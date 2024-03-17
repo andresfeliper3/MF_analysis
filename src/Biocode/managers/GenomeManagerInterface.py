@@ -1,14 +1,11 @@
 import pandas as pd
 import os
-import sqlite3
 
 from src.Biocode.sequences.Genome import Genome
 from src.Biocode.sequences.Sequence import Sequence
 from src.Biocode.managers.SequenceManager import SequenceManager
 from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 
-
-from src.Biocode.utils.utils import list_to_str, str_to_list
 from utils.logger import logger
 
 

@@ -3,12 +3,11 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.Biocode.services.WholeResultsService import WholeResultsService
-from src.Biocode.managers.DBConnectionManager import DBConnectionManager
-from src.Biocode.managers.GenomeManager import GenomeManager
-from src.load import data, ORGANISM_NAME, GCF
-from src.Biocode.utils.utils import str_to_list
-from utils.logger import logger
+from src import WholeResultsService
+from src import DBConnectionManager
+from src import GenomeManager
+from src import data, ORGANISM_NAME, GCF
+from src import str_to_list
 from utils.timer import timer
 
 

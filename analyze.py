@@ -5,13 +5,12 @@ project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..'))  # Get the absolute path of the parent directory
 sys.path.append(project_root)  # Add the project root to the Python path
 
-from src.Biocode.managers.GenomeManager import GenomeManager
-from src.Biocode.managers.DBConnectionManager import DBConnectionManager
-from local_scripts.load import data, ORGANISM_NAME, GCF, AMOUNT_CHROMOSOMES, REGIONS_NUMBER
-from utils.logger import logger
+from src.Biocode.managers import GenomeManager
+from src.Biocode.managers import DBConnectionManager
+from load import data, ORGANISM_NAME, GCF, AMOUNT_CHROMOSOMES
 from utils.timer import timer
 
-from src.Biocode.services.OrganismsService import OrganismsService
+from src.Biocode.services import OrganismsService
 
 
 @timer

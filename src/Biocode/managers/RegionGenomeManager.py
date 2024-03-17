@@ -8,7 +8,7 @@ from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.ChromosomesService import ChromosomesService
 
-from src.Biocode.utils.utils import list_to_str, str_to_list
+from src.Biocode.utils.utils import list_to_str
 
 
 class RegionGenomeManager(GenomeManagerInterface):

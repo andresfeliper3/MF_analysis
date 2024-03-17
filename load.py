@@ -1,18 +1,9 @@
 import os
-import sys
-
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..'))  # Get the absolute path of the parent directory
-sys.path.append(project_root)  # Add the project root to the Python path
-
-# from local_scripts.load import load_organism, whole_MFA
 import argparse
 import yaml
 
 # Load configurations from the YAML file
-
-
-sequences_file_path = os.path.join(project_root, 'src/sequences.yaml')
+sequences_file_path = 'resources/sequences.yaml'
 
 with open(sequences_file_path, 'r') as sequences_file:
     config = yaml.safe_load(sequences_file)
@@ -105,6 +96,7 @@ organism_path = os.path.abspath(os.path.join(sequences_folder, ORGANISM_FOLDER))
 
 data = create_sequence_data_dict(organism_path)
 AMOUNT_CHROMOSOMES = len(data)
+print(data)
 
 # change sequences.yaml to include all sequences
 # make them be selectable by name or GCF
