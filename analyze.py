@@ -39,7 +39,3 @@ def regions_MFA(organism_name, gcf, data, regions_number):
 
     logger.info(region_genome_manager.get_mfa_results())
     DBConnectionManager.close()
-
-
-#load_organism(ORGANISM_NAME, GCF, AMOUNT_CHROMOSOMES)
-#whole_MFA(ORGANISM_NAME, GCF, data)
