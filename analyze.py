@@ -1,21 +1,17 @@
 import os
-import sys
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..'))  # Get the absolute path of the parent directory
-sys.path.append(project_root)  # Add the project root to the Python path
+from src.Biocode.managers.GenomeManager import GenomeManager
+from src.Biocode.managers.DBConnectionManager import DBConnectionManager
+from src.Biocode.services.OrganismsService import OrganismsService
 
-from src.Biocode.managers import GenomeManager
-from src.Biocode.managers import DBConnectionManager
-from load import data, ORGANISM_NAME, GCF, AMOUNT_CHROMOSOMES
+from load import loader
 from utils.timer import timer
-
-from src.Biocode.services import OrganismsService
+from utils.logger import logger
 
 
 @timer
 def load_organism(organism_name, gcf, amount_chromosomes):
-    print("Loading organism")
+    logger.info("Loading organism")
     DBConnectionManager.start()
     organism_service = OrganismsService()
     organism_service.insert(record=(organism_name, gcf, amount_chromosomes))
@@ -30,7 +26,7 @@ def whole_MFA(organism_name, gcf, data):
     genome_manager.save_to_db(GCF=gcf)
     # genome_manager.generate_df_results()
 
-    print(genome_manager.get_mfa_results())
+    logger.info(genome_manager.get_mfa_results())
     DBConnectionManager.close()
 
 
@@ -46,5 +42,5 @@ def regions_MFA(organism_name, gcf, data, regions_number):
     DBConnectionManager.close()
 
 
-load_organism(ORGANISM_NAME, GCF, AMOUNT_CHROMOSOMES)
-whole_MFA(ORGANISM_NAME, GCF, data)
+#load_organism(ORGANISM_NAME, GCF, AMOUNT_CHROMOSOMES)
+#whole_MFA(ORGANISM_NAME, GCF, data)

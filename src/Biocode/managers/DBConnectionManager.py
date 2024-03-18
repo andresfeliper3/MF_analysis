@@ -4,8 +4,8 @@ import sqlite3
 
 
 class DBConnectionManager:
-    db_directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')),
-                                "MFA_analysis.db")
+    db_directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')),
+                                "resources/MFA_analysis.db")
 
     @staticmethod
     def start():
@@ -27,9 +27,7 @@ class DBConnectionManager:
 
         if existing_record:
             existing_record_id = existing_record[0]  # Assuming the id is the first element of the tuple
-            print(f"Record {record} already exists. Skipping insertion.")
             print("existing record")
-            print(existing_record)
             return existing_record_id
         else:
             insert_query = f'INSERT INTO {table_name} ({", ".join(columns)}) VALUES ({", ".join(["?"] * len(columns))});'
