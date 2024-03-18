@@ -1,102 +1,102 @@
 import os
-import argparse
 import yaml
-
-# Load configurations from the YAML file
-sequences_file_path = 'resources/sequences.yaml'
-
-with open(sequences_file_path, 'r') as sequences_file:
-    config = yaml.safe_load(sequences_file)
+from utils.logger import logger
 
 
-# Function to read fasta sequence
-def read_fasta_sequence(file_path):
-    sequence = ""
+class Loader:
+    def __init__(self):
+        self.organism = None
+        self.config = None
+        self.sequences_file_path = 'resources/sequences.yaml'
+        self.load_yaml_file()
 
-    with open(file_path, "r") as file:
-        lines = file.readlines()
+    def load_yaml_file(self):
+        with open(self.sequences_file_path, 'r') as sequences_file:
+            self.config = yaml.safe_load(sequences_file)
 
-        # Skip header lines (lines starting with '>')
-        sequence_lines = [line.strip() for line in lines if not line.startswith(">")]
+    # Function to read fasta sequence
+    def read_fasta_sequence(self, file_path):
+        sequence = ""
 
-        # Concatenate the lines to form the sequence
-        sequence = "".join(sequence_lines)
+        with open(file_path, "r") as file:
+            lines = file.readlines()
 
-    return sequence
+            # Skip header lines (lines starting with '>')
+            sequence_lines = [line.strip() for line in lines if not line.startswith(">")]
+
+            # Concatenate the lines to form the sequence
+            sequence = "".join(sequence_lines)
+
+        return sequence
+
+    def create_sequence_data_dict(self, path) -> list:
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        files = os.listdir(path)
+        sorted_files = sorted(files,
+                              key=lambda x: int(x.rstrip('.fna')[3:]) if x.rstrip('.fna')[3:].isdigit() else float(
+                                  'inf'))
+
+        return [
+            {"path": os.path.join(path, file), "name": file.split(".")[0]}
+            for file in sorted_files
+        ]
+
+    def set_organism(self, organism: str):
+        self.organism = organism
+
+    def get_organism(self) -> str:
+        return self.organism
+
+    def get_sequences_folder(self) -> str:
+        return self.config["sequences_folder"]
+
+    def get_organism_name(self) -> str:
+        try:
+            return self.config[self.organism]['organism_name']
+        except Exception as e:
+            logger.error("Invalid organism name: %s", e)
+            return None
+
+    def get_gcf(self) -> str:
+        try:
+            return self.config[self.organism]['GCF']
+        except KeyError as e:
+            logger.error("Invalid GCF: %s", e)
+            return ""
+
+    def get_regions_number(self) -> int:
+        try:
+            return self.config[self.organism]['regions_number']
+        except KeyError as e:
+            logger.error("Invalid regions number: %s", e)
+            return -1
+
+    def get_organism_folder(self) -> str:
+        try:
+            return self.get_organism_name().replace(" ", "_")
+        except Exception as e:
+            logger.error("Invalid data entered")
+            return None
+
+    def get_download_url(self) -> str:
+        try:
+            return self.config[self.organism]['download_url']
+        except KeyError as e:
+            logger.error("Invalid download url %s", e)
+            return ""
+
+    def get_data(self) -> dict:
+        organism_path = f"{self.get_sequences_folder()}/{self.get_organism_folder()}"
+        data = self.create_sequence_data_dict(organism_path)
+        return data
+
+    def get_amount_chromosomes(self) -> int:
+        return len(self.get_data())
 
 
-def create_sequence_data_dict(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-    files = os.listdir(path)
-    sorted_files = sorted(files,
-                          key=lambda x: int(x.rstrip('.fna')[3:]) if x.rstrip('.fna')[3:].isdigit() else float('inf'))
-
-    return [
-        {"path": os.path.join(path, file), "name": file.split(".")[0]}
-        for file in sorted_files
-    ]
-
-
-organism = ""
-
-
-def analyze_command(args):
-    global organism
-    if args.id:
-        organism = args.jd
-
-    elif args.name:
-        organism = args.name
-    else:
-        print("Please provide either -id or -name.")
-
-
-def graph_command(args):
-    if args.id:
-        print("Graphing by ID:", args.id)
-    elif args.name:
-        print("Graphing by name:", args.name)
-    else:
-        print("Please provide either -id or -name.")
-
-
-def main():
-    parser = argparse.ArgumentParser(description='Command line utility')
-    subparsers = parser.add_subparsers(title='Commands', dest='command')
-
-    analyze_parser = subparsers.add_parser('analyze', help='Analyze command')
-    analyze_parser.add_argument('-id', help='ID for analysis')
-    analyze_parser.add_argument('-name', help='Name for analysis')
-
-    graph_parser = subparsers.add_parser('graph', help='Graph command')
-    graph_parser.add_argument('-id', help='ID for graphing')
-    graph_parser.add_argument('-name', help='Name for graphing')
-
-    args = parser.parse_args()
-
-    if args.command == 'analyze':
-        analyze_command(args)
-    elif args.command == 'graph':
-        graph_command(args)
-
-
-if __name__ == "__main__":
-    main()
-
-sequences_folder = os.path.join(os.path.dirname(__file__), config["sequences_folder"])
-ORGANISM_NAME = config[organism]['organism_name']
-GCF = config[organism]['GCF']
-REGIONS_NUMBER = config[organism]['regions_number']
-ORGANISM_FOLDER = ORGANISM_NAME.replace(" ", "_")
-DOWNLOAD_URL = config[organism]['download_url']
-
-organism_path = os.path.abspath(os.path.join(sequences_folder, ORGANISM_FOLDER))
-
-data = create_sequence_data_dict(organism_path)
-AMOUNT_CHROMOSOMES = len(data)
-print(data)
+loader = Loader()
 
 # change sequences.yaml to include all sequences
 # make them be selectable by name or GCF
