@@ -98,7 +98,3 @@ class Loader:
 
 loader = Loader()
 
-# change sequences.yaml to include all sequences
-# make them be selectable by name or GCF
-# separation of responsibilities. load.py includes loading and commanding.
-# after executing command, the load should be made and then analyze

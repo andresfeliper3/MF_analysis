@@ -1,6 +1,5 @@
-import os
-
 from src.Biocode.managers.GenomeManager import GenomeManager
+from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
 from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 from src.Biocode.services.OrganismsService import OrganismsService
 
@@ -38,7 +37,7 @@ def regions_MFA(organism_name, gcf, data, regions_number):
     region_genome_manager.calculate_multifractal_analysis_values()
     region_genome_manager.save_to_db(GCF=gcf)
 
-    print(region_genome_manager.get_mfa_results())
+    logger.info(region_genome_manager.get_mfa_results())
     DBConnectionManager.close()
 
 

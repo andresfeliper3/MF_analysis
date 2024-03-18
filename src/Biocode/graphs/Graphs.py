@@ -16,7 +16,9 @@ class Graphs:
         plt.tight_layout()
         if not os.path.exists(actual_path):
             os.makedirs(actual_path)
+        plt.ioff()
         plt.savefig(f'{actual_path}/{title}.png')
+        plt.close()
 
     @staticmethod
     def graph_one(x_array, y_array, x_label, y_label, title, name, save=True):
