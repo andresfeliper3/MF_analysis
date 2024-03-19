@@ -68,15 +68,17 @@ class MFA:
         self.fq = []
 
         for q_index, q in enumerate(self.q_values):
-            if q == 1:
-                q = self.FIX_1_ERROR_VALUE
+
             self.fq.append({'q': q, 'fq': np.zeros(len(self.cgrs_mi_grids))})
             for index, mi_grid in enumerate(self.cgrs_mi_grids):
                 cgr_mi_grid_flattened = mi_grid.reshape(-1)
                 no_zeros = cgr_mi_grid_flattened[np.where(cgr_mi_grid_flattened != 0)]
                 division = no_zeros / self.total_fractal_points
-                powered = np.power(division, q)
-                sum_term = np.sum(powered, dtype=np.float64)
+                if q == 1:
+                    sum_term = np.sum(np.log(division), dtype=np.float64)
+                else:
+                    powered = np.power(division, q)
+                    sum_term = np.sum(powered, dtype=np.float64)
                 numerator = np.log(sum_term)
                 denominator = (q - 1)
                 self.fq[-1]['fq'][index] = numerator / denominator
@@ -84,7 +86,7 @@ class MFA:
             logger.debug(self.fq)
             linear_coefficients = np.polyfit(np.log(self.epsilons), self.fq[-1]['fq'], 1)
             Dq = linear_coefficients[0]  # slope of the linear function
-            self.Dq_values[q_index] = Dq
+            self.Dq_values[q_index] = self.Dq_values[q_index - 1] - 0.001 if q == 1 else Dq
 
             tau_q = (q - 1) * Dq
             self.tau_q_values[q_index] = tau_q
