@@ -2,6 +2,7 @@ import numpy as np
 from src.Biocode.sequences.Sequence import Sequence
 
 from src.Biocode.mfa.CGR import CGR
+from utils.logger import logger
 
 
 class MFA:
@@ -15,8 +16,8 @@ class MFA:
         self.q_min = -20
         self.q_max = 20
         self.q_values = np.arange(self.q_min, self.q_max + 1)
-        self.Dq_values = np.array([])
-        self.tau_q_values = np.array([])
+        self.Dq_values = np.zeros(len(self.q_values))
+        self.tau_q_values = np.zeros(len(self.q_values))
         self.FIX_1_ERROR_VALUE = 0.99999
 
         self.result = {}
@@ -31,7 +32,7 @@ class MFA:
         for index, epsilon in enumerate(self.epsilons):
             cgr_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=epsilon)
             self.cgrs_mi_grids.append(cgr_mi_grid)
-            print("Ready mi_grid with size", self.sizes[index], "and epsilon", epsilon)
+            logger.info(f"Ready mi_grid with size {self.sizes[index]}, and epsilon {epsilon}")
 
     def _generate_cgr_mi_grids_quickly(self):
         self.cgr_gen = CGR(self.sequence)
@@ -40,10 +41,12 @@ class MFA:
         cgr_largest_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
         self.cgrs_mi_grids[0] = cgr_largest_mi_grid
 
+        logger.info(f"Ready mi_grid with size {self.sizes[0]} and epsilon {self.epsilons[0]}")
+
         for i in range(1, len(self.sizes)):
             self.cgrs_mi_grids[i] = self.__resize_matrix(original_matrix=self.cgrs_mi_grids[i - 1],
                                                          target_size=self.sizes[i])
-            print("Ready mi_grid with size", self.sizes[i], "and epsilon", self.epsilons[i])
+            logger.info(f"Ready mi_grid with size {self.sizes[i]} and epsilon {self.epsilons[i]}")
 
     def __resize_matrix(self, original_matrix, target_size):
         result_matrix = [[0 for _ in range(target_size)] for _ in range(target_size)]
@@ -61,12 +64,13 @@ class MFA:
     def multifractal_discrimination_analysis(self):
         self._generate_cgr_mi_grids_quickly()
         self.total_fractal_points = np.sum(self.cgrs_mi_grids[0])
+        assert np.sum(self.cgrs_mi_grids[1]) == self.total_fractal_points, "total fractal points should be the same"
         self.fq = []
 
         for q_index, q in enumerate(self.q_values):
             if q == 1:
                 q = self.FIX_1_ERROR_VALUE
-            self.fq.append({'q': q, 'fq': []})
+            self.fq.append({'q': q, 'fq': np.zeros(len(self.cgrs_mi_grids))})
             for index, mi_grid in enumerate(self.cgrs_mi_grids):
                 cgr_mi_grid_flattened = mi_grid.reshape(-1)
                 no_zeros = cgr_mi_grid_flattened[np.where(cgr_mi_grid_flattened != 0)]
@@ -75,14 +79,16 @@ class MFA:
                 sum_term = np.sum(powered, dtype=np.float64)
                 numerator = np.log(sum_term)
                 denominator = (q - 1)
-                self.fq[-1]['fq'].append(numerator / denominator)
+                self.fq[-1]['fq'][index] = numerator / denominator
 
+            logger.debug(self.fq)
             linear_coefficients = np.polyfit(np.log(self.epsilons), self.fq[-1]['fq'], 1)
             Dq = linear_coefficients[0]  # slope of the linear function
-            self.Dq_values = np.append(self.Dq_values, Dq)
+            self.Dq_values[q_index] = Dq
 
             tau_q = (q - 1) * Dq
-            self.tau_q_values = np.append(self.tau_q_values, tau_q)
+            self.tau_q_values[q_index] = tau_q
+
 
         # Find the maximum and minimum Dq values
         self.Dqmax = np.max(self.Dq_values)

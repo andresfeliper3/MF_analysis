@@ -5,6 +5,7 @@ from src.Biocode.graphs.Graphs import Graphs
 
 from utils.logger import logger
 
+
 class CGR:
     def __init__(self, sequence: Sequence, corners=None):
         self.mi_grid = None
@@ -55,7 +56,7 @@ class CGR:
         self.sequence.set_cover_percentage(self.cover_percentage)
 
         if graph:
-            Graphs.graph_cgr(self.x_coords, self.y_coords, title=title, name=self.sequence.get_name(),with_grid=False)
+            Graphs.graph_cgr(self.x_coords, self.y_coords, title=title, name=self.sequence.get_name(), with_grid=False)
 
         self.sequence.set_cover(self.cover)
         return [self.x_coords, self.y_coords]
@@ -125,7 +126,8 @@ class CGR:
         return self.mi_grid
 
     def graph_cgr(self, title, name):
-        Graphs.graph_cgr(self.x_coords, self.y_coords, name=name, grid_size=self.grid_size, title=title, with_grid=False)
+        Graphs.graph_cgr(self.x_coords, self.y_coords, name=name, grid_size=self.grid_size, title=title,
+                         with_grid=False)
 
     def get_corners(self):
         return self.corners
