@@ -16,7 +16,7 @@ def main():
     analyze_parser.add_argument('-mode', help='Analysis mode: whole / regions')
 
     graph_parser = subparsers.add_parser('graph', help='Graph command')
-    graph_parser.add_argument('-name', help='Name or GCFfor graphing')
+    graph_parser.add_argument('-name', help='Name or GCF for graphing')
     graph_parser.add_argument('-mode', help='Analysis mode: whole / regions')
 
     download_parser = subparsers.add_parser('download', help='Download command')
@@ -67,6 +67,7 @@ def _validate_mode_analyzing(args):
         if args.mode == 'whole':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
+            logger.debug(loader.get_data())
             whole_MFA(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data())
         elif args.mode == 'regions':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
