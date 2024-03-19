@@ -1,4 +1,6 @@
 import numpy as np
+import decimal
+
 from src.Biocode.sequences.Sequence import Sequence
 
 from src.Biocode.mfa.CGR import CGR
@@ -63,50 +65,52 @@ class MFA:
 
     def multifractal_discrimination_analysis(self):
         self._generate_cgr_mi_grids_quickly()
-        self.total_fractal_points = np.sum(self.cgrs_mi_grids[0])
-        assert np.sum(self.cgrs_mi_grids[1]) == self.total_fractal_points, "total fractal points should be the same"
+        self.total_fractal_points = decimal.Decimal(str(np.sum(self.cgrs_mi_grids[0])))
+        assert decimal.Decimal(
+            str(np.sum(self.cgrs_mi_grids[1]))) == self.total_fractal_points, "total fractal points should be the same"
+
         self.fq = []
 
         for q_index, q in enumerate(self.q_values):
             if q == 1:
-                q = self.FIX_1_ERROR_VALUE
-            self.fq.append({'q': q, 'fq': np.zeros(len(self.cgrs_mi_grids))})
+                q = decimal.Decimal(str(self.FIX_1_ERROR_VALUE))
+            self.fq.append({'q': q, 'fq': [decimal.Decimal(0) for _ in range(len(self.cgrs_mi_grids))]})
             for index, mi_grid in enumerate(self.cgrs_mi_grids):
                 cgr_mi_grid_flattened = mi_grid.reshape(-1)
                 no_zeros = cgr_mi_grid_flattened[np.where(cgr_mi_grid_flattened != 0)]
-                division = no_zeros / self.total_fractal_points
-                powered = np.power(division, q)
-                sum_term = np.sum(powered, dtype=np.float64)
-                numerator = np.log(sum_term)
-                denominator = (q - 1)
+                division = [decimal.Decimal(str(x)) / self.total_fractal_points for x in no_zeros]
+                powered = [x ** q for x in division]
+                sum_term = sum(powered)
+                numerator = decimal.Decimal(str(sum_term)).ln()
+                denominator = q - 1
                 self.fq[-1]['fq'][index] = numerator / denominator
 
             logger.debug(self.fq)
-            linear_coefficients = np.polyfit(np.log(self.epsilons), self.fq[-1]['fq'], 1)
-            Dq = linear_coefficients[0]  # slope of the linear function
+            linear_coefficients = np.polyfit(np.log(self.epsilons), [float(x) for x in self.fq[-1]['fq']], 1)
+            Dq = decimal.Decimal(str(linear_coefficients[0]))  # slope of the linear function
             self.Dq_values[q_index] = Dq
 
             tau_q = (q - 1) * Dq
             self.tau_q_values[q_index] = tau_q
 
-
         # Find the maximum and minimum Dq values
-        self.Dqmax = np.max(self.Dq_values)
-        self.Dqmin = np.min(self.Dq_values)
+        Dq_values = [float(x) for x in self.Dq_values]
+        self.Dqmax = max(Dq_values)
+        self.Dqmin = min(Dq_values)
 
         # Calculate the degree of multifractality (DDq)
         self.DDq = self.Dqmax - self.Dqmin
 
-        # plt.show()
         print("finished chromosome:", self.sequence.get_name())
         print("*************************************")
         self.result = {
             'q_values': self.q_values,
-            'Dq_values': self.Dq_values,
-            'tau_q_values': self.tau_q_values,
-            'DDq': self.DDq,
+            'Dq_values': Dq_values,
+            'tau_q_values': [float(x) for x in self.tau_q_values],
+            'DDq': float(self.DDq),
             'sequence_name': self.sequence.get_name()
         }
+        logger.info(self.result)
         return self.result
 
     def print_tab_values(self):
