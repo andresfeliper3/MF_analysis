@@ -87,7 +87,7 @@ class MFA:
             linear_coefficients = np.polyfit(np.log(self.epsilons), self.fq[-1]['fq'], 1)
 
             # CHECK THIS OUT
-            Graphs.graph_linear_regression(self.fq[-1], self.epsilons, self.sequence.get_name(), "Linear_regression_test")
+            #Graphs.graph_linear_regression(self.fq[-1], self.epsilons, self.sequence.get_name(), "Linear_regression_test")
 
 
             Dq = linear_coefficients[0]  # slope of the linear function
