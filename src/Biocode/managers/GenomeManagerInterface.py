@@ -65,7 +65,7 @@ class GenomeManagerInterface:
             for manager in self.managers:
                 manager.graph_3d_cgr(grid_size)
 
-    def graph_linear_fit(self, name):
+    def graph_linear_fit(self):
         """Graph linear fit for fq vs ln(epsilon)"""
         for manager in self.managers:
             manager.graph_linear_fit()

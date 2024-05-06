@@ -7,6 +7,13 @@ caenorhabditis elegans 2008: &c_elegans_2008
   regions_number: 3
 GCF_000002985_4: *c_elegans_2008
 
+caenorhabditis elegans 2008 split:
+  organism_name: "Caenorhabditis elegans 2008 split"
+  GCF: "GCF_000002985.4.split"
+  download_url: ""
+  regions_number: 3
+
+
 caenorhabditis elegans: &c_elegans
   organism_name: "Caenorhabditis elegans"
   GCF: "GCF_000002985.6"

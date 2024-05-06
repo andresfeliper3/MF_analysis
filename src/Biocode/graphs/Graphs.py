@@ -390,3 +390,28 @@ class Graphs:
         if save:
             Graphs._savefig(title, name)
         plt.show()
+
+
+    @staticmethod
+    def graph_linear_regression(fq_values: list[dict], epsilons: list[float], sequence_name: str, name, save=True):
+        linear_coefficients = np.polyfit(np.log(epsilons), fq_values['fq'], 1)
+        # Create scatter plot
+        plt.scatter(np.log(epsilons), fq_values['fq'], label='Data')
+
+        # Generate points for the regression line
+        x_values = np.linspace(min(np.log(epsilons)), max(np.log(epsilons)), 100)
+        y_values = np.polyval(linear_coefficients, x_values)
+
+        # Plot the regression line
+        plt.plot(x_values, y_values, color='red', label='Linear Regression')
+
+        # Add labels and legend
+        plt.xlabel('Log(Epsilons)')
+        plt.ylabel('fq')
+        plt.legend()
+        title = f"linear regression for {sequence_name}"
+        if save:
+            Graphs._savefig(title, name)
+
+        # Show plot
+        plt.show()

@@ -4,6 +4,7 @@ from src.Biocode.sequences.Sequence import Sequence
 from src.Biocode.mfa.MFA import MFA
 from src.Biocode.graphs.Graphs import Graphs
 
+from utils.logger import logger
 
 class SequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, sequence_name: str = None,
@@ -45,6 +46,11 @@ class SequenceManager(SequenceManagerInterface):
                                     epsilon=epsilons[index])
 
     def graph_linear_fit(self):
+        logger.debug("linear fit")
+        logger.debug("self.fq")
+        logger.debug(self.fq)
+        logger.debug("epsilons")
+        logger.debug(self.mfa_generator.get_epsilons())
         Graphs.graph_linear_fit(fq_values=self.fq, epsilons=self.mfa_generator.get_epsilons(),
                                 sequence_name=self.sequence_name, name=f"{self.organism_name}/whole")
 

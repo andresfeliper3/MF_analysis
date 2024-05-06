@@ -4,6 +4,8 @@ from src.Biocode.sequences.Sequence import Sequence
 from src.Biocode.mfa.CGR import CGR
 from utils.logger import logger
 
+from src.Biocode.graphs.Graphs import Graphs
+
 
 class MFA:
     def __init__(self, sequence: Sequence):
@@ -22,7 +24,7 @@ class MFA:
 
         self.result = {}
 
-        self.sizes = np.array([1024, 512, 256, 128, 64, 32, 16, 8, 4])
+        self.sizes = np.array([512, 256, 128, 64, 32, 16, 8, 4])
         self.epsilons = 1 / self.sizes
 
     def _generate_cgr_mi_grids_thoroughly(self):  # NOT BEING USED
@@ -83,6 +85,11 @@ class MFA:
 
             logger.debug(self.fq)
             linear_coefficients = np.polyfit(np.log(self.epsilons), self.fq[-1]['fq'], 1)
+
+            # CHECK THIS OUT
+            Graphs.graph_linear_regression(self.fq[-1], self.epsilons, self.sequence.get_name(), "Linear_regression_test")
+
+
             Dq = linear_coefficients[0]  # slope of the linear function
             self.Dq_values[q_index] = Dq
 

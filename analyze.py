@@ -20,9 +20,10 @@ def load_organism(organism_name, gcf, amount_chromosomes):
 @timer
 def whole_MFA(organism_name, gcf, data):
     DBConnectionManager.start()
-    genome_manager = GenomeManager(genome_data=[data[0]], organism_name=organism_name)
+    genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
     genome_manager.calculate_multifractal_analysis_values()
     genome_manager.save_to_db(GCF=gcf)
+    genome_manager.graph_linear_fit()
     # genome_manager.generate_df_results()
 
     logger.info(genome_manager.get_mfa_results())
