@@ -9,6 +9,7 @@ from src.Biocode.graphs.Graphs import Graphs
 
 class MFA:
     def __init__(self, sequence: Sequence):
+        self._10_largest_mi_grid_values_for_k_from_10_to_4 = None
         self.DDq = None
         self.Dqmin = None
         self.Dqmax = None
@@ -24,7 +25,8 @@ class MFA:
 
         self.result = {}
 
-        self.sizes = np.array([512, 256, 128, 64, 32, 16, 8, 4])
+        self.GRID_EXPONENTS = np.array([10, 9, 8, 7, 6, 5, 4, 3, 2])
+        self.sizes = np.power(2, self.GRID_EXPONENTS)
         self.epsilons = 1 / self.sizes
 
     def _generate_cgr_mi_grids_thoroughly(self):  # NOT BEING USED
@@ -180,3 +182,30 @@ class MFA:
 
     def get_fq(self) -> list[dict]:
         return self.fq
+
+    def get_largest_mi_grid_values_given_k_n(self, k: int, n: int) -> list[int]:
+        """
+        get_largest_mi_grid_value_given_k_n
+        :param k: exponent of the grid size. E.g. if largest values with grid size 1024 is desired, k must be 10.
+        :param n: amount of largest values desired. If the 10 max values are desired, n must be 10.
+        :return: array of size n with the largest values using the grid size 2^k
+        """
+        if k not in self.GRID_EXPONENTS:
+            raise Exception("Invalid k value for mfa.get_largest_mi_grid_value_given_k_n")
+
+        exponent_index = np.where(self.GRID_EXPONENTS == k)[0][0] # to access numeric value
+        selected_mi_grid = self.cgrs_mi_grids[exponent_index]
+        selected_mi_grid_flattened = selected_mi_grid.flatten()
+        selected_mi_grid_flattened_sorted_desc = np.sort(selected_mi_grid_flattened)[::-1]
+        largest_n_values = selected_mi_grid_flattened_sorted_desc[:n]
+        return largest_n_values
+
+    def get_10_largest_mi_grid_values_for_k_from_10_to_4(self):
+        self._10_largest_mi_grid_values_for_k_from_10_to_4 = []
+        for k in range(10, 3, -1):
+            self._10_largest_mi_grid_values_for_k_from_10_to_4.append(
+                self.get_largest_mi_grid_values_given_k_n(k=k, n=10))
+
+        self._10_largest_mi_grid_values_for_k_from_10_to_4 = np.array(self._10_largest_mi_grid_values_for_k_from_10_to_4)
+        return self._10_largest_mi_grid_values_for_k_from_10_to_4
+
