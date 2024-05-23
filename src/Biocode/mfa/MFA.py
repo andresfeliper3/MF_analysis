@@ -5,7 +5,7 @@ from src.Biocode.mfa.CGR import CGR
 from utils.logger import logger
 
 from src.Biocode.graphs.Graphs import Graphs
-
+from src.Biocode.dataclasses.MiGridCoordinatesAndLargestValues import MiGridCoordinatesAndLargestValues
 
 class MFA:
     def __init__(self, sequence: Sequence):
@@ -209,13 +209,17 @@ class MFA:
         return [np.unravel_index(index, matrix_shape) for index in indices]
 
 
-    def get_10_largest_mi_grid_values_for_k_from_10_to_4(self) -> list[dict]:
+    def get_10_largest_mi_grid_values_for_k_from_10_to_4(self) -> list[MiGridCoordinatesAndLargestValues]:
         self._10_largest_mi_grid_values_for_k_from_10_to_4 = []
         for k in range(10, 3, -1):
             largest_values, coordinates =  self.get_largest_mi_grid_values_given_k_n_and_coordinates(k=k, n=10)
-            self._10_largest_mi_grid_values_for_k_from_10_to_4.append({"k": k, "largest_values": largest_values,
-                                                                      "coordinates": coordinates})
+
+            self._10_largest_mi_grid_values_for_k_from_10_to_4.append(MiGridCoordinatesAndLargestValues(
+                k=k, largest_values=largest_values, coordinates=coordinates))
 
         self._10_largest_mi_grid_values_for_k_from_10_to_4 = np.array(self._10_largest_mi_grid_values_for_k_from_10_to_4)
         return self._10_largest_mi_grid_values_for_k_from_10_to_4
+
+    def find_nucleotide_string_from_coordinates(self):
+        pass
 
