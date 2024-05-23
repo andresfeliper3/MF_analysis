@@ -220,6 +220,10 @@ class MFA:
         self._10_largest_mi_grid_values_for_k_from_10_to_4 = np.array(self._10_largest_mi_grid_values_for_k_from_10_to_4)
         return self._10_largest_mi_grid_values_for_k_from_10_to_4
 
-    def find_nucleotide_string_from_coordinates(self):
-        pass
+    def find_nucleotide_string_from_coordinates(self, coordinates_list: list[MiGridCoordinatesAndLargestValues]):
+        if self._10_largest_mi_grid_values_for_k_from_10_to_4 is None:
+            self._10_largest_mi_grid_values_for_k_from_10_to_4 = coordinates_list
+
+        for values_obj in self._10_largest_mi_grid_values_for_k_from_10_to_4:
+            values_obj
 
