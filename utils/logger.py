@@ -4,7 +4,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG,  # Set the minimum log level
                     format='%(asctime)s - %(levelname)s - %(message)s')  # Define the log message format
 
-logging.getLogger('matplotlib').setLevel(logging.INFO)
+logging.getLogger('matplotlib').setLevel(logging.WARNING)
 
 # Create a logger
 logger = logging.getLogger(__name__)

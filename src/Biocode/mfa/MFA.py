@@ -183,7 +183,7 @@ class MFA:
     def get_fq(self) -> list[dict]:
         return self.fq
 
-    def get_largest_mi_grid_values_given_k_n(self, k: int, n: int) -> list[int]:
+    def get_largest_mi_grid_values_given_k_n_and_coordinates(self, k: int, n: int) -> list[int]:
         """
         get_largest_mi_grid_value_given_k_n
         :param k: exponent of the grid size. E.g. if largest values with grid size 1024 is desired, k must be 10.
@@ -196,15 +196,25 @@ class MFA:
         exponent_index = np.where(self.GRID_EXPONENTS == k)[0][0] # to access numeric value
         selected_mi_grid = self.cgrs_mi_grids[exponent_index]
         selected_mi_grid_flattened = selected_mi_grid.flatten()
-        selected_mi_grid_flattened_sorted_desc = np.sort(selected_mi_grid_flattened)[::-1]
-        largest_n_values = selected_mi_grid_flattened_sorted_desc[:n]
-        return largest_n_values
 
-    def get_10_largest_mi_grid_values_for_k_from_10_to_4(self):
+        # Get the indices of the n largest values in the flattened array
+        indices_of_largest_n_values = np.argpartition(-selected_mi_grid_flattened, n)[:n]
+        # Get the n largest values
+        largest_n_values = selected_mi_grid_flattened[indices_of_largest_n_values]
+
+        coordinates = self._find_coordinates_of_values_in_matrix_flattened(indices_of_largest_n_values, (2**k, 2**k))
+        return largest_n_values, coordinates
+
+    def _find_coordinates_of_values_in_matrix_flattened(self, indices: list, matrix_shape: tuple) -> list:
+        return [np.unravel_index(index, matrix_shape) for index in indices]
+
+
+    def get_10_largest_mi_grid_values_for_k_from_10_to_4(self) -> list[dict]:
         self._10_largest_mi_grid_values_for_k_from_10_to_4 = []
         for k in range(10, 3, -1):
-            self._10_largest_mi_grid_values_for_k_from_10_to_4.append(
-                self.get_largest_mi_grid_values_given_k_n(k=k, n=10))
+            largest_values, coordinates =  self.get_largest_mi_grid_values_given_k_n_and_coordinates(k=k, n=10)
+            self._10_largest_mi_grid_values_for_k_from_10_to_4.append({"k": k, "largest_values": largest_values,
+                                                                      "coordinates": coordinates})
 
         self._10_largest_mi_grid_values_for_k_from_10_to_4 = np.array(self._10_largest_mi_grid_values_for_k_from_10_to_4)
         return self._10_largest_mi_grid_values_for_k_from_10_to_4

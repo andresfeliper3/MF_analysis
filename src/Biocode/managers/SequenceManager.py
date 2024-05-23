@@ -31,6 +31,7 @@ class SequenceManager(SequenceManagerInterface):
         self.mfa_results = self.mfa_generator.multifractal_discrimination_analysis()
         self._10_largest_values_from_k_10_to_4 = self.mfa_generator.get_10_largest_mi_grid_values_for_k_from_10_to_4()
         logger.critical(self._10_largest_values_from_k_10_to_4)
+
         self.fq = self.mfa_generator.get_fq()
 
     def generate_degree_of_multifractality(self):
