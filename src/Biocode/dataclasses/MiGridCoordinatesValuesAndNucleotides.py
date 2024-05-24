@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 @dataclass
-class MiGridCoordinatesAndLargestValues:
+class MiGridCoordinatesValuesAndNucleotides:
     k: int
     largest_values: List[int]
     coordinates: List[Tuple[int, int]]

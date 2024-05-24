@@ -5,7 +5,6 @@ from src.Biocode.mfa.CGR import CGR
 from utils.logger import logger
 
 from src.Biocode.graphs.Graphs import Graphs
-from src.Biocode.dataclasses.MiGridCoordinatesAndLargestValues import MiGridCoordinatesAndLargestValues
 
 class MFA:
     def __init__(self, sequence: Sequence):
@@ -182,88 +181,6 @@ class MFA:
 
     def get_fq(self) -> list[dict]:
         return self.fq
-
-    def get_largest_mi_grid_values_given_k_n_and_coordinates(self, k: int, n: int) -> list[int]:
-        """
-        get_largest_mi_grid_value_given_k_n
-        :param k: exponent of the grid size. E.g. if largest values with grid size 1024 is desired, k must be 10.
-        :param n: amount of largest values desired. If the 10 max values are desired, n must be 10.
-        :return: array of size n with the largest values using the grid size 2^k
-        """
-        if k not in self.GRID_EXPONENTS:
-            raise Exception("Invalid k value for mfa.get_largest_mi_grid_value_given_k_n")
-
-        exponent_index = np.where(self.GRID_EXPONENTS == k)[0][0] # to access numeric value
-        selected_mi_grid = self.cgrs_mi_grids[exponent_index]
-        selected_mi_grid_flattened = selected_mi_grid.flatten()
-
-        # Get the indices of the n largest values in the flattened array
-        indices_of_largest_n_values = np.argpartition(-selected_mi_grid_flattened, n)[:n]
-        # Get the n largest values
-        largest_n_values = selected_mi_grid_flattened[indices_of_largest_n_values]
-
-        coordinates = self._find_coordinates_of_values_in_matrix_flattened(indices_of_largest_n_values, (2**k, 2**k))
-        return largest_n_values, coordinates
-
-    def _find_coordinates_of_values_in_matrix_flattened(self, indices: list, matrix_shape: tuple) -> list:
-        return [np.unravel_index(index, matrix_shape) for index in indices]
-
-
-    def get_10_largest_mi_grid_values_for_k_from_10_to_4(self) -> list[MiGridCoordinatesAndLargestValues]:
-        self._10_largest_mi_grid_values_for_k_from_10_to_4 = []
-        for k in range(10, 3, -1):
-            largest_values, coordinates =  self.get_largest_mi_grid_values_given_k_n_and_coordinates(k=k, n=10)
-
-            self._10_largest_mi_grid_values_for_k_from_10_to_4.append(MiGridCoordinatesAndLargestValues(
-                k=k, largest_values=largest_values, coordinates=coordinates, nucleotides_strings=[]))
-
-        self._find_nucleotide_strings_from_coordinates()
-        self._10_largest_mi_grid_values_for_k_from_10_to_4 = np.array(self._10_largest_mi_grid_values_for_k_from_10_to_4)
-        return self._10_largest_mi_grid_values_for_k_from_10_to_4
-
-    def _find_nucleotide_strings_from_coordinates(self, coordinates_list: list[MiGridCoordinatesAndLargestValues]=None):
-        if self._10_largest_mi_grid_values_for_k_from_10_to_4 is None:
-            self._10_largest_mi_grid_values_for_k_from_10_to_4 = coordinates_list
-
-
-        for values_obj in self._10_largest_mi_grid_values_for_k_from_10_to_4:
-            grid_size = 2 ** values_obj.get_k()
-            _10_largest_nucleotides_strings_list = []
-            for coordinates in values_obj.get_coordinates():
-                nucleotide_string_reversed = self._find_nucleotide_string_from_coordinate_reversed(
-                    coordinates=coordinates, grid_size=grid_size, nucleotide_string="")
-
-                nucleotide_string = nucleotide_string_reversed[::-1]
-                _10_largest_nucleotides_strings_list.append(nucleotide_string)
-
-            values_obj.set_nucleotides_strings(_10_largest_nucleotides_strings_list)
-
-
-
-
-    def _find_nucleotide_string_from_coordinate_reversed(self, coordinates: tuple, grid_size: int,
-                                                         nucleotide_string: str) -> str:
-        row = coordinates[0]
-        col = coordinates[1]
-        half_grid_index = (grid_size / 2) - 1
-
-        is_row_lower_than_half = row <= half_grid_index
-        is_col_lower_than_half = col <= half_grid_index
-
-        if grid_size == 1:
-            return nucleotide_string
-        elif is_row_lower_than_half and is_col_lower_than_half:
-            return self._find_nucleotide_string_from_coordinate_reversed(coordinates, grid_size // 2, nucleotide_string + "A")
-
-        elif is_row_lower_than_half and not is_col_lower_than_half:
-            return self._find_nucleotide_string_from_coordinate_reversed((row, col - half_grid_index - 1), grid_size // 2,
-                                                                nucleotide_string + "C")
-        elif not is_row_lower_than_half and not is_col_lower_than_half:
-            return self._find_nucleotide_string_from_coordinate_reversed((row - half_grid_index - 1, col - half_grid_index - 1),
-                                                                grid_size // 2, nucleotide_string + "G")
-        elif not is_row_lower_than_half and is_col_lower_than_half:
-            return self._find_nucleotide_string_from_coordinate_reversed((row - half_grid_index - 1, col), grid_size // 2,
-                                                                nucleotide_string + "T")
 
 
 

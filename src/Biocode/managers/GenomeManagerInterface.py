@@ -14,6 +14,7 @@ class GenomeManagerInterface:
     def __init__(self, genome: Genome = None, genome_data: list[dict] = None, chromosomes: list[Sequence] = None,
                  organism_name: str = None,
                  regions_number: int = 0):
+        self.n_largest_mi_grid_values_strings = None
         self.df_results = None
         self.regions_number = regions_number
         if genome:
@@ -91,8 +92,16 @@ class GenomeManagerInterface:
             self.cover.append(manager.get_cover())
             self.cover_percentage.append(manager.get_cover_percentage())
             self.mfa_results.append(manager.get_mfa_results())
+            self.n_largest_mi_grid_values_strings = self._find_nucleotides_strings_recursively(
+                manager=manager, k1=10, k2=4, k_step=-1, amount_sequences=10
+            )
+            logger.critical(self.n_largest_mi_grid_values_strings)
 
         self.generate_degrees_of_multifractality()
+
+
+    def _find_nucleotides_strings_recursively(self, manager: SequenceManager, k1: int, k2: int, k_step: int, amount_sequences: int):
+        return manager.find_nucleotides_strings_recursively(k1, k2, k_step, amount_sequences)
 
     def graph_multifractal_analysis(self, _3d_cgr=True, degrees_of_multifractality=True,
                                     multifractal_spectrum=True, correlation_exponent=True, top_labels=True):
