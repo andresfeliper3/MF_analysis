@@ -7,12 +7,22 @@ CREATE TABLE organisms (
 );
 
 -- Create chromosomes table
-CREATE TABLE chromosomes (
+CREATE TABLE whole_chromosomes (
     id INTEGER PRIMARY KEY,
     name VARCHAR,
     organism_id INTEGER REFERENCES organisms(id),
     cover_percentage REAL,
     cover REAL[]
+)
+
+CREATE TABLE region_chromosomes (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR,
+    organism_id INTEGER REFERENCES organisms(id),
+    cover_percentage REAL,
+    cover REAL[],
+    regions_total INTEGER,
+    region_number INTEGER
 )
 
 -- Create mi_grids table with foreign key constraint
@@ -41,3 +51,5 @@ CREATE TABLE chr_region_results (
   tau_q_values REAL[],
   DDq REAL
 );
+
+

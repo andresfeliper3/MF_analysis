@@ -92,10 +92,13 @@ class GenomeManagerInterface:
             self.cover.append(manager.get_cover())
             self.cover_percentage.append(manager.get_cover_percentage())
             self.mfa_results.append(manager.get_mfa_results())
+            """
             self.n_largest_mi_grid_values_strings = self._find_nucleotides_strings_recursively(
                 manager=manager, k1=10, k2=4, k_step=-1, amount_sequences=10
             )
             logger.critical(self.n_largest_mi_grid_values_strings)
+            
+            """
 
         self.generate_degrees_of_multifractality()
 

@@ -5,7 +5,7 @@ from src.Biocode.graphs.Graphs import Graphs
 
 from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
-from src.Biocode.services.ChromosomesService import ChromosomesService
+from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 
 from src.Biocode.utils.utils import list_to_str
 
@@ -80,7 +80,7 @@ class GenomeManager(GenomeManagerInterface):
     def save_to_db(self, GCF):
         whole_results_service = WholeResultsService()
         organisms_service = OrganismsService()
-        chromosomes_service = ChromosomesService()
+        chromosomes_service = WholeChromosomesService()
         """
         [(val1, val2), (val1, val2)]
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
