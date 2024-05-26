@@ -25,8 +25,8 @@ class MFA:
         self.result = {}
 
         self.GRID_EXPONENTS = np.array([10, 9, 8, 7, 6, 5, 4, 3, 2])
-        self.sizes = np.power(2, self.GRID_EXPONENTS)
-        self.epsilons = 1 / self.sizes
+        self.grid_sizes = np.power(2, self.GRID_EXPONENTS)
+        self.epsilons = 1 / self.grid_sizes
 
     def _generate_cgr_mi_grids_thoroughly(self):  # NOT BEING USED
         self.cgr_gen = CGR(self.sequence)
@@ -35,21 +35,21 @@ class MFA:
         for index, epsilon in enumerate(self.epsilons):
             cgr_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=epsilon)
             self.cgrs_mi_grids.append(cgr_mi_grid)
-            logger.info(f"Ready mi_grid with size {self.sizes[index]}, and epsilon {epsilon}")
+            logger.info(f"Ready mi_grid with size {self.grid_sizes[index]}, and epsilon {epsilon}")
 
     def _generate_cgr_mi_grids_quickly(self):
         self.cgr_gen = CGR(self.sequence)
-        self.cgrs_mi_grids = [0] * len(self.sizes)
+        self.cgrs_mi_grids = [0] * len(self.grid_sizes)
 
         cgr_largest_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
         self.cgrs_mi_grids[0] = cgr_largest_mi_grid
 
-        logger.info(f"Ready mi_grid with size {self.sizes[0]} and epsilon {self.epsilons[0]}")
+        logger.info(f"Ready mi_grid with size {self.grid_sizes[0]} and epsilon {self.epsilons[0]}")
 
-        for i in range(1, len(self.sizes)):
+        for i in range(1, len(self.grid_sizes)):
             self.cgrs_mi_grids[i] = self.__resize_matrix(original_matrix=self.cgrs_mi_grids[i - 1],
-                                                         target_size=self.sizes[i])
-            logger.info(f"Ready mi_grid with size {self.sizes[i]} and epsilon {self.epsilons[i]}")
+                                                         target_size=self.grid_sizes[i])
+            logger.info(f"Ready mi_grid with size {self.grid_sizes[i]} and epsilon {self.epsilons[i]}")
 
     def __resize_matrix(self, original_matrix, target_size):
         result_matrix = [[0 for _ in range(target_size)] for _ in range(target_size)]
@@ -113,7 +113,8 @@ class MFA:
             'Dq_values': self.Dq_values,
             'tau_q_values': self.tau_q_values,
             'DDq': self.DDq,
-            'sequence_name': self.sequence.get_name()
+            'sequence_name': self.sequence.get_name(),
+            'sequence_size': self.sequence.get_size()
         }
         return self.result
 
@@ -168,7 +169,7 @@ class MFA:
         return self.epsilons
 
     def get_sizes(self) -> list:
-        return self.sizes
+        return self.grid_sizes
 
     def get_q_min(self) -> int:
         return self.q_min

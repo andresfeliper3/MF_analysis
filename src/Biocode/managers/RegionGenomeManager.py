@@ -141,7 +141,8 @@ class RegionGenomeManager(GenomeManagerInterface):
                                                                self.cover_percentage[index],
                                                                list_to_str(self.cover[index]),
                                                                self.regions_number,
-                                                               region_number))
+                                                               region_number,
+                                                               result['sequence_size']))
             region_results_service.insert(record=(self.regions_number, chromosome_id,
                                                   list_to_str(result['Dq_values'].tolist()),
                                                   list_to_str(result['tau_q_values'].tolist()),

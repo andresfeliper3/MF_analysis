@@ -91,7 +91,8 @@ class GenomeManager(GenomeManagerInterface):
         for index, result in enumerate(self.mfa_results):
             chromosome_id = chromosomes_service.insert(record=(result['sequence_name'], organism_id,
                                                                self.cover_percentage[index],
-                                                               list_to_str(self.cover[index])))
+                                                               list_to_str(self.cover[index]),
+                                                               result['sequence_size']))
             whole_results_service.insert(record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
                                                  list_to_str(result['tau_q_values'].tolist()),
                                                  list_to_str(result['DDq'])))
