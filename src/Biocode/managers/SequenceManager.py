@@ -3,12 +3,16 @@ from src.Biocode.sequences.Sequence import Sequence
 
 from src.Biocode.mfa.MFA import MFA
 from src.Biocode.graphs.Graphs import Graphs
+from src.Biocode.recursive_sequences_finder.RecursiveSequencesFinder import RecursiveSequencesFinder
+from src.Biocode.dataclasses.MiGridCoordinatesValuesAndNucleotides import MiGridCoordinatesValuesAndNucleotides
 
 from utils.logger import logger
+from typing import List
 
 class SequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, sequence_name: str = None,
                  organism_name: str = None):
+        self.n_largest_mi_grid_values_strings_for_k = None
         self.organism_name = organism_name
         if sequence:
             self.sequence = sequence
@@ -25,9 +29,11 @@ class SequenceManager(SequenceManagerInterface):
         self.degree_of_multifractality = None
         self.cover = None
         self.cover_percentage = None
+        self._10_largest_values_from_k_10_to_4 = None
 
     def generate_mfa(self):
         self.mfa_results = self.mfa_generator.multifractal_discrimination_analysis()
+
         self.fq = self.mfa_generator.get_fq()
 
     def generate_degree_of_multifractality(self):
@@ -78,6 +84,15 @@ class SequenceManager(SequenceManagerInterface):
 
     def graph_coverage(self, subfolder="whole"):
         Graphs.graph_coverage(values=self.cover, sequence_name=self.sequence_name, name=f"{self.organism_name}/{subfolder}")
+
+
+    def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step:int, amount_sequences: int) -> List[MiGridCoordinatesValuesAndNucleotides:]:
+        recursive_sequences_finder = RecursiveSequencesFinder(grid_exponents=self.mfa_generator.GRID_EXPONENTS,
+                                                              cgrs_mi_grids=self.mfa_generator.get_cgrs_mi_grids())
+        self.n_largest_mi_grid_values_strings_for_k = recursive_sequences_finder.get_largest_mi_grid_values_strings_for_different_k(
+            k1=k1, k2=k2, k_step=k_step, amount_sequences=amount_sequences
+        )
+        return self.n_largest_mi_grid_values_strings_for_k
 
     def set_organism_name(self, organism_name):
         self.organism_name = organism_name

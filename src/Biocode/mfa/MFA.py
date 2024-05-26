@@ -6,9 +6,9 @@ from utils.logger import logger
 
 from src.Biocode.graphs.Graphs import Graphs
 
-
 class MFA:
     def __init__(self, sequence: Sequence):
+        self._10_largest_mi_grid_values_for_k_from_10_to_4 = None
         self.DDq = None
         self.Dqmin = None
         self.Dqmax = None
@@ -24,7 +24,8 @@ class MFA:
 
         self.result = {}
 
-        self.sizes = np.array([512, 256, 128, 64, 32, 16, 8, 4])
+        self.GRID_EXPONENTS = np.array([10, 9, 8, 7, 6, 5, 4, 3, 2])
+        self.sizes = np.power(2, self.GRID_EXPONENTS)
         self.epsilons = 1 / self.sizes
 
     def _generate_cgr_mi_grids_thoroughly(self):  # NOT BEING USED
@@ -180,3 +181,6 @@ class MFA:
 
     def get_fq(self) -> list[dict]:
         return self.fq
+
+
+
