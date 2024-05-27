@@ -1,6 +1,8 @@
 import os
 import yaml
 from utils.logger import logger
+from Bio import SeqIO
+
 
 
 class Loader:
@@ -28,6 +30,13 @@ class Loader:
             sequence = "".join(sequence_lines)
 
         return sequence
+
+    def extract_sequence_name(self, file_path) -> str:
+        with open(file_path, 'r') as fna_file:
+            for record in SeqIO.parse(fna_file, 'fasta'):
+                # Extract the sequence name (the part before the first space)
+                sequence_name = record.description.split()[0]
+                return sequence_name
 
     def create_sequence_data_dict(self, path) -> list:
         if not os.path.exists(path):
@@ -87,7 +96,7 @@ class Loader:
             logger.error("Invalid download url %s", e)
             return ""
 
-    def get_data(self) -> dict:
+    def get_data(self) -> list:
         organism_path = f"{self.get_sequences_folder()}/{self.get_organism_folder()}"
         data = self.create_sequence_data_dict(organism_path)
         return data
