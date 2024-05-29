@@ -23,12 +23,11 @@ def load_organism(organism_name, gcf, amount_chromosomes):
 def whole_MFA_genome(organism_name, gcf, data):
     DBConnectionManager.start()
     genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
-    genome_manager.calculate_multifractal_analysis_values()
-    genome_manager.save_to_db(GCF=gcf)
-    genome_manager.graph_linear_fit()
+    genome_manager.calculate_multifractal_analysis_values(GCF=gcf)
+    #genome_manager.save_to_db_after_execution(GCF=gcf)
+    #genome_manager.graph_linear_fit()
     # genome_manager.generate_df_results()
 
-    logger.info(genome_manager.get_mfa_results())
     DBConnectionManager.close()
 
 @timer
@@ -45,10 +44,9 @@ def regions_MFA_genome(organism_name, gcf, data, regions_number):
     DBConnectionManager.start()
     region_genome_manager = RegionGenomeManager(genome_data=data, organism_name=organism_name,
                                                 regions_number=regions_number)
-    region_genome_manager.calculate_multifractal_analysis_values()
-    region_genome_manager.save_to_db(GCF=gcf)
+    region_genome_manager.calculate_multifractal_analysis_values(GCF=gcf)
+    #region_genome_manager.save_to_db_after_execution(GCF=gcf)
 
-    logger.info(region_genome_manager.get_mfa_results())
     DBConnectionManager.close()
 
 @timer

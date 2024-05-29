@@ -77,7 +77,7 @@ class GenomeManager(GenomeManagerInterface):
         return super().generate_df_results(self.mfa_results, row_labels, q_min, q_max, "Whole Genome",
                                            selected_columns)
 
-    def save_to_db(self, GCF):
+    def save_to_db_after_execution(self, GCF):
         whole_results_service = WholeResultsService()
         organisms_service = OrganismsService()
         chromosomes_service = WholeChromosomesService()
@@ -96,6 +96,8 @@ class GenomeManager(GenomeManagerInterface):
             whole_results_service.insert(record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
                                                  list_to_str(result['tau_q_values'].tolist()),
                                                  list_to_str(result['DDq'])))
+
+
 
     def set_cover(self, cover: list):
         self.cover = cover

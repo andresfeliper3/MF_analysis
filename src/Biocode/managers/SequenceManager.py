@@ -6,6 +6,12 @@ from src.Biocode.graphs.Graphs import Graphs
 from src.Biocode.recursive_sequences_finder.RecursiveSequencesFinder import RecursiveSequencesFinder
 from src.Biocode.dataclasses.MiGridCoordinatesValuesAndNucleotides import MiGridCoordinatesValuesAndNucleotides
 
+from src.Biocode.services.WholeResultsService import WholeResultsService
+from src.Biocode.services.OrganismsService import OrganismsService
+from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
+
+from src.Biocode.utils.utils import list_to_str
+
 from utils.logger import logger
 from typing import List
 
@@ -123,3 +129,24 @@ class SequenceManager(SequenceManagerInterface):
 
     def get_cover_percentage(self) -> float:
         return self.cover_percentage
+
+    def save_to_db_during_execution(self, GCF):
+        whole_results_service = WholeResultsService()
+        organisms_service = OrganismsService()
+        chromosomes_service = WholeChromosomesService()
+        """
+        [(val1, val2), (val1, val2)]
+        ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
+        [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
+        """
+        organism_id = int(organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+
+        chromosome_id = chromosomes_service.insert(record=(self.mfa_results['sequence_name'], organism_id,
+                                                           self.cover_percentage,
+                                                           list_to_str(self.cover),
+                                                           self.mfa_results['sequence_size']))
+        whole_results_service.insert(record=(chromosome_id, list_to_str(self.mfa_results['Dq_values'].tolist()),
+                                             list_to_str(self.mfa_results['tau_q_values'].tolist()),
+                                             list_to_str(self.mfa_results['DDq'])))
+        logger.info(f"************* Saved to DB {self.sequence_name} *************")
+

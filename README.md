@@ -17,15 +17,15 @@ Download and uncompress files
 Analyze and load the organism and genome data. 
 
                     
-        py .\command.py analyze genome -name "caenorhabditis elegans" -mode regions
-        py .\command.py analyze genome -name GCF_000002985_4 -mode regions
-        py .\command.py analyze genome -name GCF_000002985_4 -mode regions
+        py .\command.py analyze_genome -name "caenorhabditis elegans" -mode regions
+        py .\command.py analyze_genome -name GCF_000002985_4 -mode regions
+        py .\command.py analyze_genome -name GCF_000002985_4 -mode regions
 
 Analyze only one sequence file (one chromosome) given a file path
     
-        py .\command.py analyze sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode regions
-        py .\command.py analyze sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_4 -mode regions
-        py .\command.py analyze sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_4 -mode regions
+        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode regions
+        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_4 -mode regions
+        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_4 -mode regions
 
 
 ### Graph and xlsx file
