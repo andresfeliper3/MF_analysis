@@ -9,6 +9,7 @@ from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 from utils.logger import logger
 
 
+
 class GenomeManagerInterface:
 
     def __init__(self, genome: Genome = None, genome_data: list[dict] = None, chromosomes: list[Sequence] = None,
@@ -83,21 +84,24 @@ class GenomeManagerInterface:
         """Graph t(q) vs q"""
         pass
 
-    def calculate_multifractal_analysis_values(self):
-        """Generate mfa generators, generate mfa values, attach the degrees of multifractality, the cover and cover 
-        percentage"""
+    def calculate_multifractal_analysis_values(self, GCF: str):
+        """Generate mfa generators, generate mfa values, the cover and cover
+        percentage and send them to the DB"""
+
+        logger.debug("GenomeManagerInterface.calculate_multifractal_analysis_values")
         for manager in self.managers:
             logger.info(f"Starting chromosome: {manager.get_sequence_name()}")
             manager.calculate_multifractal_analysis_values()
-            self.cover.append(manager.get_cover())
-            self.cover_percentage.append(manager.get_cover_percentage())
-            self.mfa_results.append(manager.get_mfa_results())
+            manager.save_to_db_during_execution(GCF=GCF)
+            del manager
+
+            """
             self.n_largest_mi_grid_values_strings = self._find_nucleotides_strings_recursively(
                 manager=manager, k1=10, k2=4, k_step=-1, amount_sequences=10
             )
             logger.critical(self.n_largest_mi_grid_values_strings)
-
-        self.generate_degrees_of_multifractality()
+            
+            """
 
 
     def _find_nucleotides_strings_recursively(self, manager: SequenceManager, k1: int, k2: int, k_step: int, amount_sequences: int):
@@ -175,7 +179,7 @@ class GenomeManagerInterface:
             with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                 df.to_excel(writer, sheet_name=sheet, index=True)
 
-    def save_to_db(self, GCF):
+    def save_to_db_after_execution(self, GCF):
         pass
 
     def set_organism_name(self, organism_name):

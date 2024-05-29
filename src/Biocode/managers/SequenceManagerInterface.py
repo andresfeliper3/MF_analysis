@@ -71,3 +71,7 @@ class SequenceManagerInterface:
 
     def set_cover_percentage(self, cover_percentage):
         pass
+
+    def save_to_db_during_execution(self, GCF: str):
+       """ Save to DB after each sequence is executed"""
+       pass

@@ -6,7 +6,7 @@ from src.Biocode.graphs.Graphs import Graphs
 
 from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
-from src.Biocode.services.ChromosomesService import ChromosomesService
+from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
 
 from src.Biocode.utils.utils import list_to_str
 
@@ -61,8 +61,8 @@ class RegionGenomeManager(GenomeManagerInterface):
                                   regions_number=self.regions_number, labels_array=self.regions_names,
                                   markersize=markersize, color_by=color_by)
 
-    def calculate_multifractal_analysis_values(self):
-        super().calculate_multifractal_analysis_values()
+    def calculate_multifractal_analysis_values(self, GCF: str):
+        super().calculate_multifractal_analysis_values(GCF=GCF)
         self.generate_flattened_mfa_results_and_cover()
 
     def generate_flattened_mfa_results_and_cover(self):
@@ -124,10 +124,10 @@ class RegionGenomeManager(GenomeManagerInterface):
         return super().generate_df_results(self.flattened_mfa_results, row_labels, q_min, q_max, "With regions",
                                            selected_columns)
 
-    def save_to_db(self, GCF):
+    def save_to_db_after_execution(self, GCF):
         region_results_service = RegionResultsService()
         organisms_service = OrganismsService()
-        chromosomes_service = ChromosomesService()
+        chromosomes_service = RegionChromosomesService()
         """
         [(val1, val2), (val1, val2)]
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
@@ -136,9 +136,13 @@ class RegionGenomeManager(GenomeManagerInterface):
         """
         organism_id = int(organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
         for index, result in enumerate(self.flattened_mfa_results):
+            region_number = (index % self.regions_number) + 1
             chromosome_id = chromosomes_service.insert(record=(result['sequence_name'], organism_id,
                                                                self.cover_percentage[index],
-                                                               list_to_str(self.cover[index])))
+                                                               list_to_str(self.cover[index]),
+                                                               self.regions_number,
+                                                               region_number,
+                                                               result['sequence_size']))
             region_results_service.insert(record=(self.regions_number, chromosome_id,
                                                   list_to_str(result['Dq_values'].tolist()),
                                                   list_to_str(result['tau_q_values'].tolist()),

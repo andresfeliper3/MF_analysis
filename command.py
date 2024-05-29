@@ -2,18 +2,24 @@ import argparse
 from load import loader
 from utils.logger import logger
 
-from analyze import load_organism, whole_MFA, regions_MFA
+from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_MFA_sequence, regions_MFA_sequence
 from graph import load_data_whole, graph_whole, load_data_regions, graph_regions
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
 
+from src.Biocode.sequences.Sequence import Sequence
 
 def main():
     parser = argparse.ArgumentParser(description='Command line utility')
     subparsers = parser.add_subparsers(title='Commands', dest='command')
 
-    analyze_parser = subparsers.add_parser('analyze', help='Analyze command')
+    analyze_parser = subparsers.add_parser('analyze_genome', help='Analyze command for a whole genome')
     analyze_parser.add_argument('-name', help='Name or GCF for analysis')
     analyze_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+
+    analyze_parser = subparsers.add_parser('analyze_sequence', help='Analyze command for a sequence')
+    analyze_parser.add_argument('-path', help='Path of the .fasta sequence file relative to command.py file')
+    analyze_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    analyze_parser.add_argument('-name', help='Name or GCF for analysis')
 
     graph_parser = subparsers.add_parser('graph', help='Graph command')
     graph_parser.add_argument('-name', help='Name or GCF for graphing')
@@ -24,8 +30,10 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == 'analyze':
-        analyze_command(args)
+    if args.command == 'analyze_genome':
+        analyze_genome_command(args)
+    elif args.command == 'analyze_sequence':
+        analyze_sequence_command(args)
     elif args.command == 'graph':
         graph_command(args)
     elif args.command == 'download':
@@ -50,35 +58,67 @@ def download_command(args):
         logger.error("Please provide either a -name (lowercase name or GCF).")
 
 
-def analyze_command(args):
+def analyze_genome_command(args):
     global organism
 
     if args.name:
         organism = args.name
         loader.set_organism(organism)
-        _validate_mode_analyzing(args)
+        _validate_mode_analyzing_genome(args)
 
     else:
         logger.error("Please provide either a -name (lowercase name or GCF).")
 
+def analyze_sequence_command(args):
+    global organism
 
-def _validate_mode_analyzing(args):
+    if args.name:
+        organism = args.name
+        loader.set_organism(organism)
+    else:
+        logger.error("Please provide either a -name (lowercase name or GCF).")
+
+    if args.path:
+        sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path))
+        _validate_mode_analyzing_sequence(args, sequence)
+    else:
+        logger.error("Please provide a .fasta file path relative to command.py file")
+
+def _validate_mode_analyzing_genome(args):
     if args.mode:
         if args.mode == 'whole':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
-            logger.debug(loader.get_data())
-            whole_MFA(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data())
+            whole_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data())
         elif args.mode == 'regions':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
-            regions_MFA(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data(),
-                        regions_number=loader.get_regions_number())
+            regions_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data(),
+                               regions_number=loader.get_regions_number())
         else:
             logger.error("Enter a valid mode (whole or regions)")
     else:
         logger.error("Enter a valid mode (whole or regions)")
 
+def _validate_mode_analyzing_sequence(args, sequence: Sequence):
+    if args.mode:
+        if args.mode == 'whole':
+            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
+                          amount_chromosomes=loader.get_amount_chromosomes())
+            whole_MFA_sequence(organism_name=loader.get_organism_name(),
+                               sequence_name=loader.extract_sequence_name(file_path=args.path),
+                               gcf=loader.get_gcf(), sequence=sequence)
+        elif args.mode == 'regions':
+            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
+                          amount_chromosomes=loader.get_amount_chromosomes())
+            regions_MFA_sequence(organism_name=loader.get_organism_name(),
+                                 sequence_name=loader.extract_sequence_name(file_path=args.path),
+                                 gcf=loader.get_gcf(), sequence=sequence,
+                                 regions_number=loader.get_regions_number())
+        else:
+            logger.error("Enter a valid mode (whole or regions)")
+    else:
+        logger.error("Enter a valid mode (whole or regions)")
 
 def graph_command(args):
     global organism
