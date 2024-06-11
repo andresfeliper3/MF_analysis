@@ -93,6 +93,7 @@ class GenomeManagerInterface:
             logger.info(f"Starting chromosome: {manager.get_sequence_name()}")
             manager.calculate_multifractal_analysis_values()
             manager.save_to_db_during_execution(GCF=GCF)
+            logger.warning(self._find_nucleotides_strings_recursively(manager, k1=10, k2=4, k_step=-1, amount_sequences=10))
             del manager
 
             """

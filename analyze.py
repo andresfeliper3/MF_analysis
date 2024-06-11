@@ -36,6 +36,9 @@ def whole_MFA_sequence(organism_name, sequence_name, gcf, sequence):
     sequence_manager = SequenceManager(sequence=sequence, organism_name=organism_name,
                                        sequence_name=sequence_name)
     sequence_manager.calculate_multifractal_analysis_values()
+    sequence_manager.save_to_db_during_execution(GCF=gcf)
+    logger.warning(sequence_manager.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10))
+
     logger.info(sequence_manager.get_mfa_results())
     DBConnectionManager.close()
 

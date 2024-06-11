@@ -92,7 +92,7 @@ class SequenceManager(SequenceManagerInterface):
         Graphs.graph_coverage(values=self.cover, sequence_name=self.sequence_name, name=f"{self.organism_name}/{subfolder}")
 
 
-    def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step:int, amount_sequences: int) -> List[MiGridCoordinatesValuesAndNucleotides:]:
+    def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step:int, amount_sequences: int) -> List[MiGridCoordinatesValuesAndNucleotides]:
         recursive_sequences_finder = RecursiveSequencesFinder(grid_exponents=self.mfa_generator.GRID_EXPONENTS,
                                                               cgrs_mi_grids=self.mfa_generator.get_cgrs_mi_grids())
         self.n_largest_mi_grid_values_strings_for_k = recursive_sequences_finder.get_largest_mi_grid_values_strings_for_different_k(

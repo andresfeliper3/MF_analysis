@@ -1,3 +1,6 @@
+from typing import List
+from src.Biocode.dataclasses.MiGridCoordinatesValuesAndNucleotides import MiGridCoordinatesValuesAndNucleotides
+
 class SequenceManagerInterface:
     def generate_mfa_generator(self):
         """Generate the MFA class"""
@@ -65,6 +68,10 @@ class SequenceManagerInterface:
         self.calculate_multifractal_analysis_values()
         self.graph_multifractal_analysis()
         self.graph_coverage()
+
+    def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step:int, amount_sequences: int) -> List[MiGridCoordinatesValuesAndNucleotides]:
+        """Find nucleotides strings recursively using CGR"""
+        pass
 
     def set_cover(self, cover):
         pass
