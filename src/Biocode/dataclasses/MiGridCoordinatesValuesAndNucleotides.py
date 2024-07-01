@@ -20,5 +20,8 @@ class MiGridCoordinatesValuesAndNucleotides:
     def set_nucleotides_strings(self, nucleotides_strings: List[str]):
         self.nucleotides_strings = nucleotides_strings
 
+    def get_nucleotides_strings(self) -> List[str]:
+        return self.nucleotides_strings
+
     def __str__(self):
         return f"MiGridCoordinatesAndLargestValues(k={self.k}, largest_values={self.largest_values}, coordinates={self.coordinates}, nucleotides_strings={self.nucleotides_strings})"

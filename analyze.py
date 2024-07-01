@@ -5,6 +5,9 @@ from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.managers.SequenceManager import SequenceManager
 from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 
+from src.Biocode.services.RepeatsService import RepeatsService
+from src.Biocode.services.RepeatsWholeChromosomesService import RepeatsWholeChromosomesService
+
 from load import loader
 from utils.decorators import Timer, DBConnection
 from utils.logger import logger
@@ -37,7 +40,8 @@ def whole_MFA_sequence(organism_name, sequence_name, gcf, sequence, save_to_db):
 
     if save_to_db:
         sequence_manager.save_to_db_during_execution(GCF=gcf)
-    #logger.warning(sequence_manager.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10))
+    #nucleotides = sequence_manager.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10)
+    #logger.warning(nucleotides)
 
     logger.info(sequence_manager.get_mfa_results())
 
