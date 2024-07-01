@@ -26,3 +26,29 @@ def DBConnection(func):
         DBConnectionManager.close()
         logger.info(f"Database connection closed")
     return wrapper
+
+def Singleton(cls):
+    instances = {}
+
+    def get_instance(*args, **kwargs):
+        if cls not in instances:
+            logger.info(f"Creating instance of {cls.__name__}")
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+
+    return get_instance
+
+def Inject(**dependencies):
+    def decorator(cls):
+        original_init = cls.__init__
+
+        def __init__(self, *args, **kwargs):
+            for key, dependency in dependencies.items():
+                if key not in kwargs:
+                    kwargs[key] = dependency()
+            original_init(self, *args, **kwargs)
+
+        cls.__init__ = __init__
+        return cls
+
+    return decorator

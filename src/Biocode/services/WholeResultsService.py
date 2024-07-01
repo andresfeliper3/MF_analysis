@@ -1,7 +1,8 @@
 from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 from src.Biocode.services.AbstractService import AbstractService
+from src.Biocode.services.services_context.all_services import Service
 
-
+@Service
 class WholeResultsService(AbstractService):
     def __init__(self):
         self.table_name = "chr_whole_results"

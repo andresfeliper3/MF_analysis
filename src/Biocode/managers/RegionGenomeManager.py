@@ -9,13 +9,25 @@ from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
 
 from src.Biocode.utils.utils import list_to_str
+from utils.decorators import Inject
 
 
+@Inject(region_results_service = RegionResultsService,
+        organisms_service = OrganismsService,
+        region_chromosomes_service = RegionChromosomesService)
 class RegionGenomeManager(GenomeManagerInterface):
     def __init__(self, genome: Genome = None, genome_data: list[dict] = None, chromosomes: list[Sequence] = None,
                  organism_name: str = None,
-                 regions_number: int = 0):
+                 regions_number: int = 0,
+                 region_results_service: RegionResultsService = None,
+                 organisms_service: OrganismsService = None,
+                 region_chromosomes_service: RegionChromosomesService = None
+                 ):
         super().__init__(genome, genome_data, chromosomes, organism_name, regions_number)
+        self.region_results_service = region_results_service
+        self.organisms_service = organisms_service
+        self.region_chromosomes_service = region_chromosomes_service
+
 
     def _attach_regions_names(self):
         for manager in self.managers:
@@ -125,25 +137,22 @@ class RegionGenomeManager(GenomeManagerInterface):
                                            selected_columns)
 
     def save_to_db_after_execution(self, GCF):
-        region_results_service = RegionResultsService()
-        organisms_service = OrganismsService()
-        chromosomes_service = RegionChromosomesService()
         """
         [(val1, val2), (val1, val2)]
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         
         """
-        organism_id = int(organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
         for index, result in enumerate(self.flattened_mfa_results):
             region_number = (index % self.regions_number) + 1
-            chromosome_id = chromosomes_service.insert(record=(result['sequence_name'], organism_id,
+            chromosome_id = self.region_chromosomes_service.insert(record=(result['sequence_name'], organism_id,
                                                                self.cover_percentage[index],
                                                                list_to_str(self.cover[index]),
                                                                self.regions_number,
                                                                region_number,
                                                                result['sequence_size']))
-            region_results_service.insert(record=(self.regions_number, chromosome_id,
+            self.region_results_service.insert(record=(self.regions_number, chromosome_id,
                                                   list_to_str(result['Dq_values'].tolist()),
                                                   list_to_str(result['tau_q_values'].tolist()),
                                                   list_to_str(result['DDq'])))

@@ -8,12 +8,23 @@ from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 
 from src.Biocode.utils.utils import list_to_str
+from utils.decorators import Inject
 
 
+@Inject(whole_results_service = WholeResultsService,
+        organisms_service = OrganismsService,
+        whole_chromosomes_service = WholeChromosomesService)
 class GenomeManager(GenomeManagerInterface):
     def __init__(self, genome: Genome = None, genome_data: list[dict] = None, chromosomes: list[Sequence] = None,
-                 organism_name: str = None):
+                 organism_name: str = None,
+                 whole_results_service:WholeResultsService = None,
+                 organisms_service:OrganismsService = None,
+                 whole_chromosomes_service:WholeChromosomesService = None
+                 ):
         super().__init__(genome, genome_data, chromosomes, organism_name, 0)
+        self.whole_results_service = whole_results_service
+        self.organisms_service = organisms_service
+        self.whole_chromosomes_service = whole_chromosomes_service
 
     def generate_degrees_of_multifractality(self):
         for manager in self.managers:
@@ -78,22 +89,19 @@ class GenomeManager(GenomeManagerInterface):
                                            selected_columns)
 
     def save_to_db_after_execution(self, GCF):
-        whole_results_service = WholeResultsService()
-        organisms_service = OrganismsService()
-        chromosomes_service = WholeChromosomesService()
         """
         [(val1, val2), (val1, val2)]
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         """
-        organism_id = int(organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
 
         for index, result in enumerate(self.mfa_results):
-            chromosome_id = chromosomes_service.insert(record=(result['sequence_name'], organism_id,
+            chromosome_id = self.whole_chromosomes_service.insert(record=(result['sequence_name'], organism_id,
                                                                self.cover_percentage[index],
                                                                list_to_str(self.cover[index]),
                                                                result['sequence_size']))
-            whole_results_service.insert(record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
+            self.whole_results_service.insert(record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
                                                  list_to_str(result['tau_q_values'].tolist()),
                                                  list_to_str(result['DDq'])))
 
