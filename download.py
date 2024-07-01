@@ -3,13 +3,13 @@ import subprocess
 import gzip
 
 from load import loader
-from utils.timer import timer
+from utils.decorators import Timer
 from utils.logger import logger
 
 
 FOLDER_PATH = "resources/dna_sequences/"
 
-@timer
+@Timer
 def remove_files(organism_folder):
     directory_path = f"{FOLDER_PATH}{organism_folder}"
 
@@ -28,7 +28,7 @@ def remove_files(organism_folder):
         logger.error(f"The directory {directory_path} does not exist.")
 
 
-@timer
+@Timer
 def execute_download_command(organism_folder, download_url):
     directory_path = f"{FOLDER_PATH}{organism_folder}"
 
@@ -44,7 +44,7 @@ def execute_download_command(organism_folder, download_url):
         logger.error(result.stderr)
 
 
-@timer
+@Timer
 def clean_directory(organism_folder):
     directory_path = f"{FOLDER_PATH}{organism_folder}"
     files = os.listdir(directory_path)
@@ -56,7 +56,7 @@ def clean_directory(organism_folder):
             os.remove(file_path)
 
 
-@timer
+@Timer
 def uncompress_all_files(organism_folder):
     directory_path = f"{FOLDER_PATH}{organism_folder}"
     files = os.listdir(directory_path)

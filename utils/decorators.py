@@ -1,12 +1,14 @@
 import os
 import sys
+from src.Biocode.managers.DBConnectionManager import DBConnectionManager
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import time
 from utils.logger import logger
 
 
-def timer(func):
+def Timer(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
@@ -16,3 +18,11 @@ def timer(func):
         return result
     return wrapper
 
+def DBConnection(func):
+    def wrapper(*args, **kwargs):
+        DBConnectionManager.start()
+        logger.info(f"Database connection started")
+        func(*args, **kwargs)
+        DBConnectionManager.close()
+        logger.info(f"Database connection closed")
+    return wrapper

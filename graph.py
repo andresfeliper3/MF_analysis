@@ -5,11 +5,11 @@ from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
 from load import loader
 from src.Biocode.utils.utils import str_to_list
-from utils.timer import timer
+from utils.decorators import Timer
 from utils.logger import logger
 
 
-@timer
+@Timer
 def load_data_whole(gcf) -> dict:
     DBConnectionManager.start()
     whole_results_service = WholeResultsService()
@@ -18,7 +18,7 @@ def load_data_whole(gcf) -> dict:
     return df.to_dict(orient='records')
 
 
-@timer
+@Timer
 def graph_whole(dataframe, organism_name, data):
     genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
     desired_keys_ddq = ['DDq', 'sequence_name']
@@ -55,7 +55,7 @@ def graph_whole(dataframe, organism_name, data):
     genome_manager.graph_coverage()
 
 
-@timer
+@Timer
 def load_data_regions(gcf) -> dict:
     DBConnectionManager.start()
     region_results_service = RegionResultsService()
@@ -64,7 +64,7 @@ def load_data_regions(gcf) -> dict:
     return df.to_dict(orient='records')
 
 
-@timer
+@Timer
 def graph_regions(dataframe, organism_name, data, regions_number):
     region_genome_manager = RegionGenomeManager(genome_data=data, organism_name=organism_name,
                                                 regions_number=regions_number)
