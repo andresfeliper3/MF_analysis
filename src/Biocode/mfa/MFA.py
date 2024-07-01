@@ -84,7 +84,7 @@ class MFA:
                 denominator = (q - 1)
                 self.fq[-1]['fq'][index] = numerator / denominator
 
-            logger.debug(self.fq)
+            logger.info("fq - ", self.fq)
             linear_coefficients = np.polyfit(np.log(self.epsilons), self.fq[-1]['fq'], 1)
 
             # CHECK THIS OUT

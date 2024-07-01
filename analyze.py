@@ -20,10 +20,10 @@ def load_organism(organism_name, gcf, amount_chromosomes):
 
 
 @timer
-def whole_MFA_genome(organism_name, gcf, data):
+def whole_MFA_genome(organism_name, gcf, data, save_to_db):
     DBConnectionManager.start()
     genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
-    genome_manager.calculate_multifractal_analysis_values(GCF=gcf)
+    genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
     #genome_manager.save_to_db_after_execution(GCF=gcf)
     #genome_manager.graph_linear_fit()
     # genome_manager.generate_df_results()
@@ -31,34 +31,38 @@ def whole_MFA_genome(organism_name, gcf, data):
     DBConnectionManager.close()
 
 @timer
-def whole_MFA_sequence(organism_name, sequence_name, gcf, sequence):
+def whole_MFA_sequence(organism_name, sequence_name, gcf, sequence, save_to_db):
     DBConnectionManager.start()
     sequence_manager = SequenceManager(sequence=sequence, organism_name=organism_name,
                                        sequence_name=sequence_name)
     sequence_manager.calculate_multifractal_analysis_values()
-    sequence_manager.save_to_db_during_execution(GCF=gcf)
-    logger.warning(sequence_manager.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10))
+
+    if save_to_db:
+        sequence_manager.save_to_db_during_execution(GCF=gcf)
+    #logger.warning(sequence_manager.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10))
 
     logger.info(sequence_manager.get_mfa_results())
     DBConnectionManager.close()
 
 @timer
-def regions_MFA_genome(organism_name, gcf, data, regions_number):
+def regions_MFA_genome(organism_name, gcf, data, regions_number, save_to_db):
     DBConnectionManager.start()
     region_genome_manager = RegionGenomeManager(genome_data=data, organism_name=organism_name,
                                                 regions_number=regions_number)
-    region_genome_manager.calculate_multifractal_analysis_values(GCF=gcf)
+    region_genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
     #region_genome_manager.save_to_db_after_execution(GCF=gcf)
 
     DBConnectionManager.close()
 
 @timer
-def regions_MFA_sequence(organism_name, sequence_name, gcf, sequence, regions_number):
+def regions_MFA_sequence(organism_name, sequence_name, gcf, sequence, regions_number, save_to_db):
     DBConnectionManager.start()
     region_sequence_manager = RegionSequenceManager(sequence=sequence, organism_name=organism_name,
                                                 regions_number=regions_number, sequence_name=sequence_name)
     region_sequence_manager.calculate_multifractal_analysis_values()
-    #region_sequence_manager.save_to_db(GCF=gcf)
+
+    if save_to_db:
+        region_sequence_manager.save_to_db_during_execution(GCF=gcf)
 
     logger.info(region_sequence_manager.get_mfa_results())
     DBConnectionManager.close()

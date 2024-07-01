@@ -15,11 +15,15 @@ def main():
     analyze_parser = subparsers.add_parser('analyze_genome', help='Analyze command for a whole genome')
     analyze_parser.add_argument('-name', help='Name or GCF for analysis')
     analyze_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    analyze_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
+
 
     analyze_parser = subparsers.add_parser('analyze_sequence', help='Analyze command for a sequence')
     analyze_parser.add_argument('-path', help='Path of the .fasta sequence file relative to command.py file')
     analyze_parser.add_argument('-mode', help='Analysis mode: whole / regions')
     analyze_parser.add_argument('-name', help='Name or GCF for analysis')
+    analyze_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
+
 
     graph_parser = subparsers.add_parser('graph', help='Graph command')
     graph_parser.add_argument('-name', help='Name or GCF for graphing')
@@ -61,13 +65,33 @@ def download_command(args):
 def analyze_genome_command(args):
     global organism
 
+    save_to_db = False if args.save_to_db == 'false' else True
+
     if args.name:
         organism = args.name
         loader.set_organism(organism)
-        _validate_mode_analyzing_genome(args)
+        _validate_mode_analyzing_genome(args, save_to_db=save_to_db)
 
     else:
         logger.error("Please provide either a -name (lowercase name or GCF).")
+
+def _validate_mode_analyzing_genome(args, save_to_db: bool):
+    if args.mode:
+        if args.mode == 'whole':
+            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
+                          amount_chromosomes=loader.get_amount_chromosomes())
+            whole_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data(),
+                             save_to_db=save_to_db)
+        elif args.mode == 'regions':
+            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
+                          amount_chromosomes=loader.get_amount_chromosomes())
+            regions_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data(),
+                               regions_number=loader.get_regions_number(), save_to_db=save_to_db)
+        else:
+            logger.error("Enter a valid mode (whole or regions)")
+    else:
+        logger.error("Enter a valid mode (whole or regions)")
+
 
 def analyze_sequence_command(args):
     global organism
@@ -80,41 +104,27 @@ def analyze_sequence_command(args):
 
     if args.path:
         sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path))
-        _validate_mode_analyzing_sequence(args, sequence)
+        save_to_db = False if args.save_to_db == 'false' else True
+        _validate_mode_analyzing_sequence(args, sequence, save_to_db=save_to_db)
     else:
         logger.error("Please provide a .fasta file path relative to command.py file")
 
-def _validate_mode_analyzing_genome(args):
-    if args.mode:
-        if args.mode == 'whole':
-            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                          amount_chromosomes=loader.get_amount_chromosomes())
-            whole_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data())
-        elif args.mode == 'regions':
-            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                          amount_chromosomes=loader.get_amount_chromosomes())
-            regions_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data(),
-                               regions_number=loader.get_regions_number())
-        else:
-            logger.error("Enter a valid mode (whole or regions)")
-    else:
-        logger.error("Enter a valid mode (whole or regions)")
 
-def _validate_mode_analyzing_sequence(args, sequence: Sequence):
+def _validate_mode_analyzing_sequence(args, sequence: Sequence, save_to_db: bool):
     if args.mode:
         if args.mode == 'whole':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
             whole_MFA_sequence(organism_name=loader.get_organism_name(),
                                sequence_name=loader.extract_sequence_name(file_path=args.path),
-                               gcf=loader.get_gcf(), sequence=sequence)
+                               gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
         elif args.mode == 'regions':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
             regions_MFA_sequence(organism_name=loader.get_organism_name(),
                                  sequence_name=loader.extract_sequence_name(file_path=args.path),
                                  gcf=loader.get_gcf(), sequence=sequence,
-                                 regions_number=loader.get_regions_number())
+                                 regions_number=loader.get_regions_number(), save_to_db=save_to_db)
         else:
             logger.error("Enter a valid mode (whole or regions)")
     else:

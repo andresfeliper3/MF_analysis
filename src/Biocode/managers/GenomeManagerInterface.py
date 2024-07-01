@@ -84,7 +84,7 @@ class GenomeManagerInterface:
         """Graph t(q) vs q"""
         pass
 
-    def calculate_multifractal_analysis_values(self, GCF: str):
+    def calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool):
         """Generate mfa generators, generate mfa values, the cover and cover
         percentage and send them to the DB"""
 
@@ -92,7 +92,8 @@ class GenomeManagerInterface:
         for manager in self.managers:
             logger.info(f"Starting chromosome: {manager.get_sequence_name()}")
             manager.calculate_multifractal_analysis_values()
-            manager.save_to_db_during_execution(GCF=GCF)
+            if save_to_db:
+                manager.save_to_db_during_execution(GCF=GCF)
             logger.warning(self._find_nucleotides_strings_recursively(manager, k1=10, k2=4, k_step=-1, amount_sequences=10))
             del manager
 
