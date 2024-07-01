@@ -11,13 +11,26 @@ from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 
 from src.Biocode.utils.utils import list_to_str
+from utils.decorators import Inject
 
 from utils.logger import logger
 from typing import List
 
+@Inject(whole_results_service=WholeResultsService,
+        organisms_service = OrganismsService,
+        whole_chromosomes_service = WholeChromosomesService)
 class SequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, sequence_name: str = None,
-                 organism_name: str = None):
+                 organism_name: str = None,
+                 whole_results_service: WholeResultsService = None,
+                 organisms_service: OrganismsService = None,
+                 whole_chromosomes_service: WholeChromosomesService = None):
+
+        self.whole_chromosomes_service = whole_chromosomes_service
+        self.whole_results_service = whole_results_service
+        self.organisms_service = organisms_service
+
+
         self.n_largest_mi_grid_values_strings_for_k = None
         self.organism_name = organism_name
         if sequence:
@@ -126,21 +139,18 @@ class SequenceManager(SequenceManagerInterface):
         return self.cover_percentage
 
     def save_to_db_during_execution(self, GCF):
-        whole_results_service = WholeResultsService()
-        organisms_service = OrganismsService()
-        chromosomes_service = WholeChromosomesService()
         """
         [(val1, val2), (val1, val2)]
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         """
-        organism_id = int(organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
 
-        chromosome_id = chromosomes_service.insert(record=(self.mfa_results['sequence_name'], organism_id,
+        chromosome_id = self.whole_chromosomes_service.insert(record=(self.mfa_results['sequence_name'], organism_id,
                                                            self.cover_percentage,
                                                            list_to_str(self.cover),
                                                            self.mfa_results['sequence_size']))
-        whole_results_service.insert(record=(chromosome_id, list_to_str(self.mfa_results['Dq_values'].tolist()),
+        self.whole_results_service.insert(record=(chromosome_id, list_to_str(self.mfa_results['Dq_values'].tolist()),
                                              list_to_str(self.mfa_results['tau_q_values'].tolist()),
                                              list_to_str(self.mfa_results['DDq'])))
         logger.info(f"************* Saved to DB {self.sequence_name} *************")
