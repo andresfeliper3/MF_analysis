@@ -61,8 +61,8 @@ class RegionGenomeManager(GenomeManagerInterface):
                                   regions_number=self.regions_number, labels_array=self.regions_names,
                                   markersize=markersize, color_by=color_by)
 
-    def calculate_multifractal_analysis_values(self, GCF: str):
-        super().calculate_multifractal_analysis_values(GCF=GCF)
+    def calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool):
+        super().calculate_multifractal_analysis_values(GCF=GCF, save_to_db=save_to_db)
         self.generate_flattened_mfa_results_and_cover()
 
     def generate_flattened_mfa_results_and_cover(self):

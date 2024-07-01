@@ -58,11 +58,6 @@ class SequenceManager(SequenceManagerInterface):
                                     epsilon=epsilons[index])
 
     def graph_linear_fit(self):
-        logger.debug("linear fit")
-        logger.debug("self.fq")
-        logger.debug(self.fq)
-        logger.debug("epsilons")
-        logger.debug(self.mfa_generator.get_epsilons())
         Graphs.graph_linear_fit(fq_values=self.fq, epsilons=self.mfa_generator.get_epsilons(),
                                 sequence_name=self.sequence_name, name=f"{self.organism_name}/whole")
 
