@@ -52,4 +52,22 @@ CREATE TABLE chr_region_results (
   DDq REAL
 );
 
+-- Create repeats table for identifying general repeats
+CREATE TABLE repeats (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR,
+    class_family VARCHAR,
+    method_to_find_it VARCHAR
+);
+
+-- Table for identifying repeats in whole chromosomes with coordinates
+CREATE TABLE repeats_whole_chromosomes (
+    id INTEGER PRIMARY KEY,
+    repeats_id INTEGER REFERENCES repeats(id),
+    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id),
+    start_position INTEGER,
+    end_position INTEGER,
+    size INTEGER,
+);
+
 
