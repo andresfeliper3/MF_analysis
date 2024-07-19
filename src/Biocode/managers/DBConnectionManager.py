@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import sqlite3
 
+from utils.logger import logger
 
 class DBConnectionManager:
     db_directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')),
@@ -27,7 +28,7 @@ class DBConnectionManager:
 
         if existing_record:
             existing_record_id = existing_record[0]  # Assuming the id is the first element of the tuple
-            print("existing record")
+            logger.info(f"Existing record with id {existing_record_id}")
             return existing_record_id
         else:
             insert_query = f'INSERT INTO {table_name} ({", ".join(columns)}) VALUES ({", ".join(["?"] * len(columns))});'

@@ -13,3 +13,6 @@ class AbstractService:
     def extract_by_id(self, target_id: int):
         return DBConnectionManager.extract_by_target(table_name=self.table_name, column=self.pk_column,
                                                      target=target_id)
+
+    def extract_by_field(self, column: str, value):
+        return DBConnectionManager.extract_by_target(table_name=self.table_name, column=column, target=value)

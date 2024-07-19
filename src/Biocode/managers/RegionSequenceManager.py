@@ -8,6 +8,7 @@ from src.Biocode.graphs.Graphs import Graphs
 from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src. Biocode.services.RegionChromosomesService import RegionChromosomesService
+from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 
 from src.Biocode.utils.utils import list_to_str
 from utils.logger import logger
@@ -16,20 +17,23 @@ from utils.decorators import Inject
 
 @Inject(region_results_service = RegionResultsService,
         organisms_service = OrganismsService,
-        region_chromosomes_service = RegionChromosomesService)
+        region_chromosomes_service = RegionChromosomesService,
+        whole_chromosomes_service = WholeChromosomesService)
 class RegionSequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, regions: list[Sequence] = None,
                  sequence_name: str = None, organism_name: str = None, regions_number: int = 0,
                  region_results_service: RegionResultsService = None,
                  organisms_service: OrganismsService = None,
-                 region_chromosomes_service: RegionChromosomesService = None):
+                 region_chromosomes_service: RegionChromosomesService = None,
+                 whole_chromosomes_service: WholeChromosomesService = None):
 
         self.region_results_service = region_results_service
         self.organisms_service = organisms_service
         self.region_chromosomes_service = region_chromosomes_service
+        self.whole_chromosomes_service = whole_chromosomes_service
 
         self.organism_name = organism_name
-        self.regions_number = regions_number
+        self.regions_total = regions_number
         if sequence:
             if type(sequence) == RegionSequence:
                 self.sequence = sequence
@@ -178,16 +182,24 @@ class RegionSequenceManager(SequenceManagerInterface):
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         """
-        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
-
-        for index, result in enumerate(self.mfa_results):
-            chromosome_id = self.region_chromosomes_service.insert(record=(result['sequence_name'], organism_id,
-                                                               self.cover_percentage[index],
-                                                               list_to_str(self.cover[index]),
-                                                               self.regions_number,
-                                                               index + 1,
-                                                               result['sequence_size']))
-            self.region_results_service.insert(record=(self.regions_number, chromosome_id, list_to_str(result['Dq_values'].tolist()),
-                                                 list_to_str(result['tau_q_values'].tolist()),
-                                                 list_to_str(result['DDq'])))
+        try:
+            organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+            whole_chromosome_id = int(self.whole_chromosomes_service
+                                  .extract_by_name(name=self.sequence_name).loc[0, 'id'])
+            for index, result in enumerate(self.mfa_results):
+                chromosome_id = self.region_chromosomes_service.insert(record=(result['sequence_name'],
+                                                                               organism_id,
+                                                                               self.cover_percentage[index],
+                                                                               list_to_str(self.cover[index]),
+                                                                               self.regions_total,
+                                                                               index + 1,
+                                                                               result['sequence_size'],
+                                                                               whole_chromosome_id))
+                self.region_results_service.insert(
+                    record=(self.regions_total, chromosome_id, list_to_str(result['Dq_values'].tolist()),
+                            list_to_str(result['tau_q_values'].tolist()),
+                            list_to_str(result['DDq'])))
+        except AttributeError as e:
+            logger.error(f"Was not able to extract ids from organism and whole_chromosome to insert "
+                         f"a new region sequence {self.sequence_name} with error name: {e.name}")
         logger.info(f"************* Saved to DB {self.sequence_name} *************")
