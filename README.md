@@ -40,6 +40,17 @@ For a single sequence:
          py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode whole --save-to-db=false
          py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode whole --save-to-db=true
 
+### Analyze and find kmers recursively
+Analyze using MFA and find kmers recursively.
+This command can be used to execute the whole genome.
+
+    py .\command.py find_kmers_genome -method r -name "caenorhabditis elegans"
+
+This command can be used to execute a single chromosome.
+
+    py .\command.py find_kmers_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -method r -name "caenorhabditis elegans" 
+
+Saving kmers to database is NOT implemented yet.
 
 ### Graph and xlsx file
 Load and graph the data:

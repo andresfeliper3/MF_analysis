@@ -16,7 +16,7 @@ from utils.logger import logger
 @DBConnection
 @Timer
 def load_organism(organism_name, gcf, amount_chromosomes):
-    logger.info(f"Loading organism {organism_name} - {gcf} - {amount_chromosomes} chromosomes")
+    logger.info(f"Loading organism {organism_name} - {gcf} - {amount_chromosomes} chromosomes - to database")
     organism_service = OrganismsService()
     organism_service.insert(record=(organism_name, gcf, amount_chromosomes))
 
@@ -30,6 +30,12 @@ def whole_MFA_genome(organism_name, gcf, data, save_to_db):
     #genome_manager.graph_linear_fit()
     # genome_manager.generate_df_results()
 
+@DBConnection
+@Timer
+def find_kmers_recursively_in_genome(organism_name, gcf, data, save_to_db):
+    genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
+    genome_manager.find_only_kmers_recursively_and_calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
+
 
 @DBConnection
 @Timer
@@ -40,10 +46,17 @@ def whole_MFA_sequence(organism_name, sequence_name, gcf, sequence, save_to_db):
 
     if save_to_db:
         sequence_manager.save_to_db_during_execution(GCF=gcf)
-    #nucleotides = sequence_manager.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10)
-    #logger.warning(nucleotides)
 
     logger.info(sequence_manager.get_mfa_results())
+
+@DBConnection
+@Timer
+def find_kmers_recursively_in_sequence(organism_name, sequence_name, gcf, sequence, save_to_db):
+    sequence_manager = SequenceManager(sequence=sequence, organism_name=organism_name,
+                                       sequence_name=sequence_name)
+    sequence_manager.calculate_multifractal_analysis_values()
+    sequence_manager.find_only_kmers_recursively(GCF=gcf, save_to_db=save_to_db)
+
 
 @DBConnection
 @Timer

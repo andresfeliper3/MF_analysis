@@ -94,7 +94,6 @@ class GenomeManagerInterface:
             manager.calculate_multifractal_analysis_values()
             if save_to_db:
                 manager.save_to_db_during_execution(GCF=GCF)
-            logger.warning(self._find_nucleotides_strings_recursively(manager, k1=10, k2=4, k_step=-1, amount_sequences=10))
             del manager
 
             """
@@ -104,6 +103,17 @@ class GenomeManagerInterface:
             logger.critical(self.n_largest_mi_grid_values_strings)
             
             """
+
+
+    def find_only_kmers_recursively_and_calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool):
+        for manager in self.managers:
+            manager.calculate_multifractal_analysis_values()
+            kmers = self._find_nucleotides_strings_recursively(manager, k1=10, k2=4, k_step=-1, amount_sequences=10)
+            if save_to_db:
+                manager.save_to_db_during_execution(GCF=GCF)
+                # SAVE KMERS
+            logger.info("kmers - " + str(kmers))
+            del manager
 
 
     def _find_nucleotides_strings_recursively(self, manager: SequenceManager, k1: int, k2: int, k_step: int, amount_sequences: int):

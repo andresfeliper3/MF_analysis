@@ -12,7 +12,8 @@ CREATE TABLE whole_chromosomes (
     name VARCHAR,
     organism_id INTEGER REFERENCES organisms(id),
     cover_percentage REAL,
-    cover REAL[]
+    cover REAL[],
+    size INTEGER
 )
 
 CREATE TABLE region_chromosomes (
@@ -22,7 +23,9 @@ CREATE TABLE region_chromosomes (
     cover_percentage REAL,
     cover REAL[],
     regions_total INTEGER,
-    region_number INTEGER
+    region_number INTEGER,
+    size INTEGER,
+    whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id)
 )
 
 -- Create mi_grids table with foreign key constraint
@@ -36,7 +39,7 @@ CREATE TABLE mi_grids (
 -- Create chr_whole_results table with foreign key constraint
 CREATE TABLE chr_whole_results (
   id INTEGER PRIMARY KEY,
-  chromosome_id INTEGER REFERENCES chromosomes(id),
+  whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id),
   Dq_values REAL[],
   tau_q_values REAL[],
   DDq REAL
@@ -46,7 +49,7 @@ CREATE TABLE chr_whole_results (
 CREATE TABLE chr_region_results (
   id INTEGER PRIMARY KEY,
   regions_number INTEGER,
-  chromosome_id INTEGER REFERENCES chromosomes(id),
+  region_chromosome_id INTEGER REFERENCES region_chromosomes(id),
   Dq_values REAL[],
   tau_q_values REAL[],
   DDq REAL

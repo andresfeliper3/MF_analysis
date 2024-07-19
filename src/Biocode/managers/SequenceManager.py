@@ -155,3 +155,14 @@ class SequenceManager(SequenceManagerInterface):
                                              list_to_str(self.mfa_results['DDq'])))
         logger.info(f"************* Saved to DB {self.sequence_name} *************")
 
+
+    def find_only_kmers_recursively(self, GCF: str, save_to_db: bool):
+        kmers = self.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10)
+        if save_to_db:
+            self.save_to_db_during_execution(GCF=GCF)
+            # SAVE KMER
+        logger.info("kmers - " + str(kmers))
+
+
+
+

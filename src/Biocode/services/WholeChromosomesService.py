@@ -7,3 +7,7 @@ class WholeChromosomesService(AbstractService):
         self.table_name = "whole_chromosomes"
         self.columns = ["name", "organism_id", "cover_percentage", "cover", "size"]
         self.pk_column = "id"
+
+
+    def extract_by_name(self, name: str):
+        return self.extract_by_field(column="name", value=name)
