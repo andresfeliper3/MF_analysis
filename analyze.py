@@ -55,7 +55,9 @@ def find_kmers_recursively_in_sequence(organism_name, sequence_name, gcf, sequen
     sequence_manager = SequenceManager(sequence=sequence, organism_name=organism_name,
                                        sequence_name=sequence_name)
     sequence_manager.calculate_multifractal_analysis_values()
-    sequence_manager.find_only_kmers_recursively(GCF=gcf, save_to_db=save_to_db)
+    kmers_list = sequence_manager.find_only_kmers_recursively()
+    if save_to_db:
+        sequence_manager.save_repeats_found_recursively_to_db(kmers_list=kmers_list, GCF=gcf)
 
 
 @DBConnection

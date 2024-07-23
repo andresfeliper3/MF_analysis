@@ -3,7 +3,7 @@ from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 
 class AbstractService:
 
-    def insert(self, record: tuple):
+    def insert(self, record: tuple) -> int :
         return DBConnectionManager.insert(table_name=self.table_name, columns=self.columns, pk=self.pk_column,
                                           record=record)
 
