@@ -6,7 +6,11 @@ from src.Biocode.sequences.Sequence import Sequence
 from src.Biocode.managers.SequenceManager import SequenceManager
 from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 
+from src.Biocode.dataclasses.MiGridCoordinatesValuesAndNucleotides import MiGridCoordinatesValuesAndNucleotides
+
+
 from utils.logger import logger
+from typing import List
 
 
 
@@ -105,18 +109,21 @@ class GenomeManagerInterface:
             """
 
 
-    def find_only_kmers_recursively_and_calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool):
+    def find_only_kmers_recursively_and_calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool,
+                                                                               method_to_find_it: str):
         for manager in self.managers:
             manager.calculate_multifractal_analysis_values()
-            kmers = self._find_nucleotides_strings_recursively(manager, k1=10, k2=4, k_step=-1, amount_sequences=10)
+            kmers_list = self._find_nucleotides_strings_recursively(manager, k1=10, k2=4, k_step=-1,
+                                                                    amount_sequences=10)
             if save_to_db:
-                manager.save_to_db_during_execution(GCF=GCF)
-                # SAVE KMERS
-            logger.info("kmers - " + str(kmers))
+                manager.save_repeats_found_recursively_to_db(kmers_list=kmers_list, GCF=GCF,
+                                                             method_to_find_it=method_to_find_it)
+            logger.info("kmers - " + str(kmers_list))
             del manager
 
 
-    def _find_nucleotides_strings_recursively(self, manager: SequenceManager, k1: int, k2: int, k_step: int, amount_sequences: int):
+    def _find_nucleotides_strings_recursively(self, manager: SequenceManager, k1: int, k2: int, k_step: int,
+                                              amount_sequences: int) -> List[MiGridCoordinatesValuesAndNucleotides]:
         return manager.find_nucleotides_strings_recursively(k1, k2, k_step, amount_sequences)
 
     def graph_multifractal_analysis(self, _3d_cgr=True, degrees_of_multifractality=True,

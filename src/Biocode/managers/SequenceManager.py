@@ -176,9 +176,9 @@ class SequenceManager(SequenceManagerInterface):
         for kmers in kmers_list:
             nucleotides_strings = kmers.get_nucleotides_strings()
             for string in nucleotides_strings:
-                repeats_service_id = self.repeats_service.insert(record=(string, None, method_to_find_it))
+                repeats_service_id = self.repeats_service.insert(record=(string, "", method_to_find_it))
                 self.repeats_whole_chromosomes_service.insert(
-                    record=(repeats_service_id, organism_id, None, None, len(string)))
+                    record=(repeats_service_id, organism_id, "", "", len(string)))
 
 
 

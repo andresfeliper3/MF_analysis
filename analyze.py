@@ -34,7 +34,8 @@ def whole_MFA_genome(organism_name, gcf, data, save_to_db):
 @Timer
 def find_kmers_recursively_in_genome(organism_name, gcf, data, save_to_db):
     genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
-    genome_manager.find_only_kmers_recursively_and_calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
+    genome_manager.find_only_kmers_recursively_and_calculate_multifractal_analysis_values(
+        GCF=gcf, save_to_db=save_to_db, method_to_find_it="Recursively")
 
 
 @DBConnection
@@ -57,7 +58,8 @@ def find_kmers_recursively_in_sequence(organism_name, sequence_name, gcf, sequen
     sequence_manager.calculate_multifractal_analysis_values()
     kmers_list = sequence_manager.find_only_kmers_recursively()
     if save_to_db:
-        sequence_manager.save_repeats_found_recursively_to_db(kmers_list=kmers_list, GCF=gcf)
+        sequence_manager.save_repeats_found_recursively_to_db(
+            kmers_list=kmers_list, GCF=gcf, method_to_find_it="Recursively")
 
 
 @DBConnection
