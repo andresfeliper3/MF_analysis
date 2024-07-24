@@ -38,6 +38,9 @@ class Loader:
                 sequence_name = record.description.split()[0]
                 return sequence_name
 
+    def extract_file_name(self, file_path) -> str:
+        return os.path.basename(file_path).split(".")[0]
+
     def create_sequence_data_dict(self, path) -> list:
         if not os.path.exists(path):
             os.makedirs(path)

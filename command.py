@@ -99,7 +99,7 @@ def find_kmers_sequence_command(args):
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
             find_kmers_recursively_in_sequence(organism_name=loader.get_organism_name(),
-                               sequence_name=loader.extract_sequence_name(file_path=args.path),
+                               sequence_name=loader.extract_file_name(file_path=args.path),
                                gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
         elif args.method == 'rm':
             logger.warning("Feature not implemented yet")
@@ -175,13 +175,13 @@ def _validate_mode_analyzing_sequence(args, sequence: Sequence, save_to_db: bool
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
             whole_MFA_sequence(organism_name=loader.get_organism_name(),
-                               sequence_name=loader.extract_sequence_name(file_path=args.path),
+                               sequence_name=loader.extract_file_name(file_path=args.path),
                                gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
         elif args.mode == 'regions':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
             regions_MFA_sequence(organism_name=loader.get_organism_name(),
-                                 sequence_name=loader.extract_sequence_name(file_path=args.path),
+                                 sequence_name=loader.extract_file_name(file_path=args.path),
                                  gcf=loader.get_gcf(), sequence=sequence,
                                  regions_number=loader.get_regions_number(), save_to_db=save_to_db)
         else:
