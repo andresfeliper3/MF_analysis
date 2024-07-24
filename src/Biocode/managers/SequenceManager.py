@@ -9,6 +9,8 @@ from src.Biocode.dataclasses.MiGridCoordinatesValuesAndNucleotides import MiGrid
 from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
+from src.Biocode.services.RepeatsService import RepeatsService
+from src.Biocode.services.RepeatsWholeChromosomesService import RepeatsWholeChromosomesService
 
 from src.Biocode.utils.utils import list_to_str
 from utils.decorators import Inject
@@ -18,17 +20,25 @@ from typing import List
 
 @Inject(whole_results_service=WholeResultsService,
         organisms_service = OrganismsService,
-        whole_chromosomes_service = WholeChromosomesService)
+        whole_chromosomes_service = WholeChromosomesService,
+        repeats_service = RepeatsService,
+        repeats_whole_chromosomes_service = RepeatsWholeChromosomesService)
 class SequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, sequence_name: str = None,
                  organism_name: str = None,
                  whole_results_service: WholeResultsService = None,
                  organisms_service: OrganismsService = None,
-                 whole_chromosomes_service: WholeChromosomesService = None):
+                 whole_chromosomes_service: WholeChromosomesService = None,
+                 repeats_service: RepeatsService = None,
+                 repeats_whole_chromosomes_service: RepeatsWholeChromosomesService = None):
 
+        self.chromosome_id = None
+        self.organism_id = None
         self.whole_chromosomes_service = whole_chromosomes_service
         self.whole_results_service = whole_results_service
         self.organisms_service = organisms_service
+        self.repeats_service = repeats_service
+        self.repeats_whole_chromosomes_service = repeats_whole_chromosomes_service
 
 
         self.n_largest_mi_grid_values_strings_for_k = None
@@ -138,15 +148,21 @@ class SequenceManager(SequenceManagerInterface):
     def get_cover_percentage(self) -> float:
         return self.cover_percentage
 
+    def get_organism_id(self) -> int:
+        return self.organism_id
+
+    def get_chromosome_id(self) -> int:
+        return self.chromosome_id
+
     def save_to_db_during_execution(self, GCF):
         """
         [(val1, val2), (val1, val2)]
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         """
-        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        self.organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
 
-        chromosome_id = self.whole_chromosomes_service.insert(record=(self.mfa_results['sequence_name'], organism_id,
+        self.chromosome_id = self.whole_chromosomes_service.insert(record=(self.mfa_results['sequence_name'], organism_id,
                                                            self.cover_percentage,
                                                            list_to_str(self.cover),
                                                            self.mfa_results['sequence_size']))
@@ -156,13 +172,29 @@ class SequenceManager(SequenceManagerInterface):
         logger.info(f"************* Saved to DB {self.sequence_name} *************")
 
 
-    def find_only_kmers_recursively(self, GCF: str, save_to_db: bool):
-        kmers = self.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10)
-        if save_to_db:
-            self.save_to_db_during_execution(GCF=GCF)
-            # SAVE KMER
-        logger.info("kmers - " + str(kmers))
+    def find_only_kmers_recursively(self) -> List[MiGridCoordinatesValuesAndNucleotides]:
+        kmers_list = self.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10)
+        logger.info("kmers - " + str(kmers_list))
+        return kmers_list
 
+
+    def save_repeats_found_recursively_to_db(self, kmers_list: List[MiGridCoordinatesValuesAndNucleotides], GCF: str,
+                                             method_to_find_it: str = "Recursively"):
+
+        self.organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+
+        self.chromosome_id = self.whole_chromosomes_service.insert(
+            record=(self.mfa_results['sequence_name'], self.organism_id,
+                    self.cover_percentage,
+                    list_to_str(self.cover),
+                    self.mfa_results['sequence_size']))
+
+        for kmers in kmers_list:
+            nucleotides_strings = kmers.get_nucleotides_strings()
+            for string in nucleotides_strings:
+                repeats_service_id = self.repeats_service.insert(record=(string, "", method_to_find_it))
+                self.repeats_whole_chromosomes_service.insert(
+                    record=(repeats_service_id, self.chromosome_id , "", "", len(string)))
 
 
 
