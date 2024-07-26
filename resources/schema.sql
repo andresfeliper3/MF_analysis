@@ -74,3 +74,21 @@ CREATE TABLE repeats_whole_chromosomes (
 );
 
 
+CREATE TABLE RM_repeats_whole_chromosomes (
+    id INTEGER PRIMARY KEY,
+    repeats_id INTEGER REFERENCES repeats(id),
+    whole_chromosomes_id INTEGER REFERENCES repeats(id),
+    sw_score  INTEGER,
+    percentage_divergence REAL,
+    percentage_deletions REAL,
+    percentage_insertions REAL,
+    query_begin INTEGER,
+    query_end INTEGER,
+    repeat_length INTEGER,
+    query_left INTEGER,
+    strand VARCHAR,
+    repeat_begin INTEGER,
+    repeat_end INTEGER,
+    repeat_left INTEGER
+);
+

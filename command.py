@@ -6,6 +6,7 @@ from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_M
     find_kmers_recursively_in_genome, find_kmers_recursively_in_sequence
 from graph import load_data_whole, graph_whole, load_data_regions, graph_regions
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
+from repeats import load_RM_repeats_from_file
 
 from src.Biocode.sequences.Sequence import Sequence
 
@@ -46,6 +47,11 @@ def main():
     download_parser = subparsers.add_parser('download', help='Download command')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
 
+    load_RM_repeats_parser = subparsers.add_parser('load_RM_repeats', help='Load repeats from results file generated '
+                                            'by RepeatMasker')
+    load_RM_repeats_parser.add_argument('-path', help='Add the relative path of the .out file. For example: '
+                                                      'resources/RM_resources/*_chromosome_I.fasta.out')
+
     args = parser.parse_args()
 
     if args.command == 'analyze_genome':
@@ -60,6 +66,9 @@ def main():
         graph_command(args)
     elif args.command == 'download':
         download_command(args)
+    elif args.command == 'load_RM_repeats':
+        load_RM_repeats(args)
+
 
 
 
@@ -213,6 +222,14 @@ def _validate_mode_graphing(args):
             logger.error("Enter a valid mode (whole or regions)")
     else:
         logger.error("Enter a valid mode (whole or regions)")
+
+
+def load_RM_repeats(args):
+    try:
+        path = args.path
+        load_RM_repeats_from_file(path)
+    except Exception as e:
+        logger.error(e)
 
 
 if __name__ == "__main__":
