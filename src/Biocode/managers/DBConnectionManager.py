@@ -23,10 +23,6 @@ class DBConnectionManager:
     @staticmethod
     def insert(table_name, columns: list, pk, record: tuple):
         check_query = f'SELECT * FROM {table_name} WHERE {" AND ".join([f"{col} = ?" for col in columns if col != pk])};'
-        logger.debug("check - query")
-        logger.debug(check_query)
-        logger.debug("record - " + str(type(record)) )
-        logger.debug(record)
         DBConnectionManager.cursor.execute(check_query, tuple(record))
         existing_record = DBConnectionManager.cursor.fetchone()
         logger.debug("Existing record:")

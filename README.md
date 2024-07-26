@@ -60,4 +60,16 @@ Load and graph the data:
         py .\command.py graph -name GCF_000002985_4 -mode regions
         py .\command.py graph -name GCF_000002985_4 -mode whole
 
-Compare results with branch main and changeAlgorithm
+Compare results with branch main and changeAlgorithm.
+
+
+## Repeats using RepeatMasker
+After executing the RepeatMasker program, the results are saved in a .out file.
+These files can be saved in the following directory _resources/RM_resources/<organism_name>_
+
+### Save RepeatMasker results to database 
+Save the repeats found by RepeatMasker into the database using the results file path as a parameter.
+
+Example using the command:
+
+    py .\command.py load_RM_repeats -path resources/RM_resources/c_elegans_chromosome_I.fasta.out

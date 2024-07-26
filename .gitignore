@@ -7,7 +7,7 @@
 *.xlsx
 *.csv
 *.png
-
+*.out
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
