@@ -50,7 +50,7 @@ class GenomeManagerInterface:
 
         # name of organism
         self.organism_name = organism_name
-        # mfa results
+        # mfa resultsc
         self.mfa_results = []
         # degrees of multifractality
         self.degrees_of_multifractality = []
@@ -91,8 +91,6 @@ class GenomeManagerInterface:
     def calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool):
         """Generate mfa generators, generate mfa values, the cover and cover
         percentage and send them to the DB"""
-
-        logger.debug("GenomeManagerInterface.calculate_multifractal_analysis_values")
         for manager in self.managers:
             logger.info(f"Starting chromosome: {manager.get_sequence_name()}")
             manager.calculate_multifractal_analysis_values()

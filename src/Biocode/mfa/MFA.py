@@ -114,7 +114,8 @@ class MFA:
             'tau_q_values': self.tau_q_values,
             'DDq': self.DDq,
             'sequence_name': self.sequence.get_name(),
-            'sequence_size': self.sequence.get_size()
+            'sequence_size': self.sequence.get_size(),
+            'refseq_accession_number': self.sequence.get_refseq_accession_number()
         }
         return self.result
 

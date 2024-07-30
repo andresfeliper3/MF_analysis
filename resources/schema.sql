@@ -10,15 +10,17 @@ CREATE TABLE organisms (
 CREATE TABLE whole_chromosomes (
     id INTEGER PRIMARY KEY,
     name VARCHAR,
+    refseq_accession_number VARCHAR,
     organism_id INTEGER REFERENCES organisms(id),
     cover_percentage REAL,
     cover REAL[],
     size INTEGER
-)
+);
 
 CREATE TABLE region_chromosomes (
     id INTEGER PRIMARY KEY,
     name VARCHAR,
+    refseq_accession_number VARCHAR,
     organism_id INTEGER REFERENCES organisms(id),
     cover_percentage REAL,
     cover REAL[],
@@ -26,7 +28,7 @@ CREATE TABLE region_chromosomes (
     region_number INTEGER,
     size INTEGER,
     whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id)
-)
+);
 
 -- Create mi_grids table with foreign key constraint
 CREATE TABLE mi_grids (
@@ -70,7 +72,7 @@ CREATE TABLE repeats_whole_chromosomes (
     whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id),
     start_position INTEGER,
     end_position INTEGER,
-    size INTEGER,
+    size INTEGER
 );
 
 

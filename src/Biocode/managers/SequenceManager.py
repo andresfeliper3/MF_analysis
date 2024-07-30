@@ -42,15 +42,21 @@ class SequenceManager(SequenceManagerInterface):
 
 
         self.n_largest_mi_grid_values_strings_for_k = None
-        self.organism_name = organism_name
         if sequence:
             self.sequence = sequence
-            self.sequence_name = sequence_name
+            self.refseq_accession_number = sequence.get_refseq_accession_number()
             if sequence_name:
                 self.sequence.set_name(sequence_name)
+            if organism_name:
+                self.sequence.set_organism_name(organism_name)
+
+            self.sequence_name = self.sequence.get_name()
+            self.organism_name = self.sequence.get_organism_name()
         elif sequence_data:
             self.sequence = Sequence(sequence_data=sequence_data)
             self.sequence_name = sequence_data['name']
+            self.organism_name = sequence_data['organism_name'] or organism_name
+            self.refseq_accession_number = self.sequence.get_refseq_accession_number()
 
         self.mfa_generator = MFA(sequence=self.sequence)
         self.mfa_results = None
@@ -154,6 +160,9 @@ class SequenceManager(SequenceManagerInterface):
     def get_chromosome_id(self) -> int:
         return self.chromosome_id
 
+    def get_refseq_accession_number(self) -> str:
+        return self.refseq_accession_number
+
     def save_to_db_during_execution(self, GCF):
         """
         [(val1, val2), (val1, val2)]
@@ -162,11 +171,8 @@ class SequenceManager(SequenceManagerInterface):
         """
         self.organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
 
-        self.chromosome_id = self.whole_chromosomes_service.insert(record=(self.mfa_results['sequence_name'], organism_id,
-                                                           self.cover_percentage,
-                                                           list_to_str(self.cover),
-                                                           self.mfa_results['sequence_size']))
-        self.whole_results_service.insert(record=(chromosome_id, list_to_str(self.mfa_results['Dq_values'].tolist()),
+        self.chromosome_id = self._insert_mfa_results_to_whole_chromosomes_table()
+        self.whole_results_service.insert(record=(self.chromosome_id, list_to_str(self.mfa_results['Dq_values'].tolist()),
                                              list_to_str(self.mfa_results['tau_q_values'].tolist()),
                                              list_to_str(self.mfa_results['DDq'])))
         logger.info(f"************* Saved to DB {self.sequence_name} *************")
@@ -183,11 +189,7 @@ class SequenceManager(SequenceManagerInterface):
 
         self.organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
 
-        self.chromosome_id = self.whole_chromosomes_service.insert(
-            record=(self.mfa_results['sequence_name'], self.organism_id,
-                    self.cover_percentage,
-                    list_to_str(self.cover),
-                    self.mfa_results['sequence_size']))
+        self.chromosome_id = self._insert_mfa_results_to_whole_chromosomes_table()
 
         for kmers in kmers_list:
             nucleotides_strings = kmers.get_nucleotides_strings()
@@ -197,4 +199,10 @@ class SequenceManager(SequenceManagerInterface):
                     record=(repeats_service_id, self.chromosome_id , "", "", len(string)))
 
 
+    def _insert_mfa_results_to_whole_chromosomes_table(self) -> int:
+        return self.whole_chromosomes_service.insert(
+            record=(self.mfa_results['sequence_name'], self.sequence.get_refseq_accession_number(), self.organism_id,
+                    self.cover_percentage,
+                    list_to_str(self.cover),
+                    self.mfa_results['sequence_size']))
 
