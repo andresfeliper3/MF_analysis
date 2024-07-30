@@ -1,11 +1,13 @@
 from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.services.RegionResultsService import RegionResultsService
+from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
+from src.Biocode.graphs.Graphs import Graphs
 from load import loader
 from src.Biocode.utils.utils import str_to_list
-from utils.decorators import Timer
+from utils.decorators import Timer, DBConnection
 from utils.logger import logger
 
 
@@ -102,3 +104,17 @@ def graph_regions(dataframe, organism_name, data, regions_number):
     region_genome_manager.graph_multifractal_analysis_merged()
 
     region_genome_manager.graph_coverage()
+
+@DBConnection
+@Timer
+def graph_rm_results_from_file(path: str, refseq_accession_number:str, partitions:int, regions: int,
+                               plot_type:str = "line", save: bool = True, name: str = None):
+    DEFAULT_REGIONS = 3
+    DEFAULT_PARTITIONS = 300
+    whole_chromosomes_service = WholeChromosomesService()
+    size = whole_chromosomes_service.extract_size_by_refseq_accession_number(refseq_accession_number)
+    partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
+    regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+    Graphs.graph_distribution_of_repeats_merged_from_file(path=path, size=size, partitions=partitions,
+                                             legend=True, regions=regions, plot_type=plot_type, save=save,
+                                             name=name, refseq_accession_number=refseq_accession_number)
