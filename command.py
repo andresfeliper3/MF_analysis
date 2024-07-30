@@ -102,7 +102,10 @@ def find_kmers_sequence_command(args):
 
     if args.path:
         if args.method == 'r':
-            sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path))
+            sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path),
+                                name=loader.extract_file_name(file_path=args.path),
+                                organism_name=loader.get_organism_name(),
+                                refseq_accession_number=loader.extract_refseq_accession_number(args.path))
             save_to_db = False if args.save_to_db == 'false' else True
 
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
@@ -121,7 +124,6 @@ def download_command(args):
     if args.name:
         organism = args.name
         loader.set_organism(organism)
-        logger.debug(loader.get_organism_folder())
         remove_files(organism_folder=loader.get_organism_folder())
         execute_download_command(organism_folder=loader.get_organism_folder(), download_url=loader.get_download_url())
         clean_directory(organism_folder=loader.get_organism_folder())
@@ -171,7 +173,10 @@ def analyze_sequence_command(args):
         logger.error("Please provide either a -name (lowercase name or GCF).")
 
     if args.path:
-        sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path))
+        sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path),
+                            name=loader.extract_file_name(file_path=args.path),
+                            organism_name=loader.get_organism_name(),
+                            refseq_accession_number=loader.extract_refseq_accession_number(args.path))
         save_to_db = False if args.save_to_db == 'false' else True
         _validate_mode_analyzing_sequence(args, sequence, save_to_db=save_to_db)
     else:
@@ -183,15 +188,11 @@ def _validate_mode_analyzing_sequence(args, sequence: Sequence, save_to_db: bool
         if args.mode == 'whole':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
-            whole_MFA_sequence(organism_name=loader.get_organism_name(),
-                               sequence_name=loader.extract_file_name(file_path=args.path),
-                               gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
+            whole_MFA_sequence(gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
         elif args.mode == 'regions':
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
-            regions_MFA_sequence(organism_name=loader.get_organism_name(),
-                                 sequence_name=loader.extract_file_name(file_path=args.path),
-                                 gcf=loader.get_gcf(), sequence=sequence,
+            regions_MFA_sequence(gcf=loader.get_gcf(), sequence=sequence,
                                  regions_number=loader.get_regions_number(), save_to_db=save_to_db)
         else:
             logger.error("Enter a valid mode (whole or regions)")

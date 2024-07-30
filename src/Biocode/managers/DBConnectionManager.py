@@ -25,11 +25,9 @@ class DBConnectionManager:
         check_query = f'SELECT * FROM {table_name} WHERE {" AND ".join([f"{col} = ?" for col in columns if col != pk])};'
         DBConnectionManager.cursor.execute(check_query, tuple(record))
         existing_record = DBConnectionManager.cursor.fetchone()
-        logger.debug("Existing record:")
-        logger.debug(existing_record)
         if existing_record:
             existing_record_id = existing_record[0]  # Assuming the id is the first element of the tuple
-            logger.info(f"Existing record with id {existing_record_id}")
+            logger.info(f"Existing record with id {existing_record_id} in table {table_name}")
             return existing_record_id
         else:
             insert_query = f'INSERT INTO {table_name} ({", ".join(columns)}) VALUES ({", ".join(["?"] * len(columns))});'

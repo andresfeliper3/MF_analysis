@@ -1,5 +1,6 @@
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RepeatsService import RepeatsService
+from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 
 from load import loader
 from utils.decorators import Timer, DBConnection
@@ -35,12 +36,14 @@ def load_RM_repeats_from_file(path):
     df = _import_file_out(path)
     repeats_service = RepeatsService()
     rmRepeatsWholeChromosomesService= RMRepeatsWholeChromosomesService()
+    wholeChromosomesService = WholeChromosomesService()
 
     for _, row in df.iterrows():
         repeat_id = repeats_service.insert(record=(row['name'], row['class_family'], 'RM'))
+        whole_chromosome_id = wholeChromosomesService.extract_id_by_refseq_accession_number(row['sequence'])
         record = (
             repeat_id,
-            2, #CHANGE - HARDCODED
+            whole_chromosome_id,
             row['sw_score'],
             row['percentage_divergence'],
             row['percentage_deletions'],

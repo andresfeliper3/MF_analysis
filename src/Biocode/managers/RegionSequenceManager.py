@@ -32,26 +32,31 @@ class RegionSequenceManager(SequenceManagerInterface):
         self.region_chromosomes_service = region_chromosomes_service
         self.whole_chromosomes_service = whole_chromosomes_service
 
-        self.organism_name = organism_name
         self.regions_total = regions_number
         if sequence:
             if type(sequence) == RegionSequence:
                 self.sequence = sequence
-                self.sequence_name = sequence_name
                 if sequence_name:
                     self.sequence.set_name(sequence_name)
+                if organism_name:
+                    self.sequence.set_organism_name(organism_name)
             elif type(sequence) == Sequence:
                 self.sequence = RegionSequence(sequence=sequence.get_sequence(), regions_number=regions_number,
-                                               name=sequence_name)
-                self.sequence_name = sequence_name
+                                               name=sequence.get_name(),
+                                               refseq_accession_number=sequence.get_refseq_accession_number())
+            self.sequence_name = self.sequence.get_name()
+            self.organism_name = self.sequence.get_organism_name()
+
         elif sequence_data:
             self.sequence = RegionSequence(sequence_data=sequence_data, regions_number=regions_number,
                                            name=sequence_data['name'])
             self.sequence_name = sequence_data['name']
+            self.organism_name = sequence_data['organism_name'] or organism_name
         elif regions:
             temp = ''.join(region.get_sequence() for region in regions)
             self.sequence = RegionSequence(sequence=temp, regions_number=regions_number, name=sequence_name)
             self.sequence_name = sequence_name
+            self.organism_name = organism_name
 
         # list of regions (Sequences)
         self.regions = self.sequence.get_regions()
@@ -182,24 +187,27 @@ class RegionSequenceManager(SequenceManagerInterface):
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         """
-        try:
-            organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
-            whole_chromosome_id = int(self.whole_chromosomes_service
-                                  .extract_by_name(name=self.sequence_name).loc[0, 'id'])
-            for index, result in enumerate(self.mfa_results):
-                chromosome_id = self.region_chromosomes_service.insert(record=(result['sequence_name'],
-                                                                               organism_id,
-                                                                               self.cover_percentage[index],
-                                                                               list_to_str(self.cover[index]),
-                                                                               self.regions_total,
-                                                                               index + 1,
-                                                                               result['sequence_size'],
-                                                                               whole_chromosome_id))
-                self.region_results_service.insert(
-                    record=(self.regions_total, chromosome_id, list_to_str(result['Dq_values'].tolist()),
-                            list_to_str(result['tau_q_values'].tolist()),
-                            list_to_str(result['DDq'])))
-        except AttributeError as e:
-            logger.error(f"Was not able to extract ids from organism and whole_chromosome to insert "
-                         f"a new region sequence {self.sequence_name} with error name: {e.name}")
+        #try:
+
+        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        whole_chromosome_id = int(self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
+            self.sequence.get_refseq_accession_number()))
+
+        for index, result in enumerate(self.mfa_results):
+            chromosome_id = self.region_chromosomes_service.insert(record=(result['sequence_name'],
+                                                                           self.sequence.get_refseq_accession_number(),
+                                                                           organism_id,
+                                                                           self.cover_percentage[index],
+                                                                           list_to_str(self.cover[index]),
+                                                                           self.regions_total,
+                                                                           index + 1,
+                                                                           result['sequence_size'],
+                                                                           whole_chromosome_id))
+            self.region_results_service.insert(
+                record=(self.regions_total, chromosome_id, list_to_str(result['Dq_values'].tolist()),
+                        list_to_str(result['tau_q_values'].tolist()),
+                        list_to_str(result['DDq'])))
+   # except AttributeError as e:
+    #    logger.error(f"Was not able to extract ids from organism and whole_chromosome to insert "
+    #                 f"a new region sequence {self.sequence_name} with error name: {e.name}")
         logger.info(f"************* Saved to DB {self.sequence_name} *************")

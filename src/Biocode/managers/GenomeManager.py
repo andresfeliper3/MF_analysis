@@ -97,7 +97,8 @@ class GenomeManager(GenomeManagerInterface):
         organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
 
         for index, result in enumerate(self.mfa_results):
-            chromosome_id = self.whole_chromosomes_service.insert(record=(result['sequence_name'], organism_id,
+            chromosome_id = self.whole_chromosomes_service.insert(record=(result['sequence_name'],
+                                                                          result['refseq_accession_number'],organism_id,
                                                                self.cover_percentage[index],
                                                                list_to_str(self.cover[index]),
                                                                result['sequence_size']))

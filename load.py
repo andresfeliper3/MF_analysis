@@ -31,7 +31,7 @@ class Loader:
 
         return sequence
 
-    def extract_sequence_name(self, file_path) -> str:
+    def extract_refseq_accession_number(self, file_path) -> str:
         with open(file_path, 'r') as fna_file:
             for record in SeqIO.parse(fna_file, 'fasta'):
                 # Extract the sequence name (the part before the first space)
@@ -51,7 +51,7 @@ class Loader:
                                   'inf'))
 
         return [
-            {"path": os.path.join(path, file), "name": file.split(".")[0]}
+            {"path": os.path.join(path, file), "name": file.split(".")[0], "organism_name": self.organism}
             for file in sorted_files
         ]
 

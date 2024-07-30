@@ -40,9 +40,8 @@ def find_kmers_recursively_in_genome(organism_name, gcf, data, save_to_db):
 
 @DBConnection
 @Timer
-def whole_MFA_sequence(organism_name, sequence_name, gcf, sequence, save_to_db):
-    sequence_manager = SequenceManager(sequence=sequence, organism_name=organism_name,
-                                       sequence_name=sequence_name)
+def whole_MFA_sequence(gcf, sequence, save_to_db):
+    sequence_manager = SequenceManager(sequence=sequence)
     sequence_manager.calculate_multifractal_analysis_values()
 
     if save_to_db:
@@ -52,9 +51,8 @@ def whole_MFA_sequence(organism_name, sequence_name, gcf, sequence, save_to_db):
 
 @DBConnection
 @Timer
-def find_kmers_recursively_in_sequence(organism_name, sequence_name, gcf, sequence, save_to_db):
-    sequence_manager = SequenceManager(sequence=sequence, organism_name=organism_name,
-                                       sequence_name=sequence_name)
+def find_kmers_recursively_in_sequence(gcf, sequence, save_to_db):
+    sequence_manager = SequenceManager(sequence=sequence)
     sequence_manager.calculate_multifractal_analysis_values()
     kmers_list = sequence_manager.find_only_kmers_recursively()
     if save_to_db:
@@ -65,17 +63,17 @@ def find_kmers_recursively_in_sequence(organism_name, sequence_name, gcf, sequen
 @DBConnection
 @Timer
 def regions_MFA_genome(organism_name, gcf, data, regions_number, save_to_db):
-    region_genome_manager = RegionGenomeManager(genome_data=data, organism_name=organism_name,
-                                                regions_number=regions_number)
+    region_genome_manager = RegionGenomeManager(genome_data=data, regions_number=regions_number,
+                                                organism_name=organism_name)
     region_genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
     #region_genome_manager.save_to_db_after_execution(GCF=gcf)
 
 
 @DBConnection
 @Timer
-def regions_MFA_sequence(organism_name, sequence_name, gcf, sequence, regions_number, save_to_db):
-    region_sequence_manager = RegionSequenceManager(sequence=sequence, organism_name=organism_name,
-                                                regions_number=regions_number, sequence_name=sequence_name)
+def regions_MFA_sequence(gcf, sequence, regions_number, save_to_db):
+
+    region_sequence_manager = RegionSequenceManager(sequence=sequence, regions_number=regions_number)
     region_sequence_manager.calculate_multifractal_analysis_values()
 
     if save_to_db:
