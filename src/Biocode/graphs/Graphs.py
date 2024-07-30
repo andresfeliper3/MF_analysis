@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from itertools import cycle
 
 import os
@@ -260,7 +261,7 @@ class Graphs:
             plt.xlabel('Position')
             plt.yticks([])
             if save:
-                Graphs._savefig(title, )
+                Graphs._savefig(title, name)
             plt.show()
 
         if graph_with == 'seaborn':
@@ -415,3 +416,104 @@ class Graphs:
 
         # Show plot
         plt.show()
+
+
+    ## Repeats graphs
+    # merged with partitions
+    @staticmethod
+    def _create_partitions(df, size: int, amount_partitions: int):
+        partition_size = size // amount_partitions
+        repeat_lengths = np.zeros(amount_partitions)
+
+        for i, row in df.iterrows():
+            index = row["begin"] // partition_size
+            repeat_lengths[index] += row["Repeat length"]
+        return repeat_lengths
+
+    @staticmethod
+    def graph_distribution_of_repeats_merged_from_database(path: str, size: int, partitions: int = 300,
+                                                       filter_string: str = None,
+                                                       filter_column: str = "class/family", legend: bool = True,
+                                                       regions: int = 3,
+                                                       plot_type: str = "line"):
+        pass
+
+    @staticmethod
+    def graph_distribution_of_repeats_merged_from_file(path: str, size: int, partitions: int = 300,
+                                             filter_string: str = None,
+                                             filter_column: str = None, legend: bool = True, regions: int = 3,
+                                             plot_type: str = "line", save: bool=True, name: str = None,
+                                             refseq_accession_number: str = None):
+        df = Graphs._import_file_out(path)
+        Graphs._graph_distribution_of_repeats_merged(df, size, partitions, filter_string,
+                                                     filter_column, legend, regions, plot_type, save, name,
+                                                     refseq_accession_number)
+
+
+    @staticmethod
+    def _graph_distribution_of_repeats_merged(df, size: int, partitions: int = 300,
+                                              filter_string: str = None,
+                                              filter_column: str = "class/family", legend: bool = True, regions: int = 3,
+                                              plot_type: str = "line", save: bool=True, name: str=None,
+                                              refseq_accession_number: str=None):
+        if filter_string:
+            df = Graphs._filter(df, filter_string, filter_column)
+
+        plt.figure(figsize=(40, 6))
+
+        repeat_lengths = Graphs._create_partitions(df, size, partitions)
+
+        # Convert repeat_lengths to a numpy array for plotting
+        repeat_lengths = np.array(repeat_lengths)
+
+        if plot_type == "line":
+            # Plotting as lines
+            plt.plot(repeat_lengths, color='gray')
+        elif plot_type == "bar":
+            # Plotting as bars
+            for i, repeat_sum in enumerate(repeat_lengths):
+                plt.bar(i, repeat_sum, color='gray')
+
+        title = f"Distribution of Repeats Across Sequence {refseq_accession_number}"
+        plt.ylabel("Length of Repeat (bp)")
+        plt.xlabel("Repeat")
+        plt.title(title)
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+        # Add vertical dotted lines at 1/3 and 2/3 of X axis
+        x_ticks = np.arange(0, len(repeat_lengths), 1)
+        for x in range(1, regions):
+            plt.axvline(x=x * max(x_ticks) / regions, color='r', linestyle='--', linewidth=2)
+
+        plt.tight_layout()
+        if save:
+            Graphs._savefig(title, f"{name}/repeats/RM")
+        plt.show()
+
+    @staticmethod
+    def _import_file_out(path):
+        data = []
+
+        with open(path, 'r') as file:
+            next(file)  # Skip 3 lines
+            next(file)
+            next(file)
+            for line in file:
+                # Split the line by whitespace(s)
+                columns = line.strip().split()
+                # Append the columns to the data list
+                data.append(columns)
+
+        df = pd.DataFrame(data, columns=[
+            'score', 'div.', 'del.', 'ins.', 'sequence', 'begin', 'end', '(left)', 'Unnamed', 'repeat',
+            'class/family', 'begin_repeat', 'end_repeat', '(left)_repeat', 'ID', 'add'
+        ])
+
+        df['end'] = df['end'].astype('int')
+        df['begin'] = df['begin'].astype('int')
+        df["Repeat length"] = df["end"] - df["begin"] + 1
+        return df
+
+    @staticmethod
+    def _filter(data, filter_string=None, filter_column="class/family"):
+        return data[~data[filter_column].str.contains(filter_string)]

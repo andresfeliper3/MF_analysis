@@ -18,3 +18,5 @@ class WholeChromosomesService(AbstractService):
     def extract_id_by_refseq_accession_number(self, refseq_accession_number: str) -> int:
         return int(self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number).loc[0, 'id'])
 
+    def extract_size_by_refseq_accession_number(self, refseq_accession_number: str) -> int:
+        return int(self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number).loc[0, 'size'])

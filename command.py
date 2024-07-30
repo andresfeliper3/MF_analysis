@@ -1,10 +1,11 @@
 import argparse
+import traceback
 from load import loader
 from utils.logger import logger
 
 from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_MFA_sequence, regions_MFA_sequence, \
     find_kmers_recursively_in_genome, find_kmers_recursively_in_sequence
-from graph import load_data_whole, graph_whole, load_data_regions, graph_regions
+from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
 from repeats import load_RM_repeats_from_file
 
@@ -44,6 +45,17 @@ def main():
     graph_parser.add_argument('-name', help='Name or GCF for graphing')
     graph_parser.add_argument('-mode', help='Analysis mode: whole / regions')
 
+    graph_rm_parser = subparsers.add_parser('graph_rm', help='Graph RepeatMasker results')
+    graph_rm_parser.add_argument('-path', help="Enter the path of a RepeatMasker results file")
+    graph_rm_parser.add_argument('-ran', help="Enter the refseq accession number of the sequence/chromosome")
+    graph_rm_parser.add_argument('-partitions', help="Enter the number of partitions to use to divide the sequence and "
+                                                     "merge the repeats")
+    graph_rm_parser.add_argument('-regions', help="Enter the amount of regions to separate the graph using vertical lines")
+    graph_rm_parser.add_argument('-plot_type', help="Plot type: line or bar")
+    graph_rm_parser.add_argument('--save', choices=['true', 'false'], default='true', help='Save graphs locally in /out directory')
+    graph_rm_parser.add_argument('-name', help="Enter the scientific name of the organism to use it as a folder name")
+
+
     download_parser = subparsers.add_parser('download', help='Download command')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
 
@@ -64,6 +76,8 @@ def main():
         find_kmers_sequence_command(args)
     elif args.command == 'graph':
         graph_command(args)
+    elif args.command == 'graph_rm':
+        graph_rm_command(args)
     elif args.command == 'download':
         download_command(args)
     elif args.command == 'load_RM_repeats':
@@ -232,6 +246,13 @@ def load_RM_repeats(args):
     except Exception as e:
         logger.error(e)
 
+def graph_rm_command(args):
+    try:
+        graph_rm_results_from_file(path=args.path, refseq_accession_number=args.ran, partitions=args.partitions,
+                                   regions=args.regions, plot_type=args.plot_type, save=args.save, name=args.name)
+    except Exception as e:
+        logger.error(e)
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()
