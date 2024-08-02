@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from itertools import cycle
 
+from utils.logger import logger
+
 import os
 
 
@@ -10,6 +12,7 @@ class Graphs:
 
     @staticmethod
     def _savefig(title, name):
+        logger.debug("savefig")
         directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), "out/graphs")
         os.makedirs(directory, exist_ok=True)
 
@@ -487,7 +490,7 @@ class Graphs:
 
         plt.tight_layout()
         if save:
-            Graphs._savefig(title, f"{name}/repeats/RM")
+            Graphs._savefig(title, f"{name}/repeats/RM/distribution_merged")
         plt.show()
 
     @staticmethod
@@ -506,7 +509,7 @@ class Graphs:
 
         df = pd.DataFrame(data, columns=[
             'score', 'div.', 'del.', 'ins.', 'sequence', 'begin', 'end', '(left)', 'Unnamed', 'repeat',
-            'class/family', 'begin_repeat', 'end_repeat', '(left)_repeat', 'ID', 'add'
+            'class_family', 'begin_repeat', 'end_repeat', '(left)_repeat', 'ID', 'add'
         ])
 
         df['end'] = df['end'].astype('int')
@@ -517,3 +520,34 @@ class Graphs:
     @staticmethod
     def _filter(data, filter_string=None, filter_column="class/family"):
         return data[~data[filter_column].str.contains(filter_string)]
+
+    @staticmethod
+    def graph_frequency_of_repeats_grouped(path, col=None, filtering=False, filter_string=None,
+                                              filter_column=None, n_max=10, save: bool=True, name: str=None,
+                                              refseq_accession_number: str=None):
+        grouped_data_sorted = Graphs._group_columns(path, col, filtering, filter_string, filter_column)
+        grouped_data_sorted = grouped_data_sorted.head(n_max)
+
+        title = f"Frequency of Repeats {col} Across Sequence {refseq_accession_number}"
+        # Plot the distribution of repeats for each class/family
+        plt.figure(figsize=(10, 6))
+        plt.bar(grouped_data_sorted[col], grouped_data_sorted["Repeat length"])
+        plt.xlabel(f"{col}")
+        plt.ylabel("Total Repeat Length")
+        plt.title(title)
+        plt.xticks(rotation=90, fontsize=10)  # Use calculated fontsize
+        plt.tight_layout()
+        if save:
+            Graphs._savefig(title, f"{name}/repeats/RM/frequency_grouped")
+        plt.show()
+
+    @staticmethod
+    def _group_columns(path, col, filtering=False, filter_string=None, filter_column=None):
+        data = Graphs._import_file_out(path)
+        if filtering:
+            # Filter out rows where the column contains the specified string
+            data = Graphs._filter(data, filter_string, filter_column)
+        # Group repeats by column and calculate their total length
+        grouped_data = data.groupby(col)["Repeat length"].sum().reset_index()
+        grouped_data_sorted = grouped_data.sort_values(by="Repeat length", ascending=False)
+        return grouped_data_sorted

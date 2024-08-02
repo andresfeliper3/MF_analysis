@@ -118,3 +118,10 @@ def graph_rm_results_from_file(path: str, refseq_accession_number:str, partition
     Graphs.graph_distribution_of_repeats_merged_from_file(path=path, size=size, partitions=partitions,
                                              legend=True, regions=regions, plot_type=plot_type, save=save,
                                              name=name, refseq_accession_number=refseq_accession_number)
+
+
+    Graphs.graph_frequency_of_repeats_grouped(path, col="class_family", filtering=False, n_max=10, save=True, name=name,
+                                              refseq_accession_number=refseq_accession_number)
+    Graphs.graph_frequency_of_repeats_grouped(path, col="repeat", filtering=False, n_max=10, save=True, name=name,
+                                             refseq_accession_number=refseq_accession_number)
+
