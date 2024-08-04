@@ -120,8 +120,11 @@ def graph_rm_results_from_file(path: str, refseq_accession_number:str, partition
                                              name=name, refseq_accession_number=refseq_accession_number)
 
 
-    Graphs.graph_frequency_of_repeats_grouped(path, col="class_family", filtering=False, n_max=10, save=True, name=name,
-                                              refseq_accession_number=refseq_accession_number)
-    Graphs.graph_frequency_of_repeats_grouped(path, col="repeat", filtering=False, n_max=10, save=True, name=name,
-                                             refseq_accession_number=refseq_accession_number)
+    Graphs.graph_frequency_of_repeats_grouped_from_file(path, col="class_family", filtering=False, n_max=10, save=True, name=name,
+                                               refseq_accession_number=refseq_accession_number)
+    Graphs.graph_frequency_of_repeats_grouped_from_file(path, col="repeat", filtering=False, n_max=10, save=True, name=name,
+                                               refseq_accession_number=refseq_accession_number)
+    Graphs.graph_distribution_of_repeats_from_file(path, col="class_family", legend=True, plot_type=plot_type,
+                                                   limit=20, regions=regions, save=True, name=name,
+                                                   refseq_accession_number=refseq_accession_number)
 

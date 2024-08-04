@@ -1,3 +1,4 @@
+import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -522,10 +523,24 @@ class Graphs:
         return data[~data[filter_column].str.contains(filter_string)]
 
     @staticmethod
-    def graph_frequency_of_repeats_grouped(path, col=None, filtering=False, filter_string=None,
+    def graph_frequency_of_repeats_grouped_from_database(path, col=None, filtering=False, filter_string=None,
+                                                     filter_column=None, n_max=10, save: bool = True, name: str = None,
+                                                     refseq_accession_number: str = None):
+        pass
+
+    @staticmethod
+    def graph_frequency_of_repeats_grouped_from_file(path, col=None, filtering=False, filter_string=None,
                                               filter_column=None, n_max=10, save: bool=True, name: str=None,
                                               refseq_accession_number: str=None):
-        grouped_data_sorted = Graphs._group_columns(path, col, filtering, filter_string, filter_column)
+        data = Graphs._import_file_out(path)
+        Graphs._graph_frequency_of_repeats_grouped(data, col, filtering, filter_string, filter_column, n_max, save,
+                                                   name, refseq_accession_number)
+
+    @staticmethod
+    def _graph_frequency_of_repeats_grouped(data, col=None, filtering=False, filter_string=None,
+                                            filter_column=None, n_max=10, save: bool=True, name: str=None,
+                                            refseq_accession_number: str=None):
+        grouped_data_sorted = Graphs._group_columns(data, col, filtering, filter_string, filter_column)
         grouped_data_sorted = grouped_data_sorted.head(n_max)
 
         title = f"Frequency of Repeats {col} Across Sequence {refseq_accession_number}"
@@ -542,8 +557,7 @@ class Graphs:
         plt.show()
 
     @staticmethod
-    def _group_columns(path, col, filtering=False, filter_string=None, filter_column=None):
-        data = Graphs._import_file_out(path)
+    def _group_columns(data, col, filtering=False, filter_string=None, filter_column=None):
         if filtering:
             # Filter out rows where the column contains the specified string
             data = Graphs._filter(data, filter_string, filter_column)
@@ -551,3 +565,71 @@ class Graphs:
         grouped_data = data.groupby(col)["Repeat length"].sum().reset_index()
         grouped_data_sorted = grouped_data.sort_values(by="Repeat length", ascending=False)
         return grouped_data_sorted
+
+
+    @staticmethod
+    def graph_distribution_of_repeats_from_file(path, col, legend, plot_type, limit, regions, save, name,
+                                                refseq_accession_number):
+        data = Graphs._import_file_out(path)
+        grouped_data_sorted = Graphs._group_columns(data, col)
+        Graphs._graph_distribution_of_repeats(data, grouped_data_sorted, col, legend, plot_type, limit, regions,
+                                              save, name, refseq_accession_number)
+
+    @staticmethod
+    def _graph_distribution_of_repeats(df, grouped_data_sorted, col, legend=True, plot_type="line", limit=20,
+                                       regions=3, save=True, name=None, refseq_accession_number=None):
+        # Extract unique class/family values
+        unique_class_family = grouped_data_sorted.head(limit)[col].tolist()
+
+        # Generate a list of distinct colors dynamically
+        num_colors = len(unique_class_family)
+        palette = sns.color_palette("hls", num_colors)
+
+        # Dictionary to store class/family and corresponding color
+        color_dict = dict(zip(unique_class_family, palette))
+
+        plt.figure(figsize=(30, 6))
+        max_value = [0, ""]  # Variable to store the maximum value graphed
+
+        if plot_type == "line":
+            # Plotting as lines
+            for label in unique_class_family:
+                repeat_lengths = np.zeros(len(df))
+                for i, row in df.iterrows():
+                    if row[col] == label:
+                        repeat_lengths[i] = row["Repeat length"]
+                        max_value = [max(max_value[0], row["Repeat length"]),
+                                     row['repeat'] + " - " + row['class_family']]  # Update the maximum value
+                plt.plot(repeat_lengths, color=color_dict.get(label), label=label)
+
+        elif plot_type == "bar":
+            # Plotting as bars
+            for i, row in df.iterrows():
+                if row[col] in unique_class_family:
+                    label = row[col]
+                    plt.bar(i, row["Repeat length"], color=color_dict.get(label))
+                    max_value = [max(max_value[0], row["Repeat length"]),
+                                 row['repeat'] + " - " + row['class_family']]  # Update the maximum value
+
+        title = f"Distribution of Repeats Across Sequence {refseq_accession_number}"
+        plt.ylabel("Length of Repeat (bp)")
+        plt.xlabel("Repeat")
+        plt.title(title)
+        logger.info(f"Distribution of repeats - max value {max_value}")
+        plt.ylim(0, max_value[0] * 1.1)  # Set the y-axis limit to 110% of the maximum value graphed
+
+        x_ticks = np.arange(0, len(df), 1)
+        for x in range(1, regions):
+            plt.axvline(x=x * max(x_ticks) / regions, color='r', linestyle='--', linewidth=2)
+
+        # Create legend using unique class/family names
+        if legend:
+            plt.legend(ncol=2, loc='upper left', bbox_to_anchor=(1, 1))
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.tight_layout()
+        if save:
+            Graphs._savefig(title, f"{name}/repeats/RM/distribution_separately")
+        plt.show()
+
+
+
