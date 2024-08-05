@@ -83,7 +83,7 @@ Other possible parameters are:
 The command without the optional parameters would be:
 
        py .\command.py graph_rm -path resources/RM_resources/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -name "Caenorhabditis elegans" 
-
+ 
 
 
 ## Repeats using RepeatMasker

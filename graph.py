@@ -111,6 +111,7 @@ def graph_rm_results_from_file(path: str, refseq_accession_number:str, partition
                                plot_type:str = "line", save: bool = True, name: str = None):
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
+    DEFAULT_REPEATS_LIMIT = 20
     whole_chromosomes_service = WholeChromosomesService()
     size = whole_chromosomes_service.extract_size_by_refseq_accession_number(refseq_accession_number)
     partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
@@ -118,3 +119,16 @@ def graph_rm_results_from_file(path: str, refseq_accession_number:str, partition
     Graphs.graph_distribution_of_repeats_merged_from_file(path=path, size=size, partitions=partitions,
                                              legend=True, regions=regions, plot_type=plot_type, save=save,
                                              name=name, refseq_accession_number=refseq_accession_number)
+
+
+    Graphs.graph_frequency_of_repeats_grouped_from_file(path, col="class_family", filtering=False, n_max=10, save=save,
+                                                        name=name, refseq_accession_number=refseq_accession_number)
+    Graphs.graph_frequency_of_repeats_grouped_from_file(path, col="repeat", filtering=False, n_max=10, save=save, name=name,
+                                               refseq_accession_number=refseq_accession_number)
+    Graphs.graph_distribution_of_repeats_from_file(path, col="class_family", legend=True, plot_type=plot_type,
+                                                   limit=20, regions=regions, save=save, name=name,
+                                                   refseq_accession_number=refseq_accession_number)
+    Graphs.graph_distribution_of_repeats_subplots_from_file(path, col="class_family", legend=True,
+                                                            limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
+                                                            name=name, refseq_accession_number=refseq_accession_number)
+
