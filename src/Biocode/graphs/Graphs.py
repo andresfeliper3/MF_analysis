@@ -13,7 +13,6 @@ class Graphs:
 
     @staticmethod
     def _savefig(title, name):
-        logger.debug("savefig")
         directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), "out/graphs")
         os.makedirs(directory, exist_ok=True)
 
@@ -437,7 +436,7 @@ class Graphs:
     @staticmethod
     def graph_distribution_of_repeats_merged_from_database(path: str, size: int, partitions: int = 300,
                                                        filter_string: str = None,
-                                                       filter_column: str = "class/family", legend: bool = True,
+                                                       filter_column: str = "class_family", legend: bool = True,
                                                        regions: int = 3,
                                                        plot_type: str = "line"):
         pass
@@ -457,7 +456,7 @@ class Graphs:
     @staticmethod
     def _graph_distribution_of_repeats_merged(df, size: int, partitions: int = 300,
                                               filter_string: str = None,
-                                              filter_column: str = "class/family", legend: bool = True, regions: int = 3,
+                                              filter_column: str = "class_family", legend: bool = True, regions: int = 3,
                                               plot_type: str = "line", save: bool=True, name: str=None,
                                               refseq_accession_number: str=None):
         if filter_string:
@@ -519,7 +518,7 @@ class Graphs:
         return df
 
     @staticmethod
-    def _filter(data, filter_string=None, filter_column="class/family"):
+    def _filter(data, filter_string=None, filter_column="class_family"):
         return data[~data[filter_column].str.contains(filter_string)]
 
     @staticmethod
@@ -631,5 +630,71 @@ class Graphs:
             Graphs._savefig(title, f"{name}/repeats/RM/distribution_separately")
         plt.show()
 
+
+    @staticmethod
+    def graph_distribution_of_repeats_subplots_from_file(path, col="class_family", legend=True, limit=20, regions=3,
+                                               shared_y_axis=False, save=True, name=None, refseq_accession_number=None):
+        data = Graphs._import_file_out(path)
+        grouped_data_sorted = Graphs._group_columns(data, col)
+        Graphs._graph_distribution_of_repeats_subplots(data, grouped_data_sorted, col, legend, limit, regions,
+                                                       shared_y_axis, save, name, refseq_accession_number)
+
+    @staticmethod
+    def graph_distribution_of_repeats_subplots_from_database(path, col="class_family", legend=True, limit=20, regions=3,
+                                                             shared_y_axis=False):
+        pass
+
+    @staticmethod
+    def _graph_distribution_of_repeats_subplots(df, grouped_data_sorted, col="class_family", legend=True, limit=20,
+                                                regions=3, shared_y_axis=False, save=True, name=None,
+                                                refseq_accession_number=None):
+        # Extract unique class/family values
+        unique_class_family = grouped_data_sorted.head(limit)[col].tolist()
+
+        # Generate a list of distinct colors dynamically
+        num_colors = len(unique_class_family)
+        palette = sns.color_palette("hls", num_colors)
+
+        # Dictionary to store class/family and corresponding color
+        color_dict = dict(zip(unique_class_family, palette))
+
+        num_subplots = len(unique_class_family)
+        fig, axs = plt.subplots(num_subplots, 1, figsize=(30, 3 * num_subplots))
+
+        max_y = 0  # Variable to store the maximum y-axis value among all subplots
+
+        for i, label in enumerate(unique_class_family):
+            ax = axs[i]
+            repeat_lengths = np.zeros(len(df))
+            for i, row in df.iterrows():
+                if row[col] == label:
+                    repeat_lengths[i] = row["Repeat length"]
+            ax.plot(repeat_lengths, color=color_dict.get(label), label=label)
+            ax.set_ylabel("Length of Repeat (bp)")
+            ax.set_xlabel("Repeat")
+            ax.set_title(f"Distribution of {label} repeats across Sequence {refseq_accession_number}")
+            ax.grid(axis='y', linestyle='--', alpha=0.7)
+            ax.set_ylim(0, np.max(repeat_lengths) * 1.1)  # Set the y-axis limit to 110% of the maximum value graphed
+
+            x_ticks = np.arange(0, len(df), 1)
+            for x in range(1, regions):
+                ax.axvline(x=x * max(x_ticks) / regions, color='r', linestyle='--', linewidth=2)
+
+            if legend:
+                ax.legend()
+
+            if shared_y_axis:
+                max_y = max(max_y, np.max(repeat_lengths))  # Update the maximum y-axis value
+
+        if shared_y_axis:
+            # Set the same y-axis limits for all subplots
+            for ax in axs:
+                ax.set_ylim(0, max_y)
+
+        plt.tight_layout()
+        title = f"Distribution of repeats across Sequence {refseq_accession_number}"
+        if save:
+            Graphs._savefig(title, f"{name}/repeats/RM/distribution_subplots")
+        plt.show()
 
 
