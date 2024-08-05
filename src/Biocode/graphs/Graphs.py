@@ -429,17 +429,19 @@ class Graphs:
         repeat_lengths = np.zeros(amount_partitions)
 
         for i, row in df.iterrows():
-            index = row["begin"] // partition_size
-            repeat_lengths[index] += row["Repeat length"]
+            index = row["query_begin"] // partition_size
+            repeat_lengths[index] += row["repeat_length"]
         return repeat_lengths
 
     @staticmethod
-    def graph_distribution_of_repeats_merged_from_database(path: str, size: int, partitions: int = 300,
-                                                       filter_string: str = None,
-                                                       filter_column: str = "class_family", legend: bool = True,
-                                                       regions: int = 3,
+    def graph_distribution_of_repeats_merged_from_database(data: str, size: int, partitions: int = 300,
+                                                       filter_string: str = None, filter_column: str = "class_family",
+                                                       legend: bool = True, regions: int = 3, save: bool=True,
+                                                       name: str = None, refseq_accession_number: str = None,
                                                        plot_type: str = "line"):
-        pass
+        Graphs._graph_distribution_of_repeats_merged(data, size, partitions, filter_string,
+                                                     filter_column, legend, regions, plot_type, save, name,
+                                                     refseq_accession_number)
 
     @staticmethod
     def graph_distribution_of_repeats_merged_from_file(path: str, size: int, partitions: int = 300,
@@ -508,13 +510,14 @@ class Graphs:
                 data.append(columns)
 
         df = pd.DataFrame(data, columns=[
-            'score', 'div.', 'del.', 'ins.', 'sequence', 'begin', 'end', '(left)', 'Unnamed', 'repeat',
-            'class_family', 'begin_repeat', 'end_repeat', '(left)_repeat', 'ID', 'add'
+            'sw_score', 'percentage_divergence', 'percentage_deletions', 'percentage_insertions', 
+            'refseq_accession_number', 'query_begin', 'query_end', 'query_left', 'strand', 'name',
+            'class_family', 'repeat_begin', 'repeat_end', 'repeat_left', 'ID', 'add'
         ])
 
-        df['end'] = df['end'].astype('int')
-        df['begin'] = df['begin'].astype('int')
-        df["Repeat length"] = df["end"] - df["begin"] + 1
+        df['query_end'] = df['query_end'].astype('int')
+        df['query_begin'] = df['query_begin'].astype('int')
+        df["repeat_length"] = df["query_end"] - df["query_begin"] + 1
         return df
 
     @staticmethod
@@ -522,10 +525,11 @@ class Graphs:
         return data[~data[filter_column].str.contains(filter_string)]
 
     @staticmethod
-    def graph_frequency_of_repeats_grouped_from_database(path, col=None, filtering=False, filter_string=None,
+    def graph_frequency_of_repeats_grouped_from_database(data, col=None, filtering=False, filter_string=None,
                                                      filter_column=None, n_max=10, save: bool = True, name: str = None,
                                                      refseq_accession_number: str = None):
-        pass
+        Graphs._graph_frequency_of_repeats_grouped(data, col, filtering, filter_string, filter_column, n_max, save,
+                                                   name, refseq_accession_number)
 
     @staticmethod
     def graph_frequency_of_repeats_grouped_from_file(path, col=None, filtering=False, filter_string=None,
@@ -542,10 +546,10 @@ class Graphs:
         grouped_data_sorted = Graphs._group_columns(data, col, filtering, filter_string, filter_column)
         grouped_data_sorted = grouped_data_sorted.head(n_max)
 
-        title = f"Frequency of Repeats {col} Across Sequence {refseq_accession_number}"
+        title = f"Frequency of Repeats {col} Across Sequence {refseq_accession_number} by {col}"
         # Plot the distribution of repeats for each class/family
         plt.figure(figsize=(10, 6))
-        plt.bar(grouped_data_sorted[col], grouped_data_sorted["Repeat length"])
+        plt.bar(grouped_data_sorted[col], grouped_data_sorted["repeat_length"])
         plt.xlabel(f"{col}")
         plt.ylabel("Total Repeat Length")
         plt.title(title)
@@ -561,8 +565,8 @@ class Graphs:
             # Filter out rows where the column contains the specified string
             data = Graphs._filter(data, filter_string, filter_column)
         # Group repeats by column and calculate their total length
-        grouped_data = data.groupby(col)["Repeat length"].sum().reset_index()
-        grouped_data_sorted = grouped_data.sort_values(by="Repeat length", ascending=False)
+        grouped_data = data.groupby(col)["repeat_length"].sum().reset_index()
+        grouped_data_sorted = grouped_data.sort_values(by="repeat_length", ascending=False)
         return grouped_data_sorted
 
 
@@ -573,6 +577,14 @@ class Graphs:
         grouped_data_sorted = Graphs._group_columns(data, col)
         Graphs._graph_distribution_of_repeats(data, grouped_data_sorted, col, legend, plot_type, limit, regions,
                                               save, name, refseq_accession_number)
+
+    @staticmethod
+    def graph_distribution_of_repeats_from_database(data, col, legend, plot_type, limit, regions, save, name,
+                                                refseq_accession_number):
+        grouped_data_sorted = Graphs._group_columns(data, col)
+        Graphs._graph_distribution_of_repeats(data, grouped_data_sorted, col, legend, plot_type, limit, regions,
+                                              save, name, refseq_accession_number)
+
 
     @staticmethod
     def _graph_distribution_of_repeats(df, grouped_data_sorted, col, legend=True, plot_type="line", limit=20,
@@ -596,9 +608,9 @@ class Graphs:
                 repeat_lengths = np.zeros(len(df))
                 for i, row in df.iterrows():
                     if row[col] == label:
-                        repeat_lengths[i] = row["Repeat length"]
-                        max_value = [max(max_value[0], row["Repeat length"]),
-                                     row['repeat'] + " - " + row['class_family']]  # Update the maximum value
+                        repeat_lengths[i] = row["repeat_length"]
+                        max_value = [max(max_value[0], row["repeat_length"]),
+                                     row['name'] + " - " + row['class_family']]  # Update the maximum value
                 plt.plot(repeat_lengths, color=color_dict.get(label), label=label)
 
         elif plot_type == "bar":
@@ -606,11 +618,11 @@ class Graphs:
             for i, row in df.iterrows():
                 if row[col] in unique_class_family:
                     label = row[col]
-                    plt.bar(i, row["Repeat length"], color=color_dict.get(label))
-                    max_value = [max(max_value[0], row["Repeat length"]),
-                                 row['repeat'] + " - " + row['class_family']]  # Update the maximum value
+                    plt.bar(i, row["repeat_length"], color=color_dict.get(label))
+                    max_value = [max(max_value[0], row["repeat_length"]),
+                                 row['name'] + " - " + row['class_family']]  # Update the maximum value
 
-        title = f"Distribution of Repeats Across Sequence {refseq_accession_number}"
+        title = f"Distribution of Repeats Across Sequence {refseq_accession_number} by {col}"
         plt.ylabel("Length of Repeat (bp)")
         plt.xlabel("Repeat")
         plt.title(title)
@@ -640,9 +652,13 @@ class Graphs:
                                                        shared_y_axis, save, name, refseq_accession_number)
 
     @staticmethod
-    def graph_distribution_of_repeats_subplots_from_database(path, col="class_family", legend=True, limit=20, regions=3,
-                                                             shared_y_axis=False):
-        pass
+    def graph_distribution_of_repeats_subplots_from_database(data, col="class_family", legend=True, limit=20, regions=3,
+                                                             shared_y_axis=False, save=None, name=None,
+                                                            refseq_accession_number=None):
+        grouped_data_sorted = Graphs._group_columns(data, col)
+        Graphs._graph_distribution_of_repeats_subplots(data, grouped_data_sorted, col, legend, limit, regions,
+                                                       shared_y_axis, save, name, refseq_accession_number)
+
 
     @staticmethod
     def _graph_distribution_of_repeats_subplots(df, grouped_data_sorted, col="class_family", legend=True, limit=20,
@@ -668,7 +684,7 @@ class Graphs:
             repeat_lengths = np.zeros(len(df))
             for i, row in df.iterrows():
                 if row[col] == label:
-                    repeat_lengths[i] = row["Repeat length"]
+                    repeat_lengths[i] = row["repeat_length"]
             ax.plot(repeat_lengths, color=color_dict.get(label), label=label)
             ax.set_ylabel("Length of Repeat (bp)")
             ax.set_xlabel("Repeat")
@@ -692,7 +708,7 @@ class Graphs:
                 ax.set_ylim(0, max_y)
 
         plt.tight_layout()
-        title = f"Distribution of repeats across Sequence {refseq_accession_number}"
+        title = f"Distribution of repeats across Sequence {refseq_accession_number} by {col}"
         if save:
             Graphs._savefig(title, f"{name}/repeats/RM/distribution_subplots")
         plt.show()
