@@ -7,12 +7,16 @@ from utils.logger import logger
 class DBConnectionManager:
     db_directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')),
                                 "resources/MFA_analysis.db")
+    conn = None
+    cursor = None
 
     @staticmethod
     def start():
-        DBConnectionManager.conn = sqlite3.connect(DBConnectionManager.db_directory)
-        DBConnectionManager.cursor = DBConnectionManager.conn.cursor()
-
+        if DBConnectionManager.conn is None:
+            DBConnectionManager.conn = sqlite3.connect(DBConnectionManager.db_directory)
+            DBConnectionManager.cursor = DBConnectionManager.conn.cursor()
+        else:
+            logger.warning("Database connection already started.")
     """
     Example usage:
     table_name = "organisms"
@@ -77,4 +81,10 @@ class DBConnectionManager:
 
     @staticmethod
     def close():
-        DBConnectionManager.conn.close()
+        if DBConnectionManager.conn is not None:
+            DBConnectionManager.conn.close()
+            DBConnectionManager.conn = None
+            DBConnectionManager.cursor = None
+        else:
+            logger.warning("Database connection is not active.")
+

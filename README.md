@@ -66,6 +66,8 @@ Compare results with branch main and changeAlgorithm.
 
 ### Graph the RepeatMasker results from a RM results file
 The graphs are saved in the /out directory in the sequence folder.
+
+#### Graphing using a result .out file
 It is mandatory to specify the
 - path of the RM results file.
 - ran - refseq accession number, to identify the sequence.
@@ -78,13 +80,30 @@ Other possible parameters are:
 - plot_type - style of plot (line or bar), line is by default.
 - save - save the graph in the local directory specified /out (true or false).
 
-       py .\command.py graph_rm -path resources/RM_resources/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+       py .\command.py graph_rm_file -path resources/RM_resources/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
 
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm -path resources/RM_resources/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -name "Caenorhabditis elegans" 
+       py .\command.py graph_rm_file -path resources/RM_resources/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -name "Caenorhabditis elegans" 
  
 
+#### Graphing using a refseq accession number and the database
+It is mandatory to specify the
+- ran - refseq accession number, to identify the sequence.
+- name - scientific name of the organism that will be used as the folder name to save the graph.
+
+Other possible parameters are:
+- partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
+    300 by default.
+- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+- plot_type - style of plot (line or bar), line is by default.
+- save - save the graph in the local directory specified /out (true or false).
+
+       py .\command.py graph_rm_database -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+
+The command without the optional parameters would be:
+
+       py .\command.py graph_rm_database -ran NC_003279.8 -name "Caenorhabditis elegans" 
 
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
