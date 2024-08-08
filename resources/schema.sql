@@ -72,7 +72,7 @@ CREATE TABLE recursive_repeats_whole_chromosomes (
     whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id),
     size INTEGER,
     largest_value INTEGER,
-    COORDINATES VARCHAR
+    coordinates VARCHAR
 );
 
 

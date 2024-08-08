@@ -76,6 +76,7 @@ def main():
                                           help='Save graphs locally in /out directory')
     graph_recursive_parser.add_argument('-name',
                                           help="Enter the scientific name of the organism to use it as a folder name")
+    graph_recursive_parser.add_argument('-n_max', help="(Optional) Graph only the top n largest values")
 
     download_parser = subparsers.add_parser('download', help='Download command')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
@@ -289,7 +290,7 @@ def graph_rm_database_command(args):
 
 def graph_recursive_command(args):
     try:
-        graph_recursive_from_database(refseq_accession_number=args.ran, save=args.save, name=args.name)
+        graph_recursive_from_database(refseq_accession_number=args.ran, save=args.save, name=args.name, n_max=args.n_max)
     except Exception as e:
         logger.error(e)
         traceback.print_exc()

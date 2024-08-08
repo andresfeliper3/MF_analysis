@@ -714,3 +714,70 @@ class Graphs:
         plt.show()
 
 
+    @staticmethod
+    def graph_recursive_repeats_largest_values_from_database(df, col=None, n_max=None, save=True, name=None,
+                                                refseq_accession_number=None):
+        df = df.sort_values(by='largest_value', ascending=False)
+        if n_max is not None:
+            df = df.head(n_max)
+
+        plt.figure(figsize=(10, 6))
+        plt.bar(df[col], df['largest_value'], color='blue')
+
+        title = f"Recursively found repeats - largest values in Sequence {refseq_accession_number}"
+        plt.xlabel('Sequence')
+        plt.ylabel('Largest Value')
+        plt.title(title)
+        plt.xticks(rotation=90)
+
+        plt.tight_layout()
+        if save:
+            Graphs._savefig(title, f"{name}/repeats/recursive/largest_values")
+        plt.show()
+
+    @staticmethod
+    def graph_grouped_by_recursive_repeat_length(df, col=None, save=True, name=None, refseq_accession_number=None):
+        grouped = df.groupby('repeat_length')
+
+        plt.figure(figsize=(14, 8))
+
+        for repeat_length, group in grouped:
+            group = group.sort_values(by='largest_value', ascending=False)
+            plt.bar(group[col], group['largest_value'], label=f'Repeat Length: {repeat_length}')
+
+        title = f"Largest Values Grouped by Repeat Length of Sequence {refseq_accession_number}"
+        plt.xlabel('Sequence')
+        plt.ylabel('Largest Value')
+        plt.title(title)
+        plt.xticks(rotation=90)
+        plt.legend(title='Repeat Length')
+
+        plt.tight_layout()
+        if save:
+            Graphs._savefig(title, f"{name}/repeats/recursive/by_repeat_length")
+        plt.show()
+
+    @staticmethod
+    def graph_individual_plots_by_recursive_repeat_length(df, col=None, save=True, name=None,
+                                                          refseq_accession_number=None):
+        grouped = df.groupby('repeat_length')
+
+        for repeat_length, group in grouped:
+            group_sorted = group.sort_values(by='largest_value', ascending=False)
+
+            plt.figure(figsize=(10, 6))
+            plt.bar(group_sorted[col], group_sorted['largest_value'], color='blue')
+
+            title = f"Largest Values for Repeat Length {repeat_length} of Sequence {refseq_accession_number}"
+            plt.xlabel('Sequence')
+            plt.ylabel('Largest Value')
+            plt.title(title)
+            plt.xticks(rotation=90)
+
+            plt.tight_layout()
+
+            if save:
+                filename = f"{name}/repeats/recursive/repeat_length_{repeat_length}"
+                Graphs._savefig(title, filename)
+            plt.show()
+

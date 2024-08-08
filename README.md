@@ -105,6 +105,20 @@ The command without the optional parameters would be:
 
        py .\command.py graph_rm_database -ran NC_003279.8 -name "Caenorhabditis elegans" 
 
+
+### Graph the recursively found repeats results from the database
+The graphs are saved in the /out directory in the sequence folder.
+
+#### Graph per sequence/chromosome
+The n_max parameter is optional. It represents the total amount of repeats shown in the general graph.
+
+    py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis elegans" 
+    py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis elegans" -n_max 10
+
+
+
+#### Graphing using a result .out file
+
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
 These files can be saved in the following directory _resources/RM_resources/<organism_name>_

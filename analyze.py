@@ -6,7 +6,7 @@ from src.Biocode.managers.SequenceManager import SequenceManager
 from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 
 from src.Biocode.services.RepeatsService import RepeatsService
-from src.Biocode.services.RepeatsWholeChromosomesService import RepeatsWholeChromosomesService
+from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
 
 from load import loader
 from utils.decorators import Timer, DBConnection

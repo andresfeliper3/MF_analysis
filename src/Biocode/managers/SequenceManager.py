@@ -10,7 +10,7 @@ from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.services.RepeatsService import RepeatsService
-from src.Biocode.services.RepeatsWholeChromosomesService import RepeatsWholeChromosomesService
+from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
 
 from src.Biocode.utils.utils import list_to_str
 from utils.decorators import Inject
@@ -22,7 +22,7 @@ from typing import List
         organisms_service = OrganismsService,
         whole_chromosomes_service = WholeChromosomesService,
         repeats_service = RepeatsService,
-        repeats_whole_chromosomes_service = RepeatsWholeChromosomesService)
+        recursive_repeats_whole_chromosomes_service = RecursiveRepeatsWholeChromosomesService)
 class SequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, sequence_name: str = None,
                  organism_name: str = None,
@@ -30,7 +30,7 @@ class SequenceManager(SequenceManagerInterface):
                  organisms_service: OrganismsService = None,
                  whole_chromosomes_service: WholeChromosomesService = None,
                  repeats_service: RepeatsService = None,
-                 repeats_whole_chromosomes_service: RepeatsWholeChromosomesService = None):
+                 recursive_repeats_whole_chromosomes_service: RecursiveRepeatsWholeChromosomesService = None):
 
         self.chromosome_id = None
         self.organism_id = None
@@ -38,7 +38,7 @@ class SequenceManager(SequenceManagerInterface):
         self.whole_results_service = whole_results_service
         self.organisms_service = organisms_service
         self.repeats_service = repeats_service
-        self.repeats_whole_chromosomes_service = repeats_whole_chromosomes_service
+        self.recursive_repeats_whole_chromosomes_service = recursive_repeats_whole_chromosomes_service
 
 
         self.n_largest_mi_grid_values_strings_for_k = None
@@ -193,10 +193,13 @@ class SequenceManager(SequenceManagerInterface):
 
         for kmers in kmers_list:
             nucleotides_strings = kmers.get_nucleotides_strings()
-            for string in nucleotides_strings:
+            largest_values = kmers.get_largest_values()
+            coordinates = kmers.get_coordinates()
+            for index, string in enumerate(nucleotides_strings):
                 repeats_service_id = self.repeats_service.insert(record=(string, "", method_to_find_it))
-                self.repeats_whole_chromosomes_service.insert(
-                    record=(repeats_service_id, self.chromosome_id , "", "", len(string)))
+                self.recursive_repeats_whole_chromosomes_service.insert(
+                    record=(repeats_service_id, self.chromosome_id , len(string), int(largest_values[index]),
+                            str(coordinates[index])))
 
 
     def _insert_mfa_results_to_whole_chromosomes_table(self) -> int:
