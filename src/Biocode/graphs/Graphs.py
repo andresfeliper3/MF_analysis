@@ -434,7 +434,7 @@ class Graphs:
         return repeat_lengths
 
     @staticmethod
-    def graph_distribution_of_repeats_merged_from_database(data: str, size: int, partitions: int = 300,
+    def graph_distribution_of_repeats_merged_from_database(data: pd.DataFrame, size: int, partitions: int = 300,
                                                        filter_string: str = None, filter_column: str = "class_family",
                                                        legend: bool = True, regions: int = 3, save: bool=True,
                                                        name: str = None, refseq_accession_number: str = None,

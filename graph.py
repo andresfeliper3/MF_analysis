@@ -183,3 +183,11 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
                                                            name=name, refseq_accession_number=refseq_accession_number)
 
 
+@DBConnection
+@Timer
+def graph_recursive_from_database(refseq_accession_number: str, save: bool, name: str):
+
+
+    Graphs.graph_frequency_of_repeats_grouped_from_database(data, col="name", filtering=False, n_max=10, save=save,
+                                                            name=name,
+                                                            refseq_accession_number=refseq_accession_number)
