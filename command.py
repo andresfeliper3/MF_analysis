@@ -5,7 +5,8 @@ from utils.logger import logger
 
 from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_MFA_sequence, regions_MFA_sequence, \
     find_kmers_recursively_in_genome, find_kmers_recursively_in_sequence
-from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, graph_rm_results_from_database
+from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, \
+    graph_rm_results_from_database, graph_recursive_from_database
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
 from repeats import load_RM_repeats_from_file
 
@@ -68,6 +69,15 @@ def main():
     graph_rm_database_parser.add_argument('-name',
                                       help="Enter the scientific name of the organism to use it as a folder name")
 
+
+    graph_recursive_parser = subparsers.add_parser('graph_recursive', help='Graph results found by Recursive algorith   m')
+    graph_recursive_parser.add_argument('-ran', help="Enter the refseq accession number of the sequence/chromosome")
+    graph_recursive_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                          help='Save graphs locally in /out directory')
+    graph_recursive_parser.add_argument('-name',
+                                          help="Enter the scientific name of the organism to use it as a folder name")
+    graph_recursive_parser.add_argument('-n_max', help="(Optional) Graph only the top n largest values")
+
     download_parser = subparsers.add_parser('download', help='Download command')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
 
@@ -92,6 +102,8 @@ def main():
         graph_rm_file_command(args)
     elif args.command == 'graph_rm_database':
         graph_rm_database_command(args)
+    elif args.command == 'graph_recursive':
+        graph_recursive_command(args)
     elif args.command == 'download':
         download_command(args)
     elif args.command == 'load_RM_repeats':
@@ -276,5 +288,13 @@ def graph_rm_database_command(args):
         logger.error(e)
         traceback.print_exc()
 
+def graph_recursive_command(args):
+    try:
+        graph_recursive_from_database(refseq_accession_number=args.ran, save=args.save, name=args.name, n_max=args.n_max)
+    except Exception as e:
+        logger.error(e)
+        traceback.print_exc()
+
 if __name__ == "__main__":
     main()
+

@@ -2,6 +2,7 @@ from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
+from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
 from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
@@ -183,3 +184,16 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
                                                            name=name, refseq_accession_number=refseq_accession_number)
 
 
+@DBConnection
+@Timer
+def graph_recursive_from_database(refseq_accession_number: str, save: bool, name: str, n_max: int):
+    n_max = n_max and int(n_max)
+    recursive_repeats_whole_chromosomes_service = RecursiveRepeatsWholeChromosomesService()
+
+    data = recursive_repeats_whole_chromosomes_service.extract_info_by_chromosome(refseq_accession_number)
+    Graphs.graph_recursive_repeats_largest_values_from_database(data, col="name", n_max=n_max, save=save, name=name,
+                                                                refseq_accession_number=refseq_accession_number)
+    Graphs.graph_grouped_by_recursive_repeat_length(data, col="name", save=save, name=name,
+                                                    refseq_accession_number=refseq_accession_number)
+    Graphs.graph_individual_plots_by_recursive_repeat_length(data, col="name", save=save, name=name,
+                                                    refseq_accession_number=refseq_accession_number)
