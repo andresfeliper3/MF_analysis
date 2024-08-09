@@ -2,6 +2,8 @@ from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 from src.Biocode.services.AbstractService import AbstractService
 from src.Biocode.services.services_context.all_services import Service
 
+from typing import List
+
 @Service
 class RecursiveRepeatsWholeChromosomesService(AbstractService):
     def __init__(self):
@@ -15,3 +17,5 @@ class RecursiveRepeatsWholeChromosomesService(AbstractService):
                 f"LEFT JOIN whole_chromosomes wc on rwc.whole_chromosomes_id = wc.id " \
                 f"WHERE refseq_accession_number='{refseq_accession_number}';"
         return DBConnectionManager.extract_with_custom_query(query)
+
+
