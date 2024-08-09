@@ -1,3 +1,4 @@
+from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
@@ -197,3 +198,12 @@ def graph_recursive_from_database(refseq_accession_number: str, save: bool, name
                                                     refseq_accession_number=refseq_accession_number)
     Graphs.graph_individual_plots_by_recursive_repeat_length(data, col="name", save=save, name=name,
                                                     refseq_accession_number=refseq_accession_number)
+@DBConnection
+@Timer
+def graph_recursive_genome_from_database(GCF: str, save: bool, name: str, n_max: int):
+    n_max = n_max and int(n_max)
+    organism_service = OrganismsService()
+    refseq_accession_numbers = organism_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
+
+    for refseq_accession_number in refseq_accession_numbers:
+        graph_recursive_from_database(refseq_accession_number, save, name, n_max)

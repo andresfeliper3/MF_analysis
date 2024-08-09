@@ -18,14 +18,25 @@ def Timer(func):
         return result
     return wrapper
 
+
 def DBConnection(func):
     def wrapper(*args, **kwargs):
-        DBConnectionManager.start()
-        logger.info(f"Database connection started")
-        func(*args, **kwargs)
-        DBConnectionManager.close()
-        logger.info(f"Database connection closed")
+        connection_started = False
+        if not DBConnectionManager.is_connected():
+            DBConnectionManager.start()
+            connection_started = True
+            logger.info("Database connection started")
+        try:
+            result = func(*args, **kwargs)
+        finally:
+            if connection_started:
+                DBConnectionManager.close()
+                logger.info("Database connection closed")
+
+        return result
+
     return wrapper
+
 
 def Singleton(cls):
     instances = {}

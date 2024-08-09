@@ -17,6 +17,11 @@ class DBConnectionManager:
             DBConnectionManager.cursor = DBConnectionManager.conn.cursor()
         else:
             logger.warning("Database connection already started.")
+
+    @staticmethod
+    def is_connected():
+        return DBConnectionManager.conn is not None
+
     """
     Example usage:
     table_name = "organisms"
