@@ -111,10 +111,17 @@ The graphs are saved in the /out directory in the sequence folder.
 
 #### Graph per sequence/chromosome
 The n_max parameter is optional. It represents the total amount of repeats shown in the general graph.
+The chromosome is identified by the refseq_accession_number (-ran)
 
     py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis elegans" 
     py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis elegans" -n_max 10
 
+#### Graph per gnome
+The n_max parameter is optional. It represents the total amount of repeats shown in the general graphs.
+The genome is identified by the GCF (-gcf).
+
+    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis elegans" 
+    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis elegans" -n_max 10
 
 
 #### Graphing using a result .out file
