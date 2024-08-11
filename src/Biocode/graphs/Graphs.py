@@ -430,6 +430,8 @@ class Graphs:
 
         for i, row in df.iterrows():
             index = row["query_begin"] // partition_size
+            if index >= amount_partitions: #the residue is added to the last partition
+                index -= 1
             repeat_lengths[index] += row["repeat_length"]
         return repeat_lengths
 

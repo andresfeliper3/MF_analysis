@@ -24,8 +24,8 @@ Analyze and load the organism and genome data.
 Analyze only one sequence file (one chromosome) given a file path
     
         py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode regions
-        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_4 -mode regions
-        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_4 -mode whole
+        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_6 -mode regions
+        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_6 -mode whole
 
 It is possible to configure if the results should be saved to the database or not.
 The default behavior is to always save the data to database.
@@ -80,11 +80,11 @@ Other possible parameters are:
 - plot_type - style of plot (line or bar), line is by default.
 - save - save the graph in the local directory specified /out (true or false).
 
-       py .\command.py graph_rm_file -path resources/RM_resources/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+       py .\command.py graph_rm_file -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
 
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_file -path resources/RM_resources/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -name "Caenorhabditis elegans" 
+       py .\command.py graph_rm_file -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -ran NC_003279.8 -name "Caenorhabditis elegans" 
  
 
 #### Graphing using a refseq accession number and the database
@@ -116,15 +116,13 @@ The chromosome is identified by the refseq_accession_number (-ran)
     py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis elegans" 
     py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis elegans" -n_max 10
 
-#### Graph per gnome
+#### Graph per genome
 The n_max parameter is optional. It represents the total amount of repeats shown in the general graphs.
 The genome is identified by the GCF (-gcf).
 
     py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis elegans" 
     py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis elegans" -n_max 10
 
-
-#### Graphing using a result .out file
 
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
@@ -135,4 +133,4 @@ Save the repeats found by RepeatMasker into the database using the results file 
 
 Example using the command:
 
-    py .\command.py load_RM_repeats -path resources/RM_resources/c_elegans_chromosome_I.fasta.out
+    py .\command.py load_RM_repeats -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out
