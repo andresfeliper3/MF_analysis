@@ -119,6 +119,8 @@ def graph_rm_results_from_file(path: str, refseq_accession_number:str, partition
     size = whole_chromosomes_service.extract_size_by_refseq_accession_number(refseq_accession_number)
     partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
     regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+    plot_type = plot_type or "line"
+
     Graphs.graph_distribution_of_repeats_merged_from_file(path=path, size=size, partitions=partitions,
                                              legend=True, regions=regions, plot_type=plot_type, save=save,
                                              name=name, refseq_accession_number=refseq_accession_number)
@@ -130,10 +132,10 @@ def graph_rm_results_from_file(path: str, refseq_accession_number:str, partition
                                                refseq_accession_number=refseq_accession_number)
 
     Graphs.graph_distribution_of_repeats_from_file(path, col="class_family", legend=True, plot_type=plot_type,
-                                                   limit=20, regions=regions, save=save, name=name,
+                                                   limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=name,
                                                    refseq_accession_number=refseq_accession_number)
     Graphs.graph_distribution_of_repeats_from_file(path, col="name", legend=True, plot_type=plot_type,
-                                                   limit=20, regions=regions, save=save, name=name,
+                                                   limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=name,
                                                    refseq_accession_number=refseq_accession_number)
 
     Graphs.graph_distribution_of_repeats_subplots_from_file(path, col="class_family", legend=True,
@@ -155,6 +157,7 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
     size = whole_chromosomes_service.extract_size_by_refseq_accession_number(refseq_accession_number)
     partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
     regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+    plot_type = plot_type or "line"
 
     rm_repeats_whole_chromosomes_service = RMRepeatsWholeChromosomesService()
 

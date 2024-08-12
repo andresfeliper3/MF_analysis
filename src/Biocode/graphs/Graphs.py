@@ -437,7 +437,7 @@ class Graphs:
 
     @staticmethod
     def graph_distribution_of_repeats_merged_from_database(data: pd.DataFrame, size: int, partitions: int = 300,
-                                                       filter_string: str = None, filter_column: str = "class_family",
+                                                       filter_string: str = None, filter_column: str = None,
                                                        legend: bool = True, regions: int = 3, save: bool=True,
                                                        name: str = None, refseq_accession_number: str = None,
                                                        plot_type: str = "line"):
@@ -460,7 +460,7 @@ class Graphs:
     @staticmethod
     def _graph_distribution_of_repeats_merged(df, size: int, partitions: int = 300,
                                               filter_string: str = None,
-                                              filter_column: str = "class_family", legend: bool = True, regions: int = 3,
+                                              filter_column: str = None, legend: bool = True, regions: int = 3,
                                               plot_type: str = "line", save: bool=True, name: str=None,
                                               refseq_accession_number: str=None):
         if filter_string:
@@ -591,6 +591,10 @@ class Graphs:
     @staticmethod
     def _graph_distribution_of_repeats(df, grouped_data_sorted, col, legend=True, plot_type="line", limit=20,
                                        regions=3, save=True, name=None, refseq_accession_number=None):
+        if df.empty or grouped_data_sorted.empty:
+            logger.warning("Empty DataFrame provided for Distribution of repeats graph; skipping plot.")
+            return
+
         # Extract unique class/family values
         unique_class_family = grouped_data_sorted.head(limit)[col].tolist()
 
@@ -604,8 +608,8 @@ class Graphs:
         plt.figure(figsize=(30, 6))
         max_value = [0, ""]  # Variable to store the maximum value graphed
 
+        plotted = False
         if plot_type == "line":
-            # Plotting as lines
             for label in unique_class_family:
                 repeat_lengths = np.zeros(len(df))
                 for i, row in df.iterrows():
@@ -613,30 +617,34 @@ class Graphs:
                         repeat_lengths[i] = row["repeat_length"]
                         max_value = [max(max_value[0], row["repeat_length"]),
                                      row['name'] + " - " + row['class_family']]  # Update the maximum value
+                        plotted = True
                 plt.plot(repeat_lengths, color=color_dict.get(label), label=label)
 
         elif plot_type == "bar":
-            # Plotting as bars
             for i, row in df.iterrows():
                 if row[col] in unique_class_family:
                     label = row[col]
                     plt.bar(i, row["repeat_length"], color=color_dict.get(label))
                     max_value = [max(max_value[0], row["repeat_length"]),
                                  row['name'] + " - " + row['class_family']]  # Update the maximum value
+                    plotted = True
 
         title = f"Distribution of Repeats Across Sequence {refseq_accession_number} by {col}"
         plt.ylabel("Length of Repeat (bp)")
         plt.xlabel("Repeat")
         plt.title(title)
         logger.info(f"Distribution of repeats - max value {max_value}")
-        plt.ylim(0, max_value[0] * 1.1)  # Set the y-axis limit to 110% of the maximum value graphed
+        if max_value[0] > 0:
+            plt.ylim(0, max_value[0] * 1.1)
+        else:
+            logger.warning("No valid data to plot; skipping ylim setting.")
 
         x_ticks = np.arange(0, len(df), 1)
         for x in range(1, regions):
             plt.axvline(x=x * max(x_ticks) / regions, color='r', linestyle='--', linewidth=2)
 
         # Create legend using unique class/family names
-        if legend:
+        if legend and plotted:
             plt.legend(ncol=2, loc='upper left', bbox_to_anchor=(1, 1))
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
