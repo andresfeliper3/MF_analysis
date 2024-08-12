@@ -35,12 +35,12 @@ def load_RM_repeats_from_file(path):
     logger.info(f"Loading repeats results from RepeatMasker from {path}")
     df = _import_file_out(path)
     repeats_service = RepeatsService()
-    rmRepeatsWholeChromosomesService= RMRepeatsWholeChromosomesService()
-    wholeChromosomesService = WholeChromosomesService()
+    rm_repeats_whole_chromosomes_service= RMRepeatsWholeChromosomesService()
+    whole_chromosomes_service = WholeChromosomesService()
 
     for _, row in df.iterrows():
         repeat_id = repeats_service.insert(record=(row['name'], row['class_family'], 'RM'))
-        whole_chromosome_id = wholeChromosomesService.extract_id_by_refseq_accession_number(row['sequence'])
+        whole_chromosome_id = whole_chromosomes_service.extract_id_by_refseq_accession_number(row['sequence'])
         record = (
             repeat_id,
             whole_chromosome_id,
@@ -57,5 +57,5 @@ def load_RM_repeats_from_file(path):
             row['repeat_end'],
             row['repeat_left']
         )
-        rmRepeatsWholeChromosomesService.insert(record=record)
+        rm_repeats_whole_chromosomes_service.insert(record=record)
 
