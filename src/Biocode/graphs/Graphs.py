@@ -321,7 +321,7 @@ class Graphs:
         xticks_step = len(values) // divisions if len(values) // divisions > 0 else 1
         plt.xticks(range(0, len(values), xticks_step))
 
-        title = f"Coverage of the sequence {sequence_name}"
+        title = f"Coverage of the sequence {sequence_name} - {name}"
         plt.title(title)
         plt.xlabel('Representative percentage of the sequence')
         plt.ylabel('Absolute Value')
@@ -350,7 +350,7 @@ class Graphs:
             current_position += abs(negative)
 
         # Set labels and title
-        title = f"Coverage of the sequence {sequence_name}"
+        title = f"Coverage of the sequence {sequence_name} - {name}"
         ax.set_ylabel(title)
         ax.set_title('Order (bottom-up)')
 
@@ -389,7 +389,7 @@ class Graphs:
                          f"q = {fq_value['q']}", va='center', ha='left', fontsize=5)
                 plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., ncol=2)
 
-        title = f"fq vs ln(ε) for {sequence_name}"
+        title = f"fq vs ln(ε) for {sequence_name} - {name}"
         plt.title(title)
         if save:
             Graphs._savefig(title, name)
@@ -413,7 +413,7 @@ class Graphs:
         plt.xlabel('Log(Epsilons)')
         plt.ylabel('fq')
         plt.legend()
-        title = f"linear regression for {sequence_name}"
+        title = f"linear regression for {sequence_name} - {name}"
         if save:
             Graphs._savefig(title, name)
 
@@ -439,22 +439,22 @@ class Graphs:
     def graph_distribution_of_repeats_merged_from_database(data: pd.DataFrame, size: int, partitions: int = 300,
                                                        filter_string: str = None, filter_column: str = None,
                                                        legend: bool = True, regions: int = 3, save: bool=True,
-                                                       name: str = None, refseq_accession_number: str = None,
+                                                       name: str = None, filename: str = None,
                                                        plot_type: str = "line"):
         Graphs._graph_distribution_of_repeats_merged(data, size, partitions, filter_string,
                                                      filter_column, legend, regions, plot_type, save, name,
-                                                     refseq_accession_number)
+                                                     filename)
 
     @staticmethod
     def graph_distribution_of_repeats_merged_from_file(path: str, size: int, partitions: int = 300,
                                              filter_string: str = None,
                                              filter_column: str = None, legend: bool = True, regions: int = 3,
                                              plot_type: str = "line", save: bool=True, name: str = None,
-                                             refseq_accession_number: str = None):
+                                             filename: str = None):
         df = Graphs._import_file_out(path)
         Graphs._graph_distribution_of_repeats_merged(df, size, partitions, filter_string,
                                                      filter_column, legend, regions, plot_type, save, name,
-                                                     refseq_accession_number)
+                                                     filename)
 
 
     @staticmethod
@@ -462,7 +462,7 @@ class Graphs:
                                               filter_string: str = None,
                                               filter_column: str = None, legend: bool = True, regions: int = 3,
                                               plot_type: str = "line", save: bool=True, name: str=None,
-                                              refseq_accession_number: str=None):
+                                              filename: str=None):
         if filter_string:
             df = Graphs._filter(df, filter_string, filter_column)
 
@@ -481,7 +481,7 @@ class Graphs:
             for i, repeat_sum in enumerate(repeat_lengths):
                 plt.bar(i, repeat_sum, color='gray')
 
-        title = f"Distribution of Repeats Across Sequence {refseq_accession_number}"
+        title = f"Distribution of Repeats across Sequence {filename} - {name}"
         plt.ylabel("Length of Repeat (bp)")
         plt.xlabel("Repeat")
         plt.title(title)
@@ -529,26 +529,26 @@ class Graphs:
     @staticmethod
     def graph_frequency_of_repeats_grouped_from_database(data, col=None, filtering=False, filter_string=None,
                                                      filter_column=None, n_max=10, save: bool = True, name: str = None,
-                                                     refseq_accession_number: str = None):
+                                                     filename: str = None):
         Graphs._graph_frequency_of_repeats_grouped(data, col, filtering, filter_string, filter_column, n_max, save,
-                                                   name, refseq_accession_number)
+                                                   name, filename)
 
     @staticmethod
     def graph_frequency_of_repeats_grouped_from_file(path, col=None, filtering=False, filter_string=None,
                                               filter_column=None, n_max=10, save: bool=True, name: str=None,
-                                              refseq_accession_number: str=None):
+                                              filename: str=None):
         data = Graphs._import_file_out(path)
         Graphs._graph_frequency_of_repeats_grouped(data, col, filtering, filter_string, filter_column, n_max, save,
-                                                   name, refseq_accession_number)
+                                                   name, filename)
 
     @staticmethod
     def _graph_frequency_of_repeats_grouped(data, col=None, filtering=False, filter_string=None,
                                             filter_column=None, n_max=10, save: bool=True, name: str=None,
-                                            refseq_accession_number: str=None):
+                                            filename: str=None):
         grouped_data_sorted = Graphs._group_columns(data, col, filtering, filter_string, filter_column)
         grouped_data_sorted = grouped_data_sorted.head(n_max)
 
-        title = f"Frequency of Repeats {col} Across Sequence {refseq_accession_number} by {col}"
+        title = f"Frequency of Repeats {col} Across Sequence {filename} by {col} - {name}"
         # Plot the distribution of repeats for each class/family
         plt.figure(figsize=(10, 6))
         plt.bar(grouped_data_sorted[col], grouped_data_sorted["repeat_length"])
@@ -574,23 +574,23 @@ class Graphs:
 
     @staticmethod
     def graph_distribution_of_repeats_from_file(path, col, legend, plot_type, limit, regions, save, name,
-                                                refseq_accession_number):
+                                                filename):
         data = Graphs._import_file_out(path)
         grouped_data_sorted = Graphs._group_columns(data, col)
         Graphs._graph_distribution_of_repeats(data, grouped_data_sorted, col, legend, plot_type, limit, regions,
-                                              save, name, refseq_accession_number)
+                                              save, name, filename)
 
     @staticmethod
     def graph_distribution_of_repeats_from_database(data, col, legend, plot_type, limit, regions, save, name,
-                                                refseq_accession_number):
+                                                filename):
         grouped_data_sorted = Graphs._group_columns(data, col)
         Graphs._graph_distribution_of_repeats(data, grouped_data_sorted, col, legend, plot_type, limit, regions,
-                                              save, name, refseq_accession_number)
+                                              save, name, filename)
 
 
     @staticmethod
     def _graph_distribution_of_repeats(df, grouped_data_sorted, col, legend=True, plot_type="line", limit=20,
-                                       regions=3, save=True, name=None, refseq_accession_number=None):
+                                       regions=3, save=True, name=None, filename=None):
         if df.empty or grouped_data_sorted.empty:
             logger.warning("Empty DataFrame provided for Distribution of repeats graph; skipping plot.")
             return
@@ -629,7 +629,7 @@ class Graphs:
                                  row['name'] + " - " + row['class_family']]  # Update the maximum value
                     plotted = True
 
-        title = f"Distribution of Repeats Across Sequence {refseq_accession_number} by {col}"
+        title = f"Distribution of Repeats Across Sequence {filename} by {col} - {name}"
         plt.ylabel("Length of Repeat (bp)")
         plt.xlabel("Repeat")
         plt.title(title)
@@ -655,25 +655,25 @@ class Graphs:
 
     @staticmethod
     def graph_distribution_of_repeats_subplots_from_file(path, col="class_family", legend=True, limit=20, regions=3,
-                                               shared_y_axis=False, save=True, name=None, refseq_accession_number=None):
+                                               shared_y_axis=False, save=True, name=None, filename=None):
         data = Graphs._import_file_out(path)
         grouped_data_sorted = Graphs._group_columns(data, col)
         Graphs._graph_distribution_of_repeats_subplots(data, grouped_data_sorted, col, legend, limit, regions,
-                                                       shared_y_axis, save, name, refseq_accession_number)
+                                                       shared_y_axis, save, name, filename)
 
     @staticmethod
     def graph_distribution_of_repeats_subplots_from_database(data, col="class_family", legend=True, limit=20, regions=3,
                                                              shared_y_axis=False, save=None, name=None,
-                                                            refseq_accession_number=None):
+                                                            filename=None):
         grouped_data_sorted = Graphs._group_columns(data, col)
         Graphs._graph_distribution_of_repeats_subplots(data, grouped_data_sorted, col, legend, limit, regions,
-                                                       shared_y_axis, save, name, refseq_accession_number)
+                                                       shared_y_axis, save, name, filename)
 
 
     @staticmethod
     def _graph_distribution_of_repeats_subplots(df, grouped_data_sorted, col="class_family", legend=True, limit=20,
                                                 regions=3, shared_y_axis=False, save=True, name=None,
-                                                refseq_accession_number=None):
+                                                filename=None):
         # Extract unique class/family values
         unique_class_family = grouped_data_sorted.head(limit)[col].tolist()
 
@@ -698,7 +698,7 @@ class Graphs:
             ax.plot(repeat_lengths, color=color_dict.get(label), label=label)
             ax.set_ylabel("Length of Repeat (bp)")
             ax.set_xlabel("Repeat")
-            ax.set_title(f"Distribution of {label} repeats across Sequence {refseq_accession_number}")
+            ax.set_title(f"Distribution of {label} repeats across Sequence {filename} - {name}")
             ax.grid(axis='y', linestyle='--', alpha=0.7)
             ax.set_ylim(0, np.max(repeat_lengths) * 1.1)  # Set the y-axis limit to 110% of the maximum value graphed
 
@@ -718,7 +718,7 @@ class Graphs:
                 ax.set_ylim(0, max_y)
 
         plt.tight_layout()
-        title = f"Distribution of repeats across Sequence {refseq_accession_number} by {col}"
+        title = f"Distribution of repeats across Sequence {filename} by {col}"
         if save:
             Graphs._savefig(title, f"{name}/repeats/RM/distribution_subplots")
         plt.show()
@@ -726,7 +726,7 @@ class Graphs:
 
     @staticmethod
     def graph_recursive_repeats_largest_values_from_database(df, col=None, n_max=None, save=True, name=None,
-                                                refseq_accession_number=None):
+                                                filename=None):
         df = df.sort_values(by='largest_value', ascending=False)
         if n_max is not None:
             df = df.head(n_max)
@@ -734,7 +734,7 @@ class Graphs:
         plt.figure(figsize=(10, 6))
         plt.bar(df[col], df['largest_value'], color='blue')
 
-        title = f"Recursively found repeats - largest values in Sequence {refseq_accession_number}"
+        title = f"Recursively found repeats - largest values in Sequence {filename} - {name}"
         plt.xlabel('Sequence')
         plt.ylabel('Largest Value')
         plt.title(title)
@@ -746,7 +746,7 @@ class Graphs:
         plt.show()
 
     @staticmethod
-    def graph_grouped_by_recursive_repeat_length(df, col=None, save=True, name=None, refseq_accession_number=None):
+    def graph_grouped_by_recursive_repeat_length(df, col=None, save=True, name=None, filename=None):
         grouped = df.groupby('repeat_length')
 
         plt.figure(figsize=(14, 8))
@@ -755,7 +755,7 @@ class Graphs:
             group = group.sort_values(by='largest_value', ascending=False)
             plt.bar(group[col], group['largest_value'], label=f'Repeat Length: {repeat_length}')
 
-        title = f"Largest Values Grouped by Repeat Length of Sequence {refseq_accession_number}"
+        title = f"Largest Values Grouped by Repeat Length of Sequence {filename} - {name}"
         plt.xlabel('Sequence')
         plt.ylabel('Largest Value')
         plt.title(title)
@@ -769,7 +769,7 @@ class Graphs:
 
     @staticmethod
     def graph_individual_plots_by_recursive_repeat_length(df, col=None, save=True, name=None,
-                                                          refseq_accession_number=None):
+                                                          filename=None):
         grouped = df.groupby('repeat_length')
 
         for repeat_length, group in grouped:
@@ -778,7 +778,7 @@ class Graphs:
             plt.figure(figsize=(10, 6))
             plt.bar(group_sorted[col], group_sorted['largest_value'], color='blue')
 
-            title = f"Largest Values for Repeat Length {repeat_length} of Sequence {refseq_accession_number}"
+            title = f"Largest Values for Repeat Length {repeat_length} of Sequence {filename} - {name}"
             plt.xlabel('Sequence')
             plt.ylabel('Largest Value')
             plt.title(title)
@@ -787,7 +787,7 @@ class Graphs:
             plt.tight_layout()
 
             if save:
-                filename = f"{name}/repeats/recursive/repeat_length_{repeat_length}"
-                Graphs._savefig(title, filename)
+                route = f"{name}/repeats/recursive/repeat_length_{repeat_length}"
+                Graphs._savefig(title, route)
             plt.show()
 

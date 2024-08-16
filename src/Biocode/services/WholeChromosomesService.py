@@ -1,6 +1,8 @@
 from src.Biocode.services.AbstractService import AbstractService
 from src.Biocode.services.services_context.all_services import Service
 
+from typing import Tuple
+
 @Service
 class WholeChromosomesService(AbstractService):
     def __init__(self):
@@ -20,3 +22,10 @@ class WholeChromosomesService(AbstractService):
 
     def extract_size_by_refseq_accession_number(self, refseq_accession_number: str) -> int:
         return int(self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number).loc[0, 'size'])
+
+    def extract_filename_by_refseq_accession_number(self, refseq_accession_number: str) -> str:
+        return self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number).loc[0, 'name']
+
+    def extract_filename_and_size_by_refseq_accession_number(self, refseq_accession_number: str) -> Tuple[str, int]:
+        row = self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number)
+        return row.loc[0, 'name'], int(row.loc[0, 'size'])
