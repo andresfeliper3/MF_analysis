@@ -116,34 +116,34 @@ def graph_rm_results_from_file(path: str, refseq_accession_number:str, partition
     DEFAULT_PARTITIONS = 300
     DEFAULT_REPEATS_LIMIT = 20
     whole_chromosomes_service = WholeChromosomesService()
-    size = whole_chromosomes_service.extract_size_by_refseq_accession_number(refseq_accession_number)
+    filename, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(refseq_accession_number)
     partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
     regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
     plot_type = plot_type or "line"
 
     Graphs.graph_distribution_of_repeats_merged_from_file(path=path, size=size, partitions=partitions,
                                              legend=True, regions=regions, plot_type=plot_type, save=save,
-                                             name=name, refseq_accession_number=refseq_accession_number)
+                                             name=name, filename=filename)
 
 
     Graphs.graph_frequency_of_repeats_grouped_from_file(path, col="class_family", filtering=False, n_max=10, save=save,
-                                                        name=name, refseq_accession_number=refseq_accession_number)
+                                                        name=name, filename=filename)
     Graphs.graph_frequency_of_repeats_grouped_from_file(path, col="name", filtering=False, n_max=10, save=save, name=name,
-                                               refseq_accession_number=refseq_accession_number)
+                                                        filename=filename)
 
     Graphs.graph_distribution_of_repeats_from_file(path, col="class_family", legend=True, plot_type=plot_type,
                                                    limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=name,
-                                                   refseq_accession_number=refseq_accession_number)
+                                                   filename=filename)
     Graphs.graph_distribution_of_repeats_from_file(path, col="name", legend=True, plot_type=plot_type,
                                                    limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=name,
-                                                   refseq_accession_number=refseq_accession_number)
+                                                   filename=filename)
 
     Graphs.graph_distribution_of_repeats_subplots_from_file(path, col="class_family", legend=True,
                                                             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
-                                                            name=name, refseq_accession_number=refseq_accession_number)
+                                                            name=name, filename=filename)
     Graphs.graph_distribution_of_repeats_subplots_from_file(path, col="name", legend=True,
                                                             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
-                                                            name=name, refseq_accession_number=refseq_accession_number)
+                                                            name=name, filename=filename)
 
 
 @DBConnection
@@ -154,7 +154,7 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
     DEFAULT_PARTITIONS = 300
     DEFAULT_REPEATS_LIMIT = 20
     whole_chromosomes_service = WholeChromosomesService()
-    size = whole_chromosomes_service.extract_size_by_refseq_accession_number(refseq_accession_number)
+    filename, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(refseq_accession_number)
     partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
     regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
     plot_type = plot_type or "line"
@@ -165,27 +165,25 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
 
     Graphs.graph_distribution_of_repeats_merged_from_database(data=data, size=size, partitions=partitions,
                                              legend=True, regions=regions, plot_type=plot_type, save=save,
-                                             name=name, refseq_accession_number=refseq_accession_number)
+                                             name=name, filename=filename)
 
     Graphs.graph_frequency_of_repeats_grouped_from_database(data, col="class_family", filtering=False, n_max=10, save=save,
-                                                        name=name, refseq_accession_number=refseq_accession_number)
-    Graphs.graph_frequency_of_repeats_grouped_from_database(data, col="name", filtering=False, n_max=10, save=save, name=name,
-                                               refseq_accession_number=refseq_accession_number)
+                                                        name=name, filename=filename)
+    Graphs.graph_frequency_of_repeats_grouped_from_database(data, col="name", filtering=False, n_max=10, save=save,
+                                                            name=name, filename=filename)
 
     Graphs.graph_distribution_of_repeats_from_database(data, col="class_family", legend=True, plot_type=plot_type,
-                                                   limit=20, regions=regions, save=save, name=name,
-                                                   refseq_accession_number=refseq_accession_number)
+                                                   limit=20, regions=regions, save=save, name=name, filename=filename)
     Graphs.graph_distribution_of_repeats_from_database(data, col="name", legend=True, plot_type=plot_type,
                                                        limit=20, regions=regions, save=save, name=name,
-                                                       refseq_accession_number=refseq_accession_number)
+                                                       filename=filename)
 
     Graphs.graph_distribution_of_repeats_subplots_from_database(data, col="class_family", legend=True,
                                                                 limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
-                                                                name=name,
-                                                                refseq_accession_number=refseq_accession_number)
+                                                                name=name,  filename=filename)
     Graphs.graph_distribution_of_repeats_subplots_from_database(data, col="name", legend=True,
                                                            limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
-                                                           name=name, refseq_accession_number=refseq_accession_number)
+                                                           name=name, filename=filename)
 
 
 @DBConnection
@@ -193,14 +191,14 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
 def graph_recursive_from_database(refseq_accession_number: str, save: bool, name: str, n_max: int):
     n_max = n_max and int(n_max)
     recursive_repeats_whole_chromosomes_service = RecursiveRepeatsWholeChromosomesService()
-
+    whole_chromosomes_service = WholeChromosomesService()
+    filename = whole_chromosomes_service.extract_filename_by_refseq_accession_number(refseq_accession_number)
     data = recursive_repeats_whole_chromosomes_service.extract_info_by_chromosome(refseq_accession_number)
     Graphs.graph_recursive_repeats_largest_values_from_database(data, col="name", n_max=n_max, save=save, name=name,
-                                                                refseq_accession_number=refseq_accession_number)
-    Graphs.graph_grouped_by_recursive_repeat_length(data, col="name", save=save, name=name,
-                                                    refseq_accession_number=refseq_accession_number)
-    Graphs.graph_individual_plots_by_recursive_repeat_length(data, col="name", save=save, name=name,
-                                                    refseq_accession_number=refseq_accession_number)
+                                                                filename=filename)
+    Graphs.graph_grouped_by_recursive_repeat_length(data, col="name", save=save, name=name, filename=filename)
+    Graphs.graph_individual_plots_by_recursive_repeat_length(data, col="name", save=save, name=name, filename=filename)
+
 @DBConnection
 @Timer
 def graph_recursive_genome_from_database(GCF: str, save: bool, name: str, n_max: int):
