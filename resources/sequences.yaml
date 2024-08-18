@@ -1,21 +1,21 @@
 sequences_folder: "resources/dna_sequences"
 
 caenorhabditis elegans 2008: &c_elegans_2008
-  organism_name: "Caenorhabditis elegans 2008"
+  organism_name: "caenorhabditis_elegans 2008"
   GCF: "GCF_000002985.4"
   download_url: ""
   regions_number: 3
 GCF_000002985_4: *c_elegans_2008
 
 caenorhabditis elegans 2008 split:
-  organism_name: "Caenorhabditis elegans 2008 split"
+  organism_name: "caenorhabditis_elegans 2008 split"
   GCF: "GCF_000002985.4.split"
   download_url: ""
   regions_number: 3
 
 
 caenorhabditis elegans: &c_elegans
-  organism_name: "Caenorhabditis elegans"
+  organism_name: "caenorhabditis_elegans"
   GCF: "GCF_000002985.6"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   regions_number: 3
@@ -30,7 +30,7 @@ micromonas commoda: &m_commoda
 GCF_000090985_2: *m_commoda
 
 musa acuminata: &musa_acuminata
-  organism_name: "Musa acuminata"
+  organism_name: "musa_acuminata"
   GCF: "GCF_000313855.2"
   download_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/latest_assembly_versions/GCF_000313855.2_ASM31385v2/GCF_000313855.2_ASM31385v2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/'
   regions_number: 3
