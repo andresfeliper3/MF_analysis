@@ -5,6 +5,7 @@ import pandas as pd
 from itertools import cycle
 
 from utils.logger import logger
+from utils.FileReader import FileReader
 
 import os
 
@@ -446,12 +447,11 @@ class Graphs:
                                                      filename)
 
     @staticmethod
-    def graph_distribution_of_repeats_merged_from_file(path: str, size: int, partitions: int = 300,
+    def graph_distribution_of_repeats_merged_from_file(df: pd.DataFrame, size: int, partitions: int = 300,
                                              filter_string: str = None,
                                              filter_column: str = None, legend: bool = True, regions: int = 3,
                                              plot_type: str = "line", save: bool=True, name: str = None,
                                              filename: str = None):
-        df = Graphs._import_file_out(path)
         Graphs._graph_distribution_of_repeats_merged(df, size, partitions, filter_string,
                                                      filter_column, legend, regions, plot_type, save, name,
                                                      filename)
@@ -498,31 +498,6 @@ class Graphs:
         plt.show()
 
     @staticmethod
-    def _import_file_out(path):
-        data = []
-
-        with open(path, 'r') as file:
-            next(file)  # Skip 3 lines
-            next(file)
-            next(file)
-            for line in file:
-                # Split the line by whitespace(s)
-                columns = line.strip().split()
-                # Append the columns to the data list
-                data.append(columns)
-
-        df = pd.DataFrame(data, columns=[
-            'sw_score', 'percentage_divergence', 'percentage_deletions', 'percentage_insertions', 
-            'refseq_accession_number', 'query_begin', 'query_end', 'query_left', 'strand', 'name',
-            'class_family', 'repeat_begin', 'repeat_end', 'repeat_left', 'ID', 'add'
-        ])
-
-        df['query_end'] = df['query_end'].astype('int')
-        df['query_begin'] = df['query_begin'].astype('int')
-        df["repeat_length"] = df["query_end"] - df["query_begin"] + 1
-        return df
-
-    @staticmethod
     def _filter(data, filter_string=None, filter_column="class_family"):
         return data[~data[filter_column].str.contains(filter_string)]
 
@@ -534,11 +509,10 @@ class Graphs:
                                                    name, filename)
 
     @staticmethod
-    def graph_frequency_of_repeats_grouped_from_file(path, col=None, filtering=False, filter_string=None,
+    def graph_frequency_of_repeats_grouped_from_file(df: pd.DataFrame, col=None, filtering=False, filter_string=None,
                                               filter_column=None, n_max=10, save: bool=True, name: str=None,
                                               filename: str=None):
-        data = Graphs._import_file_out(path)
-        Graphs._graph_frequency_of_repeats_grouped(data, col, filtering, filter_string, filter_column, n_max, save,
+        Graphs._graph_frequency_of_repeats_grouped(df, col, filtering, filter_string, filter_column, n_max, save,
                                                    name, filename)
 
     @staticmethod
@@ -573,11 +547,10 @@ class Graphs:
 
 
     @staticmethod
-    def graph_distribution_of_repeats_from_file(path, col, legend, plot_type, limit, regions, save, name,
+    def graph_distribution_of_repeats_from_file(df: pd.DataFrame, col, legend, plot_type, limit, regions, save, name,
                                                 filename):
-        data = Graphs._import_file_out(path)
-        grouped_data_sorted = Graphs._group_columns(data, col)
-        Graphs._graph_distribution_of_repeats(data, grouped_data_sorted, col, legend, plot_type, limit, regions,
+        grouped_data_sorted = Graphs._group_columns(df, col)
+        Graphs._graph_distribution_of_repeats(df, grouped_data_sorted, col, legend, plot_type, limit, regions,
                                               save, name, filename)
 
     @staticmethod
@@ -654,11 +627,10 @@ class Graphs:
 
 
     @staticmethod
-    def graph_distribution_of_repeats_subplots_from_file(path, col="class_family", legend=True, limit=20, regions=3,
+    def graph_distribution_of_repeats_subplots_from_file(df: pd.DataFrame, col="class_family", legend=True, limit=20, regions=3,
                                                shared_y_axis=False, save=True, name=None, filename=None):
-        data = Graphs._import_file_out(path)
-        grouped_data_sorted = Graphs._group_columns(data, col)
-        Graphs._graph_distribution_of_repeats_subplots(data, grouped_data_sorted, col, legend, limit, regions,
+        grouped_data_sorted = Graphs._group_columns(df, col)
+        Graphs._graph_distribution_of_repeats_subplots(df, grouped_data_sorted, col, legend, limit, regions,
                                                        shared_y_axis, save, name, filename)
 
     @staticmethod

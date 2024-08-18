@@ -12,6 +12,9 @@ from load import loader
 from src.Biocode.utils.utils import str_to_list
 from utils.decorators import Timer, DBConnection
 from utils.logger import logger
+from utils.folder import apply_function_to_files_in_folder
+from utils.FileReader import FileReader
+
 
 
 @Timer
@@ -110,38 +113,42 @@ def graph_regions(dataframe, organism_name, data, regions_number):
 
 @DBConnection
 @Timer
-def graph_rm_results_from_file(path: str, refseq_accession_number:str, partitions:int, regions: int,
+def graph_rm_results_from_file(path: str, partitions:int, regions: int,
                                plot_type:str = "line", save: bool = True, name: str = None):
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
     DEFAULT_REPEATS_LIMIT = 20
+    df = FileReader.read_RM_results_file(path)
+    refseq_accession_number = df['refseq_accession_number'][0]
+
     whole_chromosomes_service = WholeChromosomesService()
     filename, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(refseq_accession_number)
+
     partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
     regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
     plot_type = plot_type or "line"
 
-    Graphs.graph_distribution_of_repeats_merged_from_file(path=path, size=size, partitions=partitions,
+    Graphs.graph_distribution_of_repeats_merged_from_file(df=df, size=size, partitions=partitions,
                                              legend=True, regions=regions, plot_type=plot_type, save=save,
                                              name=name, filename=filename)
 
 
-    Graphs.graph_frequency_of_repeats_grouped_from_file(path, col="class_family", filtering=False, n_max=10, save=save,
+    Graphs.graph_frequency_of_repeats_grouped_from_file(df=df, col="class_family", filtering=False, n_max=10, save=save,
                                                         name=name, filename=filename)
-    Graphs.graph_frequency_of_repeats_grouped_from_file(path, col="name", filtering=False, n_max=10, save=save, name=name,
+    Graphs.graph_frequency_of_repeats_grouped_from_file(df=df, col="name", filtering=False, n_max=10, save=save, name=name,
                                                         filename=filename)
 
-    Graphs.graph_distribution_of_repeats_from_file(path, col="class_family", legend=True, plot_type=plot_type,
+    Graphs.graph_distribution_of_repeats_from_file(df=df, col="class_family", legend=True, plot_type=plot_type,
                                                    limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=name,
                                                    filename=filename)
-    Graphs.graph_distribution_of_repeats_from_file(path, col="name", legend=True, plot_type=plot_type,
+    Graphs.graph_distribution_of_repeats_from_file(df=df, col="name", legend=True, plot_type=plot_type,
                                                    limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=name,
                                                    filename=filename)
 
-    Graphs.graph_distribution_of_repeats_subplots_from_file(path, col="class_family", legend=True,
+    Graphs.graph_distribution_of_repeats_subplots_from_file(df=df, col="class_family", legend=True,
                                                             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                                                             name=name, filename=filename)
-    Graphs.graph_distribution_of_repeats_subplots_from_file(path, col="name", legend=True,
+    Graphs.graph_distribution_of_repeats_subplots_from_file(df=df, col="name", legend=True,
                                                             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                                                             name=name, filename=filename)
 
@@ -184,6 +191,13 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
     Graphs.graph_distribution_of_repeats_subplots_from_database(data, col="name", legend=True,
                                                            limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                                                            name=name, filename=filename)
+
+@DBConnection
+@Timer
+def graph_rm_results_from_files_in_folder(directory_path: str, partitions: int, regions: int, plot_type: str, save: bool,
+                                          name: str):
+    apply_function_to_files_in_folder(directory_path, graph_rm_results_from_file, partitions, regions,
+                                      plot_type, save, name)
 
 
 @DBConnection
