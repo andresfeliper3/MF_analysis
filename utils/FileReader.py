@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import List
 
 class FileReader:
 
@@ -26,3 +27,20 @@ class FileReader:
         df['query_begin'] = df['query_begin'].astype('int')
         df["repeat_length"] = df["query_end"] - df["query_begin"] + 1
         return df
+
+    @staticmethod
+    def divide_genome_df_rows_by_chromosome(df: pd.DataFrame) -> List[pd.DataFrame]:
+        df = df[df['sequence'].str.startswith("NC")]
+        df_list = []
+        start_idx = 0
+
+        for i in range(1, len(df)):
+            # If chromosome changes in df
+            if df.loc[i, 'sequence'] != df.loc[i - 1, 'sequence']:
+                # Append the slice of the DataFrame to the list with index reset
+                df_list.append(df.iloc[start_idx:i].reset_index(drop=True))
+                start_idx = i
+
+        # Append the last segment with index reset
+        df_list.append(df.iloc[start_idx:].reset_index(drop=True))
+        return df_list
