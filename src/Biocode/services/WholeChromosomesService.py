@@ -29,3 +29,4 @@ class WholeChromosomesService(AbstractService):
     def extract_filename_and_size_by_refseq_accession_number(self, refseq_accession_number: str) -> Tuple[str, int]:
         row = self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number)
         return row.loc[0, 'name'], int(row.loc[0, 'size'])
+

@@ -199,6 +199,16 @@ def graph_rm_results_from_files_in_folder(directory_path: str, partitions: int, 
     apply_function_to_files_in_folder(directory_path, graph_rm_results_from_file, partitions, regions,
                                       plot_type, save, name)
 
+@DBConnection
+@Timer
+def graph_rm_results_of_genome_from_database(GCF: str, partitions: int, regions: int, plot_type: str, save: bool,
+                                             name: str):
+    organisms_service = OrganismsService()
+    chromosomes_ran_list = organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
+
+    for refseq_accession_number in chromosomes_ran_list:
+        graph_rm_results_from_database(refseq_accession_number, partitions, regions, plot_type, save, name)
+
 
 @DBConnection
 @Timer
