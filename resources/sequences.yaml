@@ -18,6 +18,7 @@ caenorhabditis elegans: &c_elegans
   organism_name: "caenorhabditis_elegans"
   GCF: "GCF_000002985.6"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/"
   regions_number: 3
 GCF_000002985_6: *c_elegans
 
@@ -25,6 +26,7 @@ micromonas commoda: &m_commoda
   organism_name: "Micromonas commoda"
   GCF: "GCF_000090985.2"
   download_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Micromonas_commoda/latest_assembly_versions/GCF_000090985.2_ASM9098v2/GCF_000090985.2_ASM9098v2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/'
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Micromonas_commoda/latest_assembly_versions/GCF_000090985.2_ASM9098v2/"
   amount_chromosomes: 17
   regions_number: 3
 GCF_000090985_2: *m_commoda

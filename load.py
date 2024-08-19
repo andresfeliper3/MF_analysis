@@ -85,16 +85,26 @@ class Loader:
             logger.error("Invalid regions number: %s", e)
             return -1
 
-    def get_organism_folder(self) -> str:
+    def get_organism_folder(self) -> str | None:
         try:
             return self.get_organism_name().replace(" ", "_")
         except Exception as e:
             logger.error("Invalid data entered")
             return None
 
+    def get_organism_gtf_subfolder(self) -> str:
+        return f"{self.get_organism_folder()}/gtf"
+
     def get_download_url(self) -> str:
         try:
             return self.config[self.organism]['download_url']
+        except KeyError as e:
+            logger.error("Invalid download url %s", e)
+            return ""
+
+    def get_download_gff_url(self) -> str:
+        try:
+            return self.config[self.organism]['download_files_url']
         except KeyError as e:
             logger.error("Invalid download url %s", e)
             return ""
