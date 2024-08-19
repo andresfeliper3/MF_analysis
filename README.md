@@ -168,3 +168,8 @@ Save the repeats found by RepeatMasker into the database using the results file 
 Example using the command:
 
     py .\command.py load_RM_repeats -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out
+
+#### Using a folder with the results of a genome
+Example using the command:
+
+    py .\command.py load_RM_repeats_folder -path resources/RM_resources/caenorhabditis_elegans
