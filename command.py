@@ -9,7 +9,7 @@ from graph import load_data_whole, graph_whole, load_data_regions, graph_regions
     graph_rm_results_from_database, graph_recursive_from_database, graph_recursive_genome_from_database, \
     graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
-from repeats import load_RM_repeats_from_file
+from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder
 
 from src.Biocode.sequences.Sequence import Sequence
 
@@ -112,7 +112,7 @@ def main():
                                           help='Save graphs locally in /out directory')
     graph_recursive_genome_parser.add_argument('-name',
                                           help="Enter the scientific name of the organism to use it as a folder name")
-    graph_recursive_genome_parser.add_argument('-n_max', help="(Optional) Graph only the top n largest values per sequenec")
+    graph_recursive_genome_parser.add_argument('-n_max', help="(Optional) Graph only the top n largest values per sequence")
 
 
     download_parser = subparsers.add_parser('download', help='Download command')
@@ -121,7 +121,11 @@ def main():
     load_RM_repeats_parser = subparsers.add_parser('load_RM_repeats', help='Load repeats from results file generated '
                                             'by RepeatMasker')
     load_RM_repeats_parser.add_argument('-path', help='Add the relative path of the .out file. For example: '
-                                                      'resources/RM_resources/*_chromosome_I.fasta.out')
+                                                      'resources/RM_resources/caenorhabditis_elegans/*_chromosome_I.fasta.out')
+
+    load_RM_repeats_folder_parser = subparsers.add_parser('load_RM_repeats_folder', help='Load repeats from folder of RM results to database')
+    load_RM_repeats_folder_parser.add_argument('-path', help='Add the relative path of the folder of RM results. For example: '
+                                                      'resources/RM_resources/caenorhabditis_elegans')
 
     args = parser.parse_args()
 
@@ -151,6 +155,8 @@ def main():
         download_command(args)
     elif args.command == 'load_RM_repeats':
         load_RM_repeats(args)
+    elif args.command == 'load_RM_repeats_folder':
+        load_RM_repeats_folder(args)
 
 
 
@@ -310,10 +316,19 @@ def _validate_mode_graphing(args):
 
 def load_RM_repeats(args):
     try:
-        path = args.path
-        load_RM_repeats_from_file(path)
+        load_RM_repeats_from_file(args.path)
     except Exception as e:
         logger.error(e)
+        traceback.print_exc()
+
+
+def load_RM_repeats_folder(args):
+    try:
+        load_RM_repeats_from_folder(args.path)
+    except Exception as e:
+        logger.error(e)
+        traceback.print_exc()
+
 
 def graph_rm_file_command(args):
     try:

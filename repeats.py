@@ -5,42 +5,24 @@ from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from load import loader
 from utils.decorators import Timer, DBConnection
 from utils.logger import logger
+from utils.FileReader import FileReader
+from utils.folder import apply_function_to_files_in_folder
 
 import pandas as pd
 
-def _import_file_out(path):
-  data = []
-
-  with open(path, 'r') as file:
-      next(file)  # Skip 3 lines
-      next(file)
-      next(file)
-      for line in file:
-          # Split the line by whitespace(s)
-          columns = line.strip().split()
-          data.append(columns)
-
-  df = pd.DataFrame(data, columns=[
-    'sw_score', 'percentage_divergence', 'percentage_deletions', 'percentage_insertions', 'sequence', 'query_begin',
-    'query_end', 'query_left', 'strand', 'name', 'class_family', 'repeat_begin', 'repeat_end', 'repeat_left', 'ID', 'add'])
-
-  df['query_end'] = df['query_end'].astype('int')
-  df['query_begin'] = df['query_begin'].astype('int')
-  df["repeat_length"] = df["query_end"] - df["query_begin"] + 1
-  return df
 
 @DBConnection
 @Timer
 def load_RM_repeats_from_file(path):
     logger.info(f"Loading repeats results from RepeatMasker from {path}")
-    df = _import_file_out(path)
+    df = FileReader.read_RM_results_file(path)
     repeats_service = RepeatsService()
     rm_repeats_whole_chromosomes_service= RMRepeatsWholeChromosomesService()
     whole_chromosomes_service = WholeChromosomesService()
 
     for _, row in df.iterrows():
         repeat_id = repeats_service.insert(record=(row['name'], row['class_family'], 'RM'))
-        whole_chromosome_id = whole_chromosomes_service.extract_id_by_refseq_accession_number(row['sequence'])
+        whole_chromosome_id = whole_chromosomes_service.extract_id_by_refseq_accession_number(row['refseq_accession_number'])
         record = (
             repeat_id,
             whole_chromosome_id,
@@ -59,3 +41,7 @@ def load_RM_repeats_from_file(path):
         )
         rm_repeats_whole_chromosomes_service.insert(record=record)
 
+@DBConnection
+@Timer
+def load_RM_repeats_from_folder(path):
+    apply_function_to_files_in_folder(path, load_RM_repeats_from_file)
