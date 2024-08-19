@@ -103,7 +103,7 @@ The command without the optional parameters would be:
        py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans -name "Caenorhabditis elegans" 
 
 
-### Graph the RepeatMasker results frusing a refseq accession number and the database
+### Graph the RepeatMasker results using a refseq accession number and the database
 It is mandatory to specify the
 - ran - refseq accession number, to identify the sequence.
 - name - scientific name of the organism that will be used as the folder name to save the graph.
