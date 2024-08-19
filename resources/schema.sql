@@ -94,3 +94,17 @@ CREATE TABLE RM_repeats_whole_chromosomes (
     repeat_left INTEGER
 );
 
+CREATE TABLE gtf_genes (
+    id INTEGER PRIMARY KEY,
+    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id),
+    source VARCHAR,
+    feature VARCHAR,
+    start_position INTEGER,
+    end_position INTEGER,
+    score REAL,
+    strand CHAR(1),
+    frame CHAR(1),
+    gene_id_gtf VARCHAR,
+    gene VARCHAR,
+    gene_biotype VARCHAR
+);
