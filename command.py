@@ -115,8 +115,11 @@ def main():
     graph_recursive_genome_parser.add_argument('-n_max', help="(Optional) Graph only the top n largest values per sequence")
 
 
-    download_parser = subparsers.add_parser('download', help='Download command')
+    download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
+                                                             'specified in the sequences.yaml file.')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
+    download_parser.add_argument('--gff', choices=['true', 'false'], default='true',
+                                      help='Save the genes .gff file from the link specified in the sequence.yaml file')
 
     load_RM_repeats_parser = subparsers.add_parser('load_RM_repeats', help='Load repeats from results file generated '
                                             'by RepeatMasker')
@@ -213,10 +216,14 @@ def download_command(args):
     if args.name:
         organism = args.name
         loader.set_organism(organism)
-        remove_files(organism_folder=loader.get_organism_folder())
-        execute_download_command(organism_folder=loader.get_organism_folder(), download_url=loader.get_download_url())
-        clean_directory(organism_folder=loader.get_organism_folder())
-        uncompress_all_files(organism_folder=loader.get_organism_folder())
+        remove_files(folder=loader.get_organism_folder())
+        execute_download_command(folder=loader.get_organism_folder(), download_url=loader.get_download_url(),
+                                 suffix=".gz")
+        uncompress_all_files(folder=loader.get_organism_folder())
+        if bool(args.gff):
+            execute_download_command(folder=loader.get_organism_gtf_subfolder(),
+                                     download_url=loader.get_download_gff_url(), suffix=".gtf.gz")
+            uncompress_all_files(folder=loader.get_organism_gtf_subfolder())
     else:
         logger.error("Please provide either a -name (lowercase name or GCF).")
 
