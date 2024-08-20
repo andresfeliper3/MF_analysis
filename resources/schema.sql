@@ -101,6 +101,7 @@ CREATE TABLE gtf_genes (
     feature VARCHAR,
     start_position INTEGER,
     end_position INTEGER,
+    length INTEGER,
     score REAL,
     strand CHAR(1),
     frame CHAR(1),
