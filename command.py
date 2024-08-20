@@ -10,6 +10,7 @@ from graph import load_data_whole, graph_whole, load_data_regions, graph_regions
     graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
 from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder
+from genes import load_genes_from_file
 
 from src.Biocode.sequences.Sequence import Sequence
 
@@ -130,6 +131,10 @@ def main():
     load_RM_repeats_folder_parser.add_argument('-path', help='Add the relative path of the folder of RM results. For example: '
                                                       'resources/RM_resources/caenorhabditis_elegans')
 
+    load_genes_parser = subparsers.add_parser('load_genes', help='Load genes file to database using a file path')
+    load_genes_parser.add_argument('-path', help='Add the relative path of the genes file. For example: '
+                                                      'resources/dna_sequences/caenorhabditis_elegans/gtf/file.gtf')
+
     args = parser.parse_args()
 
     if args.command == 'analyze_genome':
@@ -160,6 +165,8 @@ def main():
         load_RM_repeats(args)
     elif args.command == 'load_RM_repeats_folder':
         load_RM_repeats_folder(args)
+    elif args.command == 'load_genes':
+        load_genes(args)
 
 
 
@@ -380,6 +387,13 @@ def graph_recursive_command(args):
 def graph_recursive_genome_command(args):
     try:
         graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, name=args.name, n_max=args.n_max)
+    except Exception as e:
+        logger.error(e)
+        traceback.print_exc()
+
+def  load_genes(args):
+    try:
+        load_genes_from_file(path=args.path)
     except Exception as e:
         logger.error(e)
         traceback.print_exc()
