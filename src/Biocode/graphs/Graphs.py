@@ -425,15 +425,15 @@ class Graphs:
     ## Repeats graphs
     # merged with partitions
     @staticmethod
-    def _create_partitions(df, size: int, amount_partitions: int):
+    def _create_partitions(df, size: int, amount_partitions: int, start_col_name: str, length_col_name: str):
         partition_size = size // amount_partitions
         repeat_lengths = np.zeros(amount_partitions)
 
         for i, row in df.iterrows():
-            index = row["query_begin"] // partition_size
+            index = row[start_col_name] // partition_size
             if index >= amount_partitions: #the residue is added to the last partition
                 index -= 1
-            repeat_lengths[index] += row["repeat_length"]
+            repeat_lengths[index] += row[length_col_name]
         return repeat_lengths
 
     @staticmethod
@@ -468,7 +468,7 @@ class Graphs:
 
         plt.figure(figsize=(40, 6))
 
-        repeat_lengths = Graphs._create_partitions(df, size, partitions)
+        repeat_lengths = Graphs._create_partitions(df, size, partitions, "query_begin", "repeat_length")
 
         # Convert repeat_lengths to a numpy array for plotting
         repeat_lengths = np.array(repeat_lengths)
@@ -762,4 +762,37 @@ class Graphs:
                 route = f"{name}/repeats/recursive/repeat_length_{repeat_length}"
                 Graphs._savefig(title, route)
             plt.show()
+
+    @staticmethod
+    def graph_distribution_of_genes_merged(df, name: str, size: int, partitions: int,regions: int, plot_type: str,
+                                           chromosome_name: str, save: bool):
+        plt.figure(figsize=(40, 6))
+        lengths = Graphs._create_partitions(df, size, partitions, start_col_name="start_position",
+                                            length_col_name="length")
+
+        # Convert lengths to a numpy array for plotting
+        lengths = np.array(lengths)
+
+        if plot_type == "line":
+            plt.plot(lengths, color='gray')
+        elif plot_type == "bar":
+            for i, repeat_sum in enumerate(lengths):
+                plt.bar(i, repeat_sum, color='gray')
+
+        title = f"Distribution of Genes Across Sequence {chromosome_name} - {name}"
+        plt.ylabel("Length of Gene (bp)")
+        plt.xlabel("Genes")
+        plt.title(title)
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+        # Add vertical dotted lines at 1/3 and 2/3 of X axis
+        x_ticks = np.arange(0, len(lengths), 1)
+        for x in range(1, regions):
+            plt.axvline(x=x * max(x_ticks) / regions, color='r', linestyle='--', linewidth=2)
+
+        plt.tight_layout()
+        if save:
+            route = f"{name}/genes/gtf"
+            Graphs._savefig(title, route)
+        plt.show()
 
