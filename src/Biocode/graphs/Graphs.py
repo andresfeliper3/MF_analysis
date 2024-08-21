@@ -519,7 +519,7 @@ class Graphs:
     def _graph_frequency_of_repeats_grouped(data, col=None, filtering=False, filter_string=None,
                                             filter_column=None, n_max=10, save: bool=True, name: str=None,
                                             filename: str=None):
-        grouped_data_sorted = Graphs._group_columns(data, col, filtering, filter_string, filter_column)
+        grouped_data_sorted = Graphs._group_columns(data, col, "repeat_length", filtering, filter_string, filter_column)
         grouped_data_sorted = grouped_data_sorted.head(n_max)
 
         title = f"Frequency of Repeats {col} Across Sequence {filename} by {col} - {name}"
@@ -536,27 +536,27 @@ class Graphs:
         plt.show()
 
     @staticmethod
-    def _group_columns(data, col, filtering=False, filter_string=None, filter_column=None):
+    def _group_columns(data, col, sum_col, filtering=False, filter_string=None, filter_column=None):
         if filtering:
             # Filter out rows where the column contains the specified string
             data = Graphs._filter(data, filter_string, filter_column)
         # Group repeats by column and calculate their total length
-        grouped_data = data.groupby(col)["repeat_length"].sum().reset_index()
-        grouped_data_sorted = grouped_data.sort_values(by="repeat_length", ascending=False)
+        grouped_data = data.groupby(col)[sum_col].sum().reset_index()
+        grouped_data_sorted = grouped_data.sort_values(by=sum_col, ascending=False)
         return grouped_data_sorted
 
 
     @staticmethod
     def graph_distribution_of_repeats_from_file(df: pd.DataFrame, col, legend, plot_type, limit, regions, save, name,
                                                 filename):
-        grouped_data_sorted = Graphs._group_columns(df, col)
+        grouped_data_sorted = Graphs._group_columns(df, col, "repeat_length")
         Graphs._graph_distribution_of_repeats(df, grouped_data_sorted, col, legend, plot_type, limit, regions,
                                               save, name, filename)
 
     @staticmethod
     def graph_distribution_of_repeats_from_database(data, col, legend, plot_type, limit, regions, save, name,
                                                 filename):
-        grouped_data_sorted = Graphs._group_columns(data, col)
+        grouped_data_sorted = Graphs._group_columns(data, col, "repeat_length")
         Graphs._graph_distribution_of_repeats(data, grouped_data_sorted, col, legend, plot_type, limit, regions,
                                               save, name, filename)
 
@@ -629,7 +629,7 @@ class Graphs:
     @staticmethod
     def graph_distribution_of_repeats_subplots_from_file(df: pd.DataFrame, col="class_family", legend=True, limit=20, regions=3,
                                                shared_y_axis=False, save=True, name=None, filename=None):
-        grouped_data_sorted = Graphs._group_columns(df, col)
+        grouped_data_sorted = Graphs._group_columns(df, col, "repeat_length")
         Graphs._graph_distribution_of_repeats_subplots(df, grouped_data_sorted, col, legend, limit, regions,
                                                        shared_y_axis, save, name, filename)
 
@@ -637,7 +637,7 @@ class Graphs:
     def graph_distribution_of_repeats_subplots_from_database(data, col="class_family", legend=True, limit=20, regions=3,
                                                              shared_y_axis=False, save=None, name=None,
                                                             filename=None):
-        grouped_data_sorted = Graphs._group_columns(data, col)
+        grouped_data_sorted = Graphs._group_columns(data, col, "repeat_length")
         Graphs._graph_distribution_of_repeats_subplots(data, grouped_data_sorted, col, legend, limit, regions,
                                                        shared_y_axis, save, name, filename)
 
@@ -766,6 +766,8 @@ class Graphs:
     @staticmethod
     def graph_distribution_of_genes_merged(df, name: str, size: int, partitions: int,regions: int, plot_type: str,
                                            chromosome_name: str, save: bool):
+        df = df[df['feature'] == 'gene']
+        df = df.reset_index(drop=True)
         plt.figure(figsize=(40, 6))
         lengths = Graphs._create_partitions(df, size, partitions, start_col_name="start_position",
                                             length_col_name="length")
@@ -792,7 +794,59 @@ class Graphs:
 
         plt.tight_layout()
         if save:
-            route = f"{name}/genes/gtf"
+            route = f"{name}/genes/gtf_merged"
             Graphs._savefig(title, route)
         plt.show()
 
+
+    @staticmethod
+    def graph_distribution_of_genes(df, name: str, legend: bool, plot_type: str, limit: int, regions: int,
+                                    chromosome_name: str, save: bool):
+
+        grouped_data_sorted = Graphs._group_columns(df, "feature", "length")
+
+        unique_type = grouped_data_sorted.head(limit)["feature"].tolist()
+
+        num_colors = len(unique_type)
+        palette = sns.color_palette("hls", num_colors)
+
+        color_dict = dict(zip(unique_type, palette))
+
+        plt.figure(figsize=(30, 6))
+        max_value = [0, ""]  # Variable to store the maximum value graphed
+
+        if plot_type == "line":
+            for label in unique_type:
+                repeat_lengths = np.zeros(len(df))
+                for i, row in df.iterrows():
+                    if row["feature"] == label:
+                        repeat_lengths[i] = row["length"]
+                        max_value = [max(max_value[0], row["length"]), row['feature']]  # Update the maximum value
+                plt.plot(repeat_lengths, color=color_dict.get(label), label=label)
+
+        elif plot_type == "bar":
+            for i, row in df.iterrows():
+                if row["feature"] in unique_type:
+                    label = row["feature"]
+                    plt.bar(i, row["length"], color=color_dict.get(label))
+                    max_value = [max(max_value[0], row["length"]), row['feature']]  # Update the maximum value
+
+        title = f"Distribution of Genes Across Sequence {chromosome_name} - {name}"
+        plt.ylabel("Length of Gene (bp)")
+        plt.xlabel("Genes")
+        plt.title(title)
+        plt.ylim(0, max_value[0] * 1.1)  # Set the y-axis limit to 110% of the maximum value graphed
+
+        x_ticks = np.arange(0, len(df), 1)
+        for x in range(1, regions):
+            plt.axvline(x=x * max(x_ticks) / regions, color='r', linestyle='--', linewidth=2)
+
+        # Create legend using unique class/family names
+        if legend:
+            plt.legend(ncol=2, loc='upper left', bbox_to_anchor=(1, 1))
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.tight_layout()
+        if save:
+            route = f"{name}/genes/gtf"
+            Graphs._savefig(title, route)
+        plt.show()

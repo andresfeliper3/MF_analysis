@@ -248,8 +248,10 @@ def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str
     file_df = FileReader.read_gtf_file(path)
     chromosomes_df_list = FileReader.divide_genome_df_rows_by_chromosome(file_df)
 
+
     for df in chromosomes_df_list:
         refseq_accession_number = df['refseq_accession_number'][0]
+        logger.info(f"Graphing for the sequence {refseq_accession_number}")
         try:
             chromosome_name, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
                             refseq_accession_number)
@@ -260,5 +262,7 @@ def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str
 
         Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
                                                 bool(save))
+        Graphs.graph_distribution_of_genes(df, name, legend=True, plot_type=plot_type, limit=10, regions=regions,
+                                           chromosome_name=chromosome_name, save=bool(save))
 
 

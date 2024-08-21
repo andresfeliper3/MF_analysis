@@ -14,6 +14,10 @@ from utils.FileReader import FileReader
 def load_genes_from_file(path):
     logger.info(f"Loading genes data from {path}")
     file_df = FileReader.read_gtf_file(path)
+
+    file_df = file_df[file_df['feature'] == 'gene']
+    file_df = file_df.reset_index(drop=True)
+    
     df_list = FileReader.divide_genome_df_rows_by_chromosome(file_df)
     whole_chromosomes_service = WholeChromosomesService()
     gtf_genes_service = GtfGenesService()
