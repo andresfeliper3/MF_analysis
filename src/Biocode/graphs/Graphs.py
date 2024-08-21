@@ -439,28 +439,28 @@ class Graphs:
     @staticmethod
     def graph_distribution_of_repeats_merged_from_database(data: pd.DataFrame, size: int, partitions: int = 300,
                                                        filter_string: str = None, filter_column: str = None,
-                                                       legend: bool = True, regions: int = 3, save: bool=True,
+                                                       regions: int = 3, save: bool=True,
                                                        name: str = None, filename: str = None,
                                                        plot_type: str = "line"):
         Graphs._graph_distribution_of_repeats_merged(data, size, partitions, filter_string,
-                                                     filter_column, legend, regions, plot_type, save, name,
+                                                     filter_column, regions, plot_type, save, name,
                                                      filename)
 
     @staticmethod
     def graph_distribution_of_repeats_merged_from_file(df: pd.DataFrame, size: int, partitions: int = 300,
                                              filter_string: str = None,
-                                             filter_column: str = None, legend: bool = True, regions: int = 3,
+                                             filter_column: str = None, regions: int = 3,
                                              plot_type: str = "line", save: bool=True, name: str = None,
                                              filename: str = None):
         Graphs._graph_distribution_of_repeats_merged(df, size, partitions, filter_string,
-                                                     filter_column, legend, regions, plot_type, save, name,
+                                                     filter_column, regions, plot_type, save, name,
                                                      filename)
 
 
     @staticmethod
     def _graph_distribution_of_repeats_merged(df, size: int, partitions: int = 300,
                                               filter_string: str = None,
-                                              filter_column: str = None, legend: bool = True, regions: int = 3,
+                                              filter_column: str = None, regions: int = 3,
                                               plot_type: str = "line", save: bool=True, name: str=None,
                                               filename: str=None):
         if filter_string:
@@ -589,7 +589,7 @@ class Graphs:
                     if row[col] == label:
                         repeat_lengths[i] = row["repeat_length"]
                         max_value = [max(max_value[0], row["repeat_length"]),
-                                     row['name'] + " - " + row['class_family']]  # Update the maximum value
+                                     row['repeat'] + " - " + row['class_family']]  # Update the maximum value
                         plotted = True
                 plt.plot(repeat_lengths, color=color_dict.get(label), label=label)
 
@@ -599,7 +599,7 @@ class Graphs:
                     label = row[col]
                     plt.bar(i, row["repeat_length"], color=color_dict.get(label))
                     max_value = [max(max_value[0], row["repeat_length"]),
-                                 row['name'] + " - " + row['class_family']]  # Update the maximum value
+                                 row['repeat'] + " - " + row['class_family']]  # Update the maximum value
                     plotted = True
 
         title = f"Distribution of Repeats Across Sequence {filename} by {col} - {name}"

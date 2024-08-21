@@ -128,7 +128,7 @@ def graph_rm_results_from_file(path: str, partitions:int, regions: int,
     plot_type = plot_type or "line"
 
     Graphs.graph_distribution_of_repeats_merged_from_file(df=df, size=size, partitions=partitions,
-                                             legend=True, regions=regions, plot_type=plot_type, save=save,
+                                             regions=regions, plot_type=plot_type, save=save,
                                              name=name, filename=filename)
 
 
@@ -170,24 +170,24 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
     data = rm_repeats_whole_chromosomes_service.extract_info_by_chromosome(refseq_accession_number)
 
     Graphs.graph_distribution_of_repeats_merged_from_database(data=data, size=size, partitions=partitions,
-                                             legend=True, regions=regions, plot_type=plot_type, save=save,
+                                            regions=regions, plot_type=plot_type, save=save,
                                              name=name, filename=filename)
 
     Graphs.graph_frequency_of_repeats_grouped_from_database(data, col="class_family", filtering=False, n_max=10, save=save,
                                                         name=name, filename=filename)
-    Graphs.graph_frequency_of_repeats_grouped_from_database(data, col="name", filtering=False, n_max=10, save=save,
+    Graphs.graph_frequency_of_repeats_grouped_from_database(data, col="repeat", filtering=False, n_max=10, save=save,
                                                             name=name, filename=filename)
 
     Graphs.graph_distribution_of_repeats_from_database(data, col="class_family", legend=True, plot_type=plot_type,
                                                    limit=20, regions=regions, save=save, name=name, filename=filename)
-    Graphs.graph_distribution_of_repeats_from_database(data, col="name", legend=True, plot_type=plot_type,
+    Graphs.graph_distribution_of_repeats_from_database(data, col="repeat", legend=True, plot_type=plot_type,
                                                        limit=20, regions=regions, save=save, name=name,
                                                        filename=filename)
 
     Graphs.graph_distribution_of_repeats_subplots_from_database(data, col="class_family", legend=True,
                                                                 limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                                                                 name=name,  filename=filename)
-    Graphs.graph_distribution_of_repeats_subplots_from_database(data, col="name", legend=True,
+    Graphs.graph_distribution_of_repeats_subplots_from_database(data, col="repeat", legend=True,
                                                            limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                                                            name=name, filename=filename)
 
