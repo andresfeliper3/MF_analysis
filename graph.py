@@ -264,6 +264,19 @@ def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str
         Graphs.graph_distribution_of_genes(df, name, legend=True, plot_type=plot_type, limit=20, regions=regions,
                                            chromosome_name=chromosome_name, save=bool(save))
 
+
+def _graph_gtf_single_chromosome_from_database(refseq_accession_number: str, name: str, partitions: int, regions: int,
+                                               plot_type: str, save: bool):
+    gtf_genes_service = GtfGenesService()
+    whole_chromosomes_service = WholeChromosomesService()
+    logger.info(f"Graphing for the sequence {refseq_accession_number}")
+    chromosome_name, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
+                                refseq_accession_number)
+    df = gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
+
+    Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
+                                              bool(save))
+
 @DBConnection
 @Timer
 def graph_gtf_from_database(GCF: str, refseq_accession_number: str, partitions: int, regions: int, plot_type: str,
@@ -275,23 +288,24 @@ def graph_gtf_from_database(GCF: str, refseq_accession_number: str, partitions: 
     regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
     plot_type = plot_type or "line"
 
-    gtf_genes_service = GtfGenesService()
-
     if GCF:
         if refseq_accession_number:
-            df = gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
+           _graph_gtf_single_chromosome_from_database(refseq_accession_number, name, partitions, regions, plot_type,
+                                                      save)
         else:
-            chromosomes_df_list = gtf_genes_service.extract_genes_by_genome(GCF)
+            organisms_service = OrganismsService()
+            chromosomes_ran_list = organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
+            logger.info(f"Graphing for the genome: {GCF}")
+            for refseq_accession_number in chromosomes_ran_list:
+                _graph_gtf_single_chromosome_from_database(refseq_accession_number, name, partitions, regions,
+                                                           plot_type, save)
+    elif refseq_accession_number:
+        _graph_gtf_single_chromosome_from_database(refseq_accession_number, name, partitions, regions, plot_type,
+                                                       save)
     else:
-        if refseq_accession_number:
-            df = gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
-        else:
-            logger.error("Specify whether a GCF (organism/genome) or a refseq accession number (sequence/chromosome)")
-            return
+        logger.error("Specify whether a GCF (organism/genome) or a refseq accession number (sequence/chromosome)")
+        return
 
-    if df:
-        pass
-    if chromosomes_df_list:
-        pass
+
 
 

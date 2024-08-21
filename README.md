@@ -178,6 +178,32 @@ Short version:
 
     py .\command.py graph_gtf_file -path resources/dna_sequences/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -name "Caenorhabditis elegans" 
 
+#### Graph from database
+It is mandatory to specify the
+- gcf - GCF of the organism/genome.
+- ran - refseq accession number of the sequence/chromosome.
+- name - scientific name of the organism that will be used as the folder name to save the graph.
+
+**If GCF is entered, it is NOT necessary to enter a RAN. If RAN is entered, it is NOT necessary to enter
+a GCF. If RAN is entered, any GCF added will be ignored.**
+
+Other possible parameters are:
+- partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
+    300 by default.
+- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+- plot_type - style of plot (line or bar), line is by default.
+- save - save the graph in the local directory specified /out (true or false).
+
+Example using the command:
+
+    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+
+Short version:
+
+    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -name "Caenorhabditis elegans"  
+    py .\command.py graph_gtf_database -ran NC_003279.8  -name "Caenorhabditis elegans"
+    py .\command.py graph_gtf_database -ran NC_003279.8  -name "Caenorhabditis elegans" -gcf anything_here
+
 
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
