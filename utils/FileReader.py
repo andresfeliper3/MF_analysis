@@ -72,9 +72,6 @@ class FileReader:
         # Calculate 'length' column
         df["length"] = df["end_position"] - df["start_position"] + 1
 
-        df = df[df['feature'] == 'gene']
-        df = df.reset_index(drop=True)
-
         return df
 
     @staticmethod

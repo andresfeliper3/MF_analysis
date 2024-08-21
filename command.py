@@ -7,7 +7,7 @@ from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_M
     find_kmers_recursively_in_genome, find_kmers_recursively_in_sequence
 from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, \
     graph_rm_results_from_database, graph_recursive_from_database, graph_recursive_genome_from_database, \
-    graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database
+    graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database, graph_gtf_from_file
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
 from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder
 from genes import load_genes_from_file
@@ -116,6 +116,19 @@ def main():
     graph_recursive_genome_parser.add_argument('-n_max', help="(Optional) Graph only the top n largest values per sequence")
 
 
+    graph_gtf_file_parser = subparsers.add_parser('graph_gtf_file', help='Graph genes from .gtf file')
+    graph_gtf_file_parser.add_argument('-path', help="Enter the path of a genes .gtf file")
+    graph_gtf_file_parser.add_argument('-partitions',
+                                      help="Enter the number of partitions to use to divide the sequence and "
+                                           "merge the repeats")
+    graph_gtf_file_parser.add_argument('-regions',
+                                      help="Enter the amount of regions to separate the graph using vertical lines")
+    graph_gtf_file_parser.add_argument('-plot_type', help="Plot type: line or bar")
+    graph_gtf_file_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                      help='Save graphs locally in /out directory')
+    graph_gtf_file_parser.add_argument('-name',
+                                      help="Enter the scientific name of the organism to use it as a folder name")
+
     download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
                                                              'specified in the sequences.yaml file.')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
@@ -159,6 +172,8 @@ def main():
         graph_recursive_command(args)
     elif args.command == 'graph_recursive_genome':
         graph_recursive_genome_command(args)
+    elif args.command == 'graph_gtf_file':
+        graph_gtf_file(args)
     elif args.command == 'download':
         download_command(args)
     elif args.command == 'load_RM_repeats':
@@ -387,6 +402,14 @@ def graph_recursive_command(args):
 def graph_recursive_genome_command(args):
     try:
         graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, name=args.name, n_max=args.n_max)
+    except Exception as e:
+        logger.error(e)
+        traceback.print_exc()
+
+def graph_gtf_file(args):
+    try:
+        graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
+                            save=args.save, name=args.name)
     except Exception as e:
         logger.error(e)
         traceback.print_exc()

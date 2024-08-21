@@ -232,3 +232,37 @@ def graph_recursive_genome_from_database(GCF: str, save: bool, name: str, n_max:
 
     for refseq_accession_number in refseq_accession_numbers:
         graph_recursive_from_database(refseq_accession_number, save, name, n_max)
+
+@DBConnection
+@Timer
+def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str, save: bool, name: str):
+    DEFAULT_REGIONS = 3
+    DEFAULT_PARTITIONS = 300
+
+    partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
+    regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+    plot_type = plot_type or "line"
+
+    whole_chromosomes_service = WholeChromosomesService()
+
+    file_df = FileReader.read_gtf_file(path)
+    chromosomes_df_list = FileReader.divide_genome_df_rows_by_chromosome(file_df)
+
+
+    for df in chromosomes_df_list:
+        refseq_accession_number = df['refseq_accession_number'][0]
+        logger.info(f"Graphing for the sequence {refseq_accession_number}")
+        try:
+            chromosome_name, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
+                            refseq_accession_number)
+        except Exception as e:
+            logger.error(
+                f"Failed to extract whole chromosome ID for refseq_accession_number {refseq_accession_number}: {e}")
+            break
+
+        Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
+                                                bool(save))
+        Graphs.graph_distribution_of_genes(df, name, legend=True, plot_type=plot_type, limit=10, regions=regions,
+                                           chromosome_name=chromosome_name, save=bool(save))
+
+

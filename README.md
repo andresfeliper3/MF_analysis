@@ -157,6 +157,27 @@ The genome is identified by the GCF (-gcf).
     py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis elegans" 
     py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis elegans" -n_max 10
 
+### Graph genes data
+#### Graph from .gtf file
+It is mandatory to specify the
+- path - relative path of the .gtf file.
+- name - scientific name of the organism that will be used as the folder name to save the graph.
+
+Other possible parameters are:
+- partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
+    300 by default.
+- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+- plot_type - style of plot (line or bar), line is by default.
+- save - save the graph in the local directory specified /out (true or false).
+
+Example using the command:
+
+    py .\command.py graph_gtf_file -path resources/dna_sequences/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+
+Short version:
+
+    py .\command.py graph_gtf_file -path resources/dna_sequences/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -name "Caenorhabditis elegans" 
+
 
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
@@ -173,3 +194,11 @@ Example using the command:
 Example using the command:
 
     py .\command.py load_RM_repeats_folder -path resources/RM_resources/caenorhabditis_elegans
+
+
+## Genes using a .gtf file
+### Save the .gtf file data to database 
+Example using the command:
+
+    py .\command.py load_genes -path resources/dna_sequences/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf
+
