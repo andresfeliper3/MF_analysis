@@ -16,3 +16,6 @@ class AbstractService:
 
     def extract_by_field(self, column: str, value):
         return DBConnectionManager.extract_by_target(table_name=self.table_name, column=column, target=value)
+
+    def extract_with_custom_query(self, query):
+        return DBConnectionManager.extract_with_custom_query(query)

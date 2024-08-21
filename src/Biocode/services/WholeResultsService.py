@@ -15,4 +15,4 @@ class WholeResultsService(AbstractService):
                 f"cover_percentage FROM chr_whole_results  JOIN chromosomes ON " \
                 f"chr_whole_results.chromosome_id = chromosomes.id JOIN organisms o on chromosomes.organism_id = o.id " \
                 f"WHERE o.GCF = '{GCF}';"
-        return DBConnectionManager.extract_with_custom_query(query)
+        return self.extract_with_custom_query(query)

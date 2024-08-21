@@ -19,7 +19,7 @@ class RMRepeatsWholeChromosomesService(AbstractService):
                 f"repeats.class_family, repeat_begin, repeat_end, repeat_left FROM repeats " \
                 f"JOIN RM_repeats_whole_chromosomes Rrwc on repeats.id = Rrwc.repeats_id JOIN whole_chromosomes wc " \
                 f"on Rrwc.whole_chromosomes_id = wc.id WHERE refseq_accession_number = '{refseq_accession_number}';"
-        return DBConnectionManager.extract_with_custom_query(query)
+        return self.extract_with_custom_query(query)
 
     def extract_info_by_organism(self, GCF: str):
         query = f"SELECT sw_score, percentage_divergence, percentage_deletions, percentage_insertions, " \
@@ -28,4 +28,4 @@ class RMRepeatsWholeChromosomesService(AbstractService):
                 f"JOIN RM_repeats_whole_chromosomes Rrwc on repeats.id = Rrwc.repeats_id JOIN whole_chromosomes wc " \
                 f"on Rrwc.whole_chromosomes_id = wc.id JOIN organisms o on wc.organism_id = o.id " \
                 f"WHERE GCF='GCF_000002985.6';"
-        return DBConnectionManager.extract_with_custom_query(query)
+        return self.extract_with_custom_query(query)

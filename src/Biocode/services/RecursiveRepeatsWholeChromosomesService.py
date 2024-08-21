@@ -16,6 +16,6 @@ class RecursiveRepeatsWholeChromosomesService(AbstractService):
                 f"JOIN recursive_repeats_whole_chromosomes rwc on repeats.id = rwc.repeats_id " \
                 f"LEFT JOIN whole_chromosomes wc on rwc.whole_chromosomes_id = wc.id " \
                 f"WHERE refseq_accession_number='{refseq_accession_number}';"
-        return DBConnectionManager.extract_with_custom_query(query)
+        return self.extract_with_custom_query(query)
 
 

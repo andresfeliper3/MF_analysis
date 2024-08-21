@@ -13,9 +13,9 @@ class OrganismsService(AbstractService):
         self.pk_column = "id"
 
     def extract_by_GCF(self, GCF: str):
-        return DBConnectionManager.extract_by_target(table_name=self.table_name, column="GCF", target=GCF)
+        return self.extract_by_field(column="GCF", value=GCF)
 
     def extract_chromosomes_refseq_accession_numbers_by_GCF(self, GCF: str) -> List:
         query = f"SELECT refseq_accession_number FROM whole_chromosomes JOIN organisms o on whole_chromosomes.organism_id = o.id " \
                 f"WHERE GCF='{GCF}';"
-        return DBConnectionManager.extract_with_custom_query(query)['refseq_accession_number'].to_numpy()
+        return self.extract_with_custom_query(query)['refseq_accession_number'].to_numpy()
