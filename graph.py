@@ -4,6 +4,7 @@ from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
+from src.Biocode.services.GtfGenesService import GtfGenesService
 from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
@@ -17,12 +18,11 @@ from utils.FileReader import FileReader
 
 
 
+@DBConnection
 @Timer
 def load_data_whole(gcf) -> dict:
-    DBConnectionManager.start()
     whole_results_service = WholeResultsService()
     df = whole_results_service.extract_results(GCF=gcf)
-    DBConnectionManager.close()
     return df.to_dict(orient='records')
 
 
@@ -63,12 +63,11 @@ def graph_whole(dataframe, organism_name, data):
     genome_manager.graph_coverage()
 
 
+@DBConnection
 @Timer
 def load_data_regions(gcf) -> dict:
-    DBConnectionManager.start()
     region_results_service = RegionResultsService()
     df = region_results_service.extract_results(GCF=gcf)
-    DBConnectionManager.close()
     return df.to_dict(orient='records')
 
 
@@ -262,7 +261,37 @@ def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str
 
         Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
                                                 bool(save))
-        Graphs.graph_distribution_of_genes(df, name, legend=True, plot_type=plot_type, limit=10, regions=regions,
+        Graphs.graph_distribution_of_genes(df, name, legend=True, plot_type=plot_type, limit=20, regions=regions,
                                            chromosome_name=chromosome_name, save=bool(save))
+
+@DBConnection
+@Timer
+def graph_gtf_from_database(GCF: str, refseq_accession_number: str, partitions: int, regions: int, plot_type: str,
+                            save: bool, name: str):
+    DEFAULT_REGIONS = 3
+    DEFAULT_PARTITIONS = 300
+
+    partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
+    regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+    plot_type = plot_type or "line"
+
+    gtf_genes_service = GtfGenesService()
+
+    if GCF:
+        if refseq_accession_number:
+            df = gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
+        else:
+            chromosomes_df_list = gtf_genes_service.extract_genes_by_genome(GCF)
+    else:
+        if refseq_accession_number:
+            df = gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
+        else:
+            logger.error("Specify whether a GCF (organism/genome) or a refseq accession number (sequence/chromosome)")
+            return
+
+    if df:
+        pass
+    if chromosomes_df_list:
+        pass
 
 
