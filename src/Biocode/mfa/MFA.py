@@ -1,10 +1,17 @@
 import numpy as np
+import pickle
 from src.Biocode.sequences.Sequence import Sequence
+
+from src.Biocode.services.MiGridsService import MiGridsService
+
+from utils.decorators import Timer, DBConnection
 
 from src.Biocode.mfa.CGR import CGR
 from utils.logger import logger
 
 from src.Biocode.graphs.Graphs import Graphs
+
+import gc
 
 class MFA:
     def __init__(self, sequence: Sequence):
@@ -37,15 +44,45 @@ class MFA:
             self.cgrs_mi_grids.append(cgr_mi_grid)
             logger.info(f"Ready mi_grid with size {self.grid_sizes[index]}, and epsilon {epsilon}")
 
+    @DBConnection
+    @Timer
     def _generate_cgr_mi_grids_quickly(self):
         self.cgr_gen = CGR(self.sequence)
         self.cgrs_mi_grids = [0] * len(self.grid_sizes)
 
         cgr_largest_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
+        # This must be refactored
+
+        cgr_largest_mi_grid_np = np.array(cgr_largest_mi_grid, dtype=np.float64)
+
+        del cgr_largest_mi_grid
+
+        # Option 1: Using pickle for serialization
+        binary_data = pickle.dumps(cgr_largest_mi_grid_np)
+        # Option 2: Using NumPy's tobytes() method
+        binary_data_numpy = cgr_largest_mi_grid_np.tobytes()
+        del cgr_largest_mi_grid_np
+
+        mi_grids_service = MiGridsService()
+        mi_grids_service.insert(record=(binary_data_numpy, 1, self.epsilons[0]))
+        del binary_data_numpy
+        ##
+        gc.collect()
+        retrieved_data = mi_grids_service.extract_mi_grid_by_chromosome_id(1)
+        # Deserialize the data - use the same method used for storing
+        # If using pickle:
+        #cgr_largest_mi_grid = pickle.loads(retrieved_data)
+        # If using NumPy's tobytes():
+        cgr_largest_mi_grid = np.frombuffer(retrieved_data, dtype=np.float64)
+
+        # Reshape the matrix
+        cgr_largest_mi_grid = cgr_largest_mi_grid.reshape((self.grid_sizes[0], self.grid_sizes[0]))
+
+        # Log the matrix type
         self.cgrs_mi_grids[0] = cgr_largest_mi_grid
 
         logger.info(f"Ready largest_mi_grid with size {self.grid_sizes[0]} and epsilon {self.epsilons[0]}")
-        logger.info(cgr_largest_mi_grid)
+        #logger.info(cgr_largest_mi_grid)
 
         for i in range(1, len(self.grid_sizes)):
             self.cgrs_mi_grids[i] = self.__resize_matrix(original_matrix=self.cgrs_mi_grids[i - 1],
@@ -85,7 +122,7 @@ class MFA:
                 denominator = (q - 1)
                 self.fq[-1]['fq'][index] = numerator / denominator
 
-            logger.info("fq - ", self.fq)
+            #logger.info("fq - ", self.fq)
             linear_coefficients = np.polyfit(np.log(self.epsilons), self.fq[-1]['fq'], 1)
 
             # CHECK THIS OUT
