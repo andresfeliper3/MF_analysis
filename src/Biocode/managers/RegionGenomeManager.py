@@ -143,7 +143,7 @@ class RegionGenomeManager(GenomeManagerInterface):
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         
         """
-        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
         for index, result in enumerate(self.flattened_mfa_results):
             region_number = (index % self.regions_number) + 1
             chromosome_id = self.region_chromosomes_service.insert(record=(result['sequence_name'], organism_id,

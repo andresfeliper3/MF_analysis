@@ -189,7 +189,7 @@ class RegionSequenceManager(SequenceManagerInterface):
         """
         #try:
 
-        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
         whole_chromosome_id = int(self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
             self.sequence.get_refseq_accession_number()))
 
