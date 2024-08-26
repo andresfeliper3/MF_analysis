@@ -169,7 +169,7 @@ class SequenceManager(SequenceManagerInterface):
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         """
-        self.organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
 
         self.chromosome_id = self._insert_mfa_results_to_whole_chromosomes_table()
         self.whole_results_service.insert(record=(self.chromosome_id, list_to_str(self.mfa_results['Dq_values'].tolist()),
@@ -187,7 +187,7 @@ class SequenceManager(SequenceManagerInterface):
     def save_repeats_found_recursively_to_db(self, kmers_list: List[MiGridCoordinatesValuesAndNucleotides], GCF: str,
                                              method_to_find_it: str = "Recursively"):
 
-        self.organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
 
         self.chromosome_id = self._insert_mfa_results_to_whole_chromosomes_table()
 

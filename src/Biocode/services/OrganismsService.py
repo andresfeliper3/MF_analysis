@@ -13,7 +13,7 @@ class OrganismsService(AbstractService):
         self.pk_column = "id"
 
     def extract_by_GCF(self, GCF: str):
-        return self.extract_by_field(column="GCF", value=GCF)
+        return int(self.extract_by_field(column="GCF", value=GCF).loc[0, 'id'])
 
     def extract_chromosomes_refseq_accession_numbers_by_GCF(self, GCF: str) -> List:
         query = f"SELECT refseq_accession_number FROM whole_chromosomes JOIN organisms o on whole_chromosomes.organism_id = o.id " \

@@ -272,7 +272,7 @@ def _graph_gtf_single_chromosome_from_database(refseq_accession_number: str, nam
     logger.info(f"Graphing for the sequence {refseq_accession_number}")
     chromosome_name, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
                                 refseq_accession_number)
-    df = gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
+    df = gtf_genes_service. extract_genes_by_chromosome(refseq_accession_number)
 
     Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
                                               bool(save))

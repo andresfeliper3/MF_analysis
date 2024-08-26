@@ -94,7 +94,7 @@ class GenomeManager(GenomeManagerInterface):
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         """
-        organism_id = int(self.organisms_service.extract_by_GCF(GCF=GCF).loc[0, 'id'])
+        organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
 
         for index, result in enumerate(self.mfa_results):
             chromosome_id = self.whole_chromosomes_service.insert(record=(result['sequence_name'],
