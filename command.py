@@ -349,6 +349,7 @@ def graph_command(args):
 def _validate_mode_graphing(args):
     if args.mode:
         if args.mode == 'whole':
+            logger.warn("gcf")
             df = load_data_whole(gcf=loader.get_gcf())
             graph_whole(dataframe=df, organism_name=loader.get_organism_name(), data=loader.get_data())
         elif args.mode == 'regions':

@@ -322,7 +322,7 @@ class Graphs:
         xticks_step = len(values) // divisions if len(values) // divisions > 0 else 1
         plt.xticks(range(0, len(values), xticks_step))
 
-        title = f"Coverage of the sequence {sequence_name} - {name}"
+        title = f"Coverage of the sequence {sequence_name}"
         plt.title(title)
         plt.xlabel('Representative percentage of the sequence')
         plt.ylabel('Absolute Value')
@@ -351,7 +351,7 @@ class Graphs:
             current_position += abs(negative)
 
         # Set labels and title
-        title = f"Coverage of the sequence {sequence_name} - {name}"
+        title = f"Stacked coverage of the sequence {sequence_name}"
         ax.set_ylabel(title)
         ax.set_title('Order (bottom-up)')
 

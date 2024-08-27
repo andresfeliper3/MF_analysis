@@ -22,6 +22,8 @@ from utils.FileReader import FileReader
 @Timer
 def load_data_whole(gcf) -> dict:
     whole_results_service = WholeResultsService()
+    logger.warn("gcf")
+    logger.warn(gcf)
     df = whole_results_service.extract_results(GCF=gcf)
     return df.to_dict(orient='records')
 

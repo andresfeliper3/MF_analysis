@@ -46,7 +46,7 @@ class MFA:
 
     @DBConnection
     @Timer
-    def _generate_cgr_mi_grids_quickly(self):
+    def _generate_cgr_mi_grids_quickly_using_database(self):
         self.cgr_gen = CGR(self.sequence)
         self.cgrs_mi_grids = [0] * len(self.grid_sizes)
 
@@ -88,6 +88,22 @@ class MFA:
             self.cgrs_mi_grids[i] = self.__resize_matrix(original_matrix=self.cgrs_mi_grids[i - 1],
                                                          target_size=self.grid_sizes[i])
             logger.info(f"Ready mi_grid with size {self.grid_sizes[i]} and epsilon {self.epsilons[i]}")
+
+
+    def _generate_cgr_mi_grids_quickly(self):
+        self.cgr_gen = CGR(self.sequence)
+        self.cgrs_mi_grids = [0] * len(self.grid_sizes)
+        cgr_largest_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
+        self.cgrs_mi_grids[0] = cgr_largest_mi_grid
+
+        logger.info(f"Ready largest_mi_grid with size {self.grid_sizes[0]} and epsilon {self.epsilons[0]}")
+        # logger.info(cgr_largest_mi_grid)
+
+        for i in range(1, len(self.grid_sizes)):
+            self.cgrs_mi_grids[i] = self.__resize_matrix(original_matrix=self.cgrs_mi_grids[i - 1],
+                                                         target_size=self.grid_sizes[i])
+            logger.info(f"Ready mi_grid with size {self.grid_sizes[i]} and epsilon {self.epsilons[i]}")
+
 
     def __resize_matrix(self, original_matrix, target_size):
         result_matrix = [[0 for _ in range(target_size)] for _ in range(target_size)]

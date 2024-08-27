@@ -34,9 +34,22 @@ class Loader:
     def extract_refseq_accession_number(self, file_path) -> str:
         with open(file_path, 'r') as fna_file:
             for record in SeqIO.parse(fna_file, 'fasta'):
-                # Extract the sequence name (the part before the first space)
-                sequence_name = record.description.split()[0]
-                return sequence_name
+                # Split the description by space and check the first part
+                parts = record.description.split()
+                first_part = parts[0]
+
+                if first_part.startswith("gi|"):
+                    # If it starts with 'gi|', extract the third part (refseq accession number)
+                    refseq_accession_number = first_part.split('|')[3]
+                elif first_part.startswith("NC_") or first_part.startswith("XM_") or first_part.startswith("XP_"):
+                    # If it starts directly with the accession number (e.g., NC_), use it as is
+                    refseq_accession_number = first_part
+                else:
+                    # Handle any unexpected format if needed
+                    logger.error(f"Unexpected format in sequence description: {record.description}")
+                    continue
+
+                return refseq_accession_number
 
     def extract_file_name(self, file_path) -> str:
         return os.path.basename(file_path).split(".")[0]

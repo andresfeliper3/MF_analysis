@@ -226,5 +226,5 @@ Example using the command:
 ### Save the .gtf file data to database 
 Example using the command:
 
-    py .\command.py load_genes -path resources/dna_sequences/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf
+    py .\command.py load_genes -path resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf 
 
