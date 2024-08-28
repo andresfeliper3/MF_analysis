@@ -100,7 +100,7 @@ Other possible parameters are:
         
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans -name "Caenorhabditis elegans" 
+       py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -name "Caenorhabditis elegans" 
 
 
 ### Graph the RepeatMasker results using a refseq accession number and the database
@@ -172,11 +172,11 @@ Other possible parameters are:
 
 Example using the command:
 
-    py .\command.py graph_gtf_file -path resources/dna_sequences/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
 
 Short version:
 
-    py .\command.py graph_gtf_file -path resources/dna_sequences/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -name "Caenorhabditis elegans" 
+    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -name "Caenorhabditis elegans" 
 
 #### Graph from database
 It is mandatory to specify the

@@ -21,7 +21,7 @@ class FileReader:
 
         df = pd.DataFrame(data, columns=[
             'sw_score', 'percentage_divergence', 'percentage_deletions', 'percentage_insertions',
-            'refseq_accession_number', 'query_begin', 'query_end', 'query_left', 'strand', 'name',
+            'refseq_accession_number', 'query_begin', 'query_end', 'query_left', 'strand', 'repeat',
             'class_family', 'repeat_begin', 'repeat_end', 'repeat_left', 'ID', 'add'
         ])
 

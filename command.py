@@ -276,6 +276,7 @@ def analyze_genome_command(args):
     if args.name:
         organism = args.name
         loader.set_organism(organism)
+        logger.warn(organism)
         _validate_mode_analyzing_genome(args, save_to_db=save_to_db)
 
     else:
