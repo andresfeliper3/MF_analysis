@@ -175,6 +175,7 @@ class SequenceManager(SequenceManagerInterface):
         self.whole_results_service.insert(record=(self.chromosome_id, list_to_str(self.mfa_results['Dq_values'].tolist()),
                                              list_to_str(self.mfa_results['tau_q_values'].tolist()),
                                              list_to_str(self.mfa_results['DDq'])))
+        del self.mfa_results
         logger.info(f"************* Saved to DB {self.sequence_name} *************")
 
 

@@ -11,7 +11,7 @@ from src.Biocode.dataclasses.MiGridCoordinatesValuesAndNucleotides import MiGrid
 
 from utils.logger import logger
 from typing import List
-
+import gc
 
 
 class GenomeManagerInterface:
@@ -88,15 +88,16 @@ class GenomeManagerInterface:
         """Graph t(q) vs q"""
         pass
 
-    def calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool):
-        """Generate mfa generators, generate mfa values, the cover and cover
-        percentage and send them to the DB"""
-        for manager in self.managers:
-            logger.info(f"Starting chromosome: {manager.get_sequence_name()}")
-            manager.calculate_multifractal_analysis_values()
-            if save_to_db:
-                manager.save_to_db_during_execution(GCF=GCF)
-            del manager
+        def calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool):
+            """Generate mfa generators, generate mfa values, the cover and cover
+            percentage and send them to the DB"""
+            for manager in self.managers:
+                logger.info(f"Starting chromosome: {manager.get_sequence_name()}")
+                manager.calculate_multifractal_analysis_values()
+                if save_to_db:
+                    manager.save_to_db_during_execution(GCF=GCF)
+                del manager
+                gc.collect()
 
             """
             self.n_largest_mi_grid_values_strings = self._find_nucleotides_strings_recursively(

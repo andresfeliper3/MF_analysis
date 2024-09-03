@@ -65,7 +65,7 @@ def graph_whole(dataframe, organism_name, data):
 
 @DBConnection
 @Timer
-def load_data_regions(gcf) -> dict:
+def load_data_regions(gcf) -> list[dict]:
     region_results_service = RegionResultsService()
     df = region_results_service.extract_results(GCF=gcf)
     return df.to_dict(orient='records')
@@ -134,20 +134,20 @@ def graph_rm_results_from_file(path: str, partitions:int, regions: int,
 
     Graphs.graph_frequency_of_repeats_grouped_from_file(df=df, col="class_family", filtering=False, n_max=10, save=save,
                                                         name=name, filename=filename)
-    Graphs.graph_frequency_of_repeats_grouped_from_file(df=df, col="name", filtering=False, n_max=10, save=save, name=name,
+    Graphs.graph_frequency_of_repeats_grouped_from_file(df=df, col="repeat", filtering=False, n_max=10, save=save, name=name,
                                                         filename=filename)
 
     Graphs.graph_distribution_of_repeats_from_file(df=df, col="class_family", legend=True, plot_type=plot_type,
                                                    limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=name,
                                                    filename=filename)
-    Graphs.graph_distribution_of_repeats_from_file(df=df, col="name", legend=True, plot_type=plot_type,
+    Graphs.graph_distribution_of_repeats_from_file(df=df, col="repeat", legend=True, plot_type=plot_type,
                                                    limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=name,
                                                    filename=filename)
 
     Graphs.graph_distribution_of_repeats_subplots_from_file(df=df, col="class_family", legend=True,
                                                             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                                                             name=name, filename=filename)
-    Graphs.graph_distribution_of_repeats_subplots_from_file(df=df, col="name", legend=True,
+    Graphs.graph_distribution_of_repeats_subplots_from_file(df=df, col="repeat", legend=True,
                                                             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                                                             name=name, filename=filename)
 

@@ -10,6 +10,9 @@ biopython = "==1.80"
 matplotlib = "==3.7.1"
 pyyaml = "==6.0"
 seaborn = "==0.12.2"
+xlsxwriter = "*"
+openpyxl = "*"
+
 [dev-packages]
 
 [requires]

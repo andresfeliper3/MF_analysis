@@ -11,8 +11,8 @@ class WholeResultsService(AbstractService):
 
     def extract_results(self, GCF):
         query = f"SELECT chr_whole_results.id as results_id, o.name as organism_name, whole_chromosomes.id as whole_chromosome_id \
-                        , chromosomes.name as sequence_name, DDq, o.GCF AS GCF, Dq_values, tau_q_values, cover, " \
-                f"cover_percentage FROM chr_whole_results  JOIN chromosomes ON " \
-                f"chr_whole_results.chromosome_id = chromosomes.id JOIN organisms o on chromosomes.organism_id = o.id " \
+                        , whole_chromosomes.name as sequence_name, DDq, o.GCF AS GCF, Dq_values, tau_q_values, cover, " \
+                f"cover_percentage FROM chr_whole_results  JOIN whole_chromosomes ON " \
+                f"chr_whole_results.whole_chromosome_id = whole_chromosomes.id JOIN organisms o on whole_chromosomes.organism_id = o.id " \
                 f"WHERE o.GCF = '{GCF}';"
         return self.extract_with_custom_query(query)

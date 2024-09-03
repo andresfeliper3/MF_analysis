@@ -242,9 +242,7 @@ def find_kmers_sequence_command(args):
 
             load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
                           amount_chromosomes=loader.get_amount_chromosomes())
-            find_kmers_recursively_in_sequence(organism_name=loader.get_organism_name(),
-                               sequence_name=loader.extract_file_name(file_path=args.path),
-                               gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
+            find_kmers_recursively_in_sequence(gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
         elif args.method == 'rm':
             logger.warning("Feature not implemented yet")
     else:
@@ -276,6 +274,7 @@ def analyze_genome_command(args):
     if args.name:
         organism = args.name
         loader.set_organism(organism)
+        logger.warn(organism)
         _validate_mode_analyzing_genome(args, save_to_db=save_to_db)
 
     else:
@@ -349,11 +348,12 @@ def graph_command(args):
 def _validate_mode_graphing(args):
     if args.mode:
         if args.mode == 'whole':
-            df = load_data_whole(gcf=loader.get_gcf())
-            graph_whole(dataframe=df, organism_name=loader.get_organism_name(), data=loader.get_data())
+            logger.warn("gcf")
+            dic = load_data_whole(gcf=loader.get_gcf())
+            graph_whole(dataframe=dic, organism_name=loader.get_organism_name(), data=loader.get_data())
         elif args.mode == 'regions':
-            df = load_data_regions(gcf=loader.get_gcf())
-            graph_regions(dataframe=df, organism_name=loader.get_organism_name(), data=loader.get_data(),
+            dic_list = load_data_regions(gcf=loader.get_gcf())
+            graph_regions(dataframe=dic_list, organism_name=loader.get_organism_name(), data=loader.get_data(),
                           regions_number=loader.get_regions_number())
         else:
             logger.error("Enter a valid mode (whole or regions)")

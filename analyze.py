@@ -47,8 +47,6 @@ def whole_MFA_sequence(gcf, sequence, save_to_db):
     if save_to_db:
         sequence_manager.save_to_db_during_execution(GCF=gcf)
 
-    logger.info(sequence_manager.get_mfa_results())
-
 @DBConnection
 @Timer
 def find_kmers_recursively_in_sequence(gcf, sequence, save_to_db):
@@ -79,4 +77,3 @@ def regions_MFA_sequence(gcf, sequence, regions_number, save_to_db):
     if save_to_db:
         region_sequence_manager.save_to_db_during_execution(GCF=gcf)
 
-    logger.info(region_sequence_manager.get_mfa_results())

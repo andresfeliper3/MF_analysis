@@ -11,6 +11,7 @@ from src.Biocode.services.RegionChromosomesService import RegionChromosomesServi
 from src.Biocode.utils.utils import list_to_str
 from utils.decorators import Inject
 
+from utils.logger import logger
 
 @Inject(region_results_service = RegionResultsService,
         organisms_service = OrganismsService,

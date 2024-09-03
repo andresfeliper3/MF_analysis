@@ -10,6 +10,7 @@ from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.utils.utils import list_to_str
 from utils.decorators import Inject
 
+from utils.logger import logger
 
 @Inject(whole_results_service = WholeResultsService,
         organisms_service = OrganismsService,
