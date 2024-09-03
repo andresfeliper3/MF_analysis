@@ -153,8 +153,7 @@ class RegionGenomeManager(GenomeManagerInterface):
                                                                self.regions_number,
                                                                region_number,
                                                                result['sequence_size']))
-            self.region_results_service.insert(record=(self.regions_number, chromosome_id,
-                                                  list_to_str(result['Dq_values'].tolist()),
+            self.region_results_service.insert(record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
                                                   list_to_str(result['tau_q_values'].tolist()),
                                                   list_to_str(result['DDq'])))
 

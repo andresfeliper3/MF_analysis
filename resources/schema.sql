@@ -50,7 +50,6 @@ CREATE TABLE chr_whole_results (
 -- Create chr_region_results table with foreign key constraint
 CREATE TABLE chr_region_results (
   id INTEGER PRIMARY KEY,
-  regions_number INTEGER,
   region_chromosome_id INTEGER REFERENCES region_chromosomes(id),
   Dq_values REAL[],
   tau_q_values REAL[],

@@ -204,7 +204,7 @@ class RegionSequenceManager(SequenceManagerInterface):
                                                                            result['sequence_size'],
                                                                            whole_chromosome_id))
             self.region_results_service.insert(
-                record=(self.regions_total, chromosome_id, list_to_str(result['Dq_values'].tolist()),
+                record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
                         list_to_str(result['tau_q_values'].tolist()),
                         list_to_str(result['DDq'])))
         del self.mfa_results
