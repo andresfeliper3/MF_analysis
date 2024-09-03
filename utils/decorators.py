@@ -5,6 +5,9 @@ from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import time
+import functools
+import traceback
+
 from utils.logger import logger
 
 
@@ -63,3 +66,17 @@ def Inject(**dependencies):
         return cls
 
     return decorator
+
+def TryExcept(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Exception in {func.__name__}: {str(e)}")
+            logger.error(traceback.format_exc())
+            # re-raise the exception if you don't want to suppress it
+            #raise
+    return wrapper
+
+
