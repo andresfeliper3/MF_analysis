@@ -207,6 +207,7 @@ class RegionSequenceManager(SequenceManagerInterface):
                 record=(self.regions_total, chromosome_id, list_to_str(result['Dq_values'].tolist()),
                         list_to_str(result['tau_q_values'].tolist()),
                         list_to_str(result['DDq'])))
+        del self.mfa_results
    # except AttributeError as e:
     #    logger.error(f"Was not able to extract ids from organism and whole_chromosome to insert "
     #                 f"a new region sequence {self.sequence_name} with error name: {e.name}")
