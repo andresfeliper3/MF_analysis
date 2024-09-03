@@ -2,6 +2,7 @@ import argparse
 import traceback
 from load import loader
 from utils.logger import logger
+from utils.decorators import TryExcept
 
 from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_MFA_sequence, regions_MFA_sequence, \
     find_kmers_recursively_in_genome, find_kmers_recursively_in_sequence
@@ -203,9 +204,9 @@ def main():
 
 
 
-
 organism = ""
 
+@TryExcept
 def find_kmers_genome_command(args):
     global organism
 
@@ -222,7 +223,7 @@ def find_kmers_genome_command(args):
         elif args.method == 'rm':
             logger.warning("Feature not implemented yet")
 
-
+@TryExcept
 def find_kmers_sequence_command(args):
     global organism
 
@@ -230,7 +231,7 @@ def find_kmers_sequence_command(args):
         organism = args.name
         loader.set_organism(organism)
     else:
-        logger.error("Please provide either a -name (lowercase name or GCF).")
+        raise Exception("Please provide either a -name (lowercase name or GCF).")
 
     if args.path:
         if args.method == 'r':
@@ -246,8 +247,9 @@ def find_kmers_sequence_command(args):
         elif args.method == 'rm':
             logger.warning("Feature not implemented yet")
     else:
-        logger.error("Please provide a .fasta file path relative to command.py file")
+        raise Exception("Please provide a .fasta file path relative to command.py file")
 
+@TryExcept
 def download_command(args):
     global organism
 
@@ -263,9 +265,9 @@ def download_command(args):
                                      download_url=loader.get_download_gff_url(), suffix=".gtf.gz")
             uncompress_all_files(folder=loader.get_organism_gtf_subfolder())
     else:
-        logger.error("Please provide either a -name (lowercase name or GCF).")
+        raise Exception("Please provide either a -name (lowercase name or GCF).")
 
-
+@TryExcept
 def analyze_genome_command(args):
     global organism
 
@@ -274,11 +276,10 @@ def analyze_genome_command(args):
     if args.name:
         organism = args.name
         loader.set_organism(organism)
-        logger.warn(organism)
         _validate_mode_analyzing_genome(args, save_to_db=save_to_db)
 
     else:
-        logger.error("Please provide either a -name (lowercase name or GCF).")
+        raise Exception("Please provide either a -name (lowercase name or GCF).")
 
 def _validate_mode_analyzing_genome(args, save_to_db: bool):
     if args.mode:
@@ -293,11 +294,11 @@ def _validate_mode_analyzing_genome(args, save_to_db: bool):
             regions_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data(),
                                regions_number=loader.get_regions_number(), save_to_db=save_to_db)
         else:
-            logger.error("Enter a valid mode (whole or regions)")
+            raise Exception("Enter a valid mode (whole or regions)")
     else:
-        logger.error("Enter a valid mode (whole or regions)")
+        raise Exception("Enter a valid mode (whole or regions)")
 
-
+@TryExcept
 def analyze_sequence_command(args):
     global organism
 
@@ -305,7 +306,7 @@ def analyze_sequence_command(args):
         organism = args.name
         loader.set_organism(organism)
     else:
-        logger.error("Please provide either a -name (lowercase name or GCF).")
+       raise Exception("Please provide either a -name (lowercase name or GCF).")
 
     if args.path:
         sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path),
@@ -315,7 +316,7 @@ def analyze_sequence_command(args):
         save_to_db = False if args.save_to_db == 'false' else True
         _validate_mode_analyzing_sequence(args, sequence, save_to_db=save_to_db)
     else:
-        logger.error("Please provide a .fasta file path relative to command.py file")
+        raise Exception("Please provide a .fasta file path relative to command.py file")
 
 
 def _validate_mode_analyzing_sequence(args, sequence: Sequence, save_to_db: bool):
@@ -330,10 +331,11 @@ def _validate_mode_analyzing_sequence(args, sequence: Sequence, save_to_db: bool
             regions_MFA_sequence(gcf=loader.get_gcf(), sequence=sequence,
                                  regions_number=loader.get_regions_number(), save_to_db=save_to_db)
         else:
-            logger.error("Enter a valid mode (whole or regions)")
+            raise Exception("Enter a valid mode (whole or regions)")
     else:
-        logger.error("Enter a valid mode (whole or regions)")
+        raise Exception("Enter a valid mode (whole or regions)")
 
+@TryExcept
 def graph_command(args):
     global organism
 
@@ -342,13 +344,12 @@ def graph_command(args):
         loader.set_organism(organism)
         _validate_mode_graphing(args)
     else:
-        logger.error("Please provide either -id or -name.")
+        raise Exception("Please provide either -id or -name.")
 
 
 def _validate_mode_graphing(args):
     if args.mode:
         if args.mode == 'whole':
-            logger.warn("gcf")
             dic = load_data_whole(gcf=loader.get_gcf())
             graph_whole(dataframe=dic, organism_name=loader.get_organism_name(), data=loader.get_data())
         elif args.mode == 'regions':
@@ -356,97 +357,62 @@ def _validate_mode_graphing(args):
             graph_regions(dataframe=dic_list, organism_name=loader.get_organism_name(), data=loader.get_data(),
                           regions_number=loader.get_regions_number())
         else:
-            logger.error("Enter a valid mode (whole or regions)")
+            raise Exception("Enter a valid mode (whole or regions)")
     else:
-        logger.error("Enter a valid mode (whole or regions)")
+        raise Exception("Enter a valid mode (whole or regions)")
 
-
+@TryExcept
 def load_RM_repeats(args):
-    try:
-        load_RM_repeats_from_file(args.path)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
+    load_RM_repeats_from_file(args.path)
 
-
+@TryExcept
 def load_RM_repeats_folder(args):
-    try:
-        load_RM_repeats_from_folder(args.path)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
+    load_RM_repeats_from_folder(args.path)
 
-
+@TryExcept
 def graph_rm_file_command(args):
-    try:
-        graph_rm_results_from_file(path=args.path, partitions=args.partitions, regions=args.regions,
+    graph_rm_results_from_file(path=args.path, partitions=args.partitions, regions=args.regions,
                                    plot_type=args.plot_type, save=args.save, name=args.name)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
 
+@TryExcept
 def graph_rm_database_command(args):
-    try:
-        graph_rm_results_from_database(refseq_accession_number=args.ran, partitions=args.partitions,
+    graph_rm_results_from_database(refseq_accession_number=args.ran, partitions=args.partitions,
                                    regions=args.regions, plot_type=args.plot_type, save=args.save, name=args.name)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
 
 
+@TryExcept
 def graph_rm_file_genome_command(args):
-    try:
-        graph_rm_results_from_files_in_folder(directory_path=args.path, partitions=args.partitions, regions=args.regions,
+    graph_rm_results_from_files_in_folder(directory_path=args.path, partitions=args.partitions, regions=args.regions,
                                               plot_type=args.plot_type, save=args.save, name=args.name)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
 
+@TryExcept
 def graph_rm_database_genome_command(args):
-    try:
         graph_rm_results_of_genome_from_database(GCF=args.gcf, partitions=args.partitions, regions=args.regions,
                                                  plot_type=args.plot_type, save=args.save, name=args.name)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
 
+@TryExcept
 def graph_recursive_command(args):
-    try:
-        graph_recursive_from_database(refseq_accession_number=args.ran, save=args.save, name=args.name, n_max=args.n_max)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
+    graph_recursive_from_database(refseq_accession_number=args.ran, save=args.save, name=args.name, n_max=args.n_max)
 
+@TryExcept
 def graph_recursive_genome_command(args):
-    try:
-        graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, name=args.name, n_max=args.n_max)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
+    graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, name=args.name, n_max=args.n_max)
 
+
+@TryExcept
 def graph_gtf_file(args):
-    try:
-        graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
+    graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
                             save=args.save, name=args.name)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
 
+@TryExcept
 def graph_gtf_database(args):
-    try:
-        graph_gtf_from_database(GCF=args.gcf, refseq_accession_number=args.ran, partitions=args.partitions,
+    graph_gtf_from_database(GCF=args.gcf, refseq_accession_number=args.ran, partitions=args.partitions,
                                 regions=args.regions, plot_type=args.plot_type, save=args.save, name=args.name)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
 
-
+@TryExcept
 def  load_genes(args):
-    try:
-        load_genes_from_file(path=args.path)
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
+    load_genes_from_file(path=args.path)
+
 
 if __name__ == "__main__":
     main()
