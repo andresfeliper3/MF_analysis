@@ -7,7 +7,6 @@ from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 
-from src.Biocode.utils.utils import list_to_str
 from utils.decorators import Inject
 
 from utils.logger import logger
@@ -101,11 +100,11 @@ class GenomeManager(GenomeManagerInterface):
             chromosome_id = self.whole_chromosomes_service.insert(record=(result['sequence_name'],
                                                                           result['refseq_accession_number'],organism_id,
                                                                self.cover_percentage[index],
-                                                               list_to_str(self.cover[index]),
+                                                               self.cover[index],
                                                                result['sequence_size']))
-            self.whole_results_service.insert(record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
-                                                 list_to_str(result['tau_q_values'].tolist()),
-                                                 list_to_str(result['DDq'])))
+            self.whole_results_service.insert(record=(chromosome_id, result['Dq_values'].tolist(),
+                                                 result['tau_q_values'].tolist(),
+                                                 result['DDq']))
 
 
 

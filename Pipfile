@@ -12,6 +12,7 @@ pyyaml = "==6.0"
 seaborn = "==0.12.2"
 xlsxwriter = "*"
 openpyxl = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 

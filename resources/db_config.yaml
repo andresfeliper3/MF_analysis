@@ -1,0 +1,16 @@
+database:
+  type: "postgresql"  # other options: "postgresql", "mysql"
+  sqlite:
+    db_file: "resources/MFA_analysis.db"
+  postgresql:
+    host: "localhost"
+    port: 5433
+    user: "postgres"
+    password: "310301"
+    database: "MFA_analysis"
+  mysql:
+    host: "localhost"
+    port: 3306
+    user: "your_user"
+    password: "your_password"
+    database: "your_db"
