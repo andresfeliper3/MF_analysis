@@ -8,7 +8,6 @@ from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
 
-from src.Biocode.utils.utils import list_to_str
 from utils.decorators import Inject
 
 from utils.logger import logger
@@ -149,13 +148,13 @@ class RegionGenomeManager(GenomeManagerInterface):
             region_number = (index % self.regions_number) + 1
             chromosome_id = self.region_chromosomes_service.insert(record=(result['sequence_name'], organism_id,
                                                                self.cover_percentage[index],
-                                                               list_to_str(self.cover[index]),
+                                                               self.cover[index],
                                                                self.regions_number,
                                                                region_number,
                                                                result['sequence_size']))
-            self.region_results_service.insert(record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
-                                                  list_to_str(result['tau_q_values'].tolist()),
-                                                  list_to_str(result['DDq'])))
+            self.region_results_service.insert(record=(chromosome_id, result['Dq_values'].tolist(),
+                                                 result['tau_q_values'].tolist(),
+                                                 result['DDq']))
 
     def set_organism_name(self, organism_name):
         self.organism_name = organism_name

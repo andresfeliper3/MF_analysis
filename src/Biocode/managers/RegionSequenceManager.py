@@ -10,7 +10,6 @@ from src.Biocode.services.OrganismsService import OrganismsService
 from src. Biocode.services.RegionChromosomesService import RegionChromosomesService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 
-from src.Biocode.utils.utils import list_to_str
 from utils.logger import logger
 
 from utils.decorators import Inject
@@ -198,15 +197,15 @@ class RegionSequenceManager(SequenceManagerInterface):
                                                                            self.sequence.get_refseq_accession_number(),
                                                                            organism_id,
                                                                            self.cover_percentage[index],
-                                                                           list_to_str(self.cover[index]),
+                                                                           self.cover[index],
                                                                            self.regions_total,
                                                                            index + 1,
                                                                            result['sequence_size'],
                                                                            whole_chromosome_id))
             self.region_results_service.insert(
-                record=(chromosome_id, list_to_str(result['Dq_values'].tolist()),
-                        list_to_str(result['tau_q_values'].tolist()),
-                        list_to_str(result['DDq'])))
+                record=(chromosome_id, result['Dq_values'].tolist(),
+                       result['tau_q_values'].tolist(),
+                        result['DDq']))
         del self.mfa_results
    # except AttributeError as e:
     #    logger.error(f"Was not able to extract ids from organism and whole_chromosome to insert "

@@ -12,7 +12,6 @@ from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.services.RepeatsService import RepeatsService
 from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
 
-from src.Biocode.utils.utils import list_to_str
 from utils.decorators import Inject
 
 from utils.logger import logger
@@ -172,9 +171,9 @@ class SequenceManager(SequenceManagerInterface):
         self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
 
         self.chromosome_id = self._insert_mfa_results_to_whole_chromosomes_table()
-        self.whole_results_service.insert(record=(self.chromosome_id, list_to_str(self.mfa_results['Dq_values'].tolist()),
-                                             list_to_str(self.mfa_results['tau_q_values'].tolist()),
-                                             list_to_str(self.mfa_results['DDq'])))
+        self.whole_results_service.insert(record=(self.chromosome_id, self.mfa_results['Dq_values'].tolist(),
+                                             self.mfa_results['tau_q_values'].tolist(),
+                                             self.mfa_results['DDq']))
         del self.mfa_results
         logger.info(f"************* Saved to DB {self.sequence_name} *************")
 
@@ -207,6 +206,6 @@ class SequenceManager(SequenceManagerInterface):
         return self.whole_chromosomes_service.insert(
             record=(self.mfa_results['sequence_name'], self.sequence.get_refseq_accession_number(), self.organism_id,
                     self.cover_percentage,
-                    list_to_str(self.cover),
+                    self.cover,
                     self.mfa_results['sequence_size']))
 
