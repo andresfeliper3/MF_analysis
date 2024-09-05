@@ -35,13 +35,23 @@ CREATE TABLE region_chromosomes (
 );
 
 -- Create mi_grids table with foreign key constraint
-CREATE TABLE mi_grids (
+CREATE TABLE whole_mi_grids (
   id INT AUTO_INCREMENT PRIMARY KEY,
   mi_grid LONGBLOB,
-  chromosome_id INT,
+  whole_chromosome_id INT,
   epsilon_size FLOAT,
-  FOREIGN KEY (chromosome_id) REFERENCES region_chromosomes(id)
+  FOREIGN KEY (whole_chromosome_id) REFERENCES whole_chromosomes(id)
 );
+
+-- Create mi_grids table with foreign key constraint
+CREATE TABLE region_mi_grids (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  mi_grid LONGBLOB,
+  region_chromosome_id INT,
+  epsilon_size FLOAT,
+  FOREIGN KEY (region_chromosome_id) REFERENCES region_chromosomes(id)
+);
+
 
 -- Create chr_whole_results table with foreign key constraint
 CREATE TABLE chr_whole_results (

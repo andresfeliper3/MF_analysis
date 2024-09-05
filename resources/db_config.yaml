@@ -1,5 +1,5 @@
 database:
-  type: "postgresql"  # other options: "postgresql", "mysql"
+  type: "sqlite"  # other options: "postgresql", "mysql"
   sqlite:
     db_file: "resources/MFA_analysis.db"
   postgresql:

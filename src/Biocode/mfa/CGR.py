@@ -110,8 +110,8 @@ class CGR:
             try:
                 self.mi_grid[row, col] += 1
             except:
-                print("Error here")
-                print("position:", current_position[0], ";", current_position[1], "epsilon:", epsilon, "row:", row,
+                logger.error("Error here")
+                logger.error("position:", current_position[0], ";", current_position[1], "epsilon:", epsilon, "row:", row,
                       "col:", col)
 
         self.sum_nucleotides = sum(x for x in self.cover if x > 0)

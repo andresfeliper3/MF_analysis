@@ -180,7 +180,7 @@ class RegionSequenceManager(SequenceManagerInterface):
     def get_managers(self) -> list[SequenceManager]:
         return self.managers
 
-    def save_to_db_during_execution(self, GCF):
+    def save_results_to_db_during_execution(self, GCF):
         """
         [(val1, val2), (val1, val2)]
         ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]

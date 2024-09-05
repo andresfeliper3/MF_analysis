@@ -11,15 +11,15 @@ The organism name and GCF expressed in that file are the ones to be used in the 
 Download and uncompress files
 
         py .\command.py download -name "caenorhabditis elegans"
-        py .\command.py download -name GCF_000002985_4
+        py .\command.py download -name GCF_000002985_6
 
 ### Analyze
 Analyze and load the organism and genome data. 
 
                     
         py .\command.py analyze_genome -name "caenorhabditis elegans" -mode regions
-        py .\command.py analyze_genome -name GCF_000002985_4 -mode regions
-        py .\command.py analyze_genome -name GCF_000002985_4 -mode whole
+        py .\command.py analyze_genome -name GCF_000002985_6 -mode regions
+        py .\command.py analyze_genome -name GCF_000002985_6 -mode whole
 
 Analyze only one sequence file (one chromosome) given a file path
     
