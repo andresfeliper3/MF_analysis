@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 from src.Biocode.sequences.Sequence import Sequence
 
-from src.Biocode.services.MiGridsService import MiGridsService
+from src.Biocode.services.WholeMiGridsService import WholeMiGridsService
 
 from utils.decorators import Timer, DBConnection
 
@@ -37,24 +37,21 @@ class MFA:
 
     def _generate_cgr_mi_grids_thoroughly(self):  # NOT BEING USED
         self.cgr_gen = CGR(self.sequence)
-        self.cgrs_mi_grids = []
+        cgrs_mi_grids = []
 
         for index, epsilon in enumerate(self.epsilons):
             cgr_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=epsilon)
-            self.cgrs_mi_grids.append(cgr_mi_grid)
+            cgrs_mi_grids.append(cgr_mi_grid)
             logger.info(f"Ready mi_grid with size {self.grid_sizes[index]}, and epsilon {epsilon}")
+        return cgrs_mi_grids
 
     @DBConnection
     @Timer
     def _generate_cgr_mi_grids_quickly_using_database(self):
         self.cgr_gen = CGR(self.sequence)
-        self.cgrs_mi_grids = [0] * len(self.grid_sizes)
-
         cgr_largest_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
-        # This must be refactored
 
         cgr_largest_mi_grid_np = np.array(cgr_largest_mi_grid, dtype=np.float64)
-
         del cgr_largest_mi_grid
 
         # Option 1: Using pickle for serialization
@@ -63,7 +60,7 @@ class MFA:
         binary_data_numpy = cgr_largest_mi_grid_np.tobytes()
         del cgr_largest_mi_grid_np
 
-        mi_grids_service = MiGridsService()
+        mi_grids_service = WholeMiGridsService()
         mi_grids_service.insert(record=(binary_data_numpy, 1, self.epsilons[0]))
         del binary_data_numpy
         ##
@@ -77,33 +74,26 @@ class MFA:
 
         # Reshape the matrix
         cgr_largest_mi_grid = cgr_largest_mi_grid.reshape((self.grid_sizes[0], self.grid_sizes[0]))
+        return self.generate_cgr_mi_grids_from_initial_grid(cgr_largest_mi_grid)
 
-        # Log the matrix type
-        self.cgrs_mi_grids[0] = cgr_largest_mi_grid
-
-        logger.info(f"Ready largest_mi_grid with size {self.grid_sizes[0]} and epsilon {self.epsilons[0]}")
-        #logger.info(cgr_largest_mi_grid)
-
-        for i in range(1, len(self.grid_sizes)):
-            self.cgrs_mi_grids[i] = self.__resize_matrix(original_matrix=self.cgrs_mi_grids[i - 1],
-                                                         target_size=self.grid_sizes[i])
-            logger.info(f"Ready mi_grid with size {self.grid_sizes[i]} and epsilon {self.epsilons[i]}")
-
-
-    def _generate_cgr_mi_grids_quickly(self):
+    def generate_initial_grid(self):
         self.cgr_gen = CGR(self.sequence)
-        self.cgrs_mi_grids = [0] * len(self.grid_sizes)
+        return self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
+
+    def _generate_cgr_mi_grids_quickly(self) -> list:
+        self.cgr_gen = CGR(self.sequence)
         cgr_largest_mi_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
-        self.cgrs_mi_grids[0] = cgr_largest_mi_grid
+        return self.generate_cgr_mi_grids_from_initial_grid(cgr_largest_mi_grid)
 
+    def generate_cgr_mi_grids_from_initial_grid(self, cgr_largest_mi_grid: list) -> list:
+        cgrs_mi_grids = [0] * len(self.grid_sizes)
+        cgrs_mi_grids[0] = cgr_largest_mi_grid
         logger.info(f"Ready largest_mi_grid with size {self.grid_sizes[0]} and epsilon {self.epsilons[0]}")
-        # logger.info(cgr_largest_mi_grid)
-
         for i in range(1, len(self.grid_sizes)):
-            self.cgrs_mi_grids[i] = self.__resize_matrix(original_matrix=self.cgrs_mi_grids[i - 1],
-                                                         target_size=self.grid_sizes[i])
+            cgrs_mi_grids[i] = self.__resize_matrix(original_matrix=cgrs_mi_grids[i - 1],
+                                                    target_size=self.grid_sizes[i])
             logger.info(f"Ready mi_grid with size {self.grid_sizes[i]} and epsilon {self.epsilons[i]}")
-
+        return cgrs_mi_grids
 
     def __resize_matrix(self, original_matrix, target_size):
         result_matrix = [[0 for _ in range(target_size)] for _ in range(target_size)]
@@ -118,17 +108,16 @@ class MFA:
                 )
         return np.array(result_matrix)
 
-    def multifractal_discrimination_analysis(self):
-        self._generate_cgr_mi_grids_quickly()
-        self.total_fractal_points = np.sum(self.cgrs_mi_grids[0])
-        assert np.sum(self.cgrs_mi_grids[1]) == self.total_fractal_points, "total fractal points should be the same"
+    def multifractal_discrimination_analysis(self, cgrs_mi_grids):
+        self.total_fractal_points = np.sum(cgrs_mi_grids[0])
+        assert np.sum(cgrs_mi_grids[1]) == self.total_fractal_points, "total fractal points should be the same"
         self.fq = []
 
         for q_index, q in enumerate(self.q_values):
             if q == 1:
                 q = self.FIX_1_ERROR_VALUE
-            self.fq.append({'q': q, 'fq': np.zeros(len(self.cgrs_mi_grids))})
-            for index, mi_grid in enumerate(self.cgrs_mi_grids):
+            self.fq.append({'q': q, 'fq': np.zeros(len(cgrs_mi_grids))})
+            for index, mi_grid in enumerate(cgrs_mi_grids):
                 cgr_mi_grid_flattened = mi_grid.reshape(-1)
                 no_zeros = cgr_mi_grid_flattened[np.where(cgr_mi_grid_flattened != 0)]
                 division = no_zeros / self.total_fractal_points
@@ -217,7 +206,7 @@ class MFA:
     def get_total_fractal_points(self) -> float:
         return self.total_fractal_points
 
-    def get_cgrs_mi_grids(self) -> list:
+    def get_cgrs_mi_grids(self) -> list: #CHECK THIS
         return self.cgrs_mi_grids
 
     def get_epsilons(self) -> list[float]:
@@ -237,6 +226,9 @@ class MFA:
 
     def get_fq(self) -> list[dict]:
         return self.fq
+
+    def get_grid_sizes(self) -> list[int]:
+        return self.grid_sizes
 
 
 

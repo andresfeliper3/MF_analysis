@@ -32,10 +32,18 @@ CREATE TABLE region_chromosomes (
 );
 
 -- Create mi_grids table with foreign key constraint
-CREATE TABLE mi_grids (
+CREATE TABLE whole_mi_grids (
   id SERIAL PRIMARY KEY,
   mi_grid BYTEA,
-  chromosome_id INTEGER REFERENCES whole_chromosomes(id),
+  whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id),
+  epsilon_size REAL
+);
+
+-- Create mi_grids table with foreign key constraint
+CREATE TABLE region_mi_grids (
+  id SERIAL PRIMARY KEY,
+  mi_grid BYTEA,
+  region_chromosome_id INTEGER REFERENCES region_chromosomes(id),
   epsilon_size REAL
 );
 

@@ -38,10 +38,10 @@ class SequenceManagerInterface:
         """Attach to the fields of the class the cover and cover_percentage of the sequence"""
         pass
 
-    def calculate_multifractal_analysis_values(self):
+    def calculate_multifractal_analysis_values(self, GCF):
         """Generate mfa generators, generate mfa values, attach the degrees of multifractality, the cover and cover
         percentage"""
-        self.generate_mfa()
+        self.generate_mfa(GCF)
         self.generate_degree_of_multifractality()
         self._attach_cover_data()
 
@@ -63,9 +63,9 @@ class SequenceManagerInterface:
         identified)"""
         pass
 
-    def calculate_and_graph(self):
+    def calculate_and_graph(self, GCF:str):
         """Generate MFA values and graph them along with the coverage"""
-        self.calculate_multifractal_analysis_values()
+        self.calculate_multifractal_analysis_values(GCF)
         self.graph_multifractal_analysis()
         self.graph_coverage()
 
@@ -79,6 +79,6 @@ class SequenceManagerInterface:
     def set_cover_percentage(self, cover_percentage):
         pass
 
-    def save_to_db_during_execution(self, GCF: str):
+    def save_results_to_db_during_execution(self, GCF: str):
        """ Save to DB after each sequence is executed"""
        pass

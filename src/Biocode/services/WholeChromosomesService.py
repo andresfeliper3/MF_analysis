@@ -17,8 +17,13 @@ class WholeChromosomesService(AbstractService):
     def extract_by_refseq_accession_number(self, refseq_accession_number: str) -> str:
         return self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number)
 
-    def extract_id_by_refseq_accession_number(self, refseq_accession_number: str) -> int:
-        return int(self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number).loc[0, 'id'])
+    def extract_id_by_refseq_accession_number(self, refseq_accession_number: str) -> int | None:
+        result = self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number)
+
+        if result is not None and not result.empty:
+            return int(result.loc[0, 'id'])
+        return None
+
 
     def extract_size_by_refseq_accession_number(self, refseq_accession_number: str) -> int:
         return int(self.extract_by_field(column="refseq_accession_number", value=refseq_accession_number).loc[0, 'size'])

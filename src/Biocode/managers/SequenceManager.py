@@ -11,17 +11,22 @@ from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.services.RepeatsService import RepeatsService
 from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
+from src.Biocode.services.WholeMiGridsService import WholeMiGridsService
 
 from utils.decorators import Inject
 
 from utils.logger import logger
 from typing import List
+import gc
+import numpy as np
 
 @Inject(whole_results_service=WholeResultsService,
         organisms_service = OrganismsService,
         whole_chromosomes_service = WholeChromosomesService,
         repeats_service = RepeatsService,
-        recursive_repeats_whole_chromosomes_service = RecursiveRepeatsWholeChromosomesService)
+        recursive_repeats_whole_chromosomes_service = RecursiveRepeatsWholeChromosomesService,
+        whole_mi_grids_service = WholeMiGridsService
+        )
 class SequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, sequence_name: str = None,
                  organism_name: str = None,
@@ -29,7 +34,8 @@ class SequenceManager(SequenceManagerInterface):
                  organisms_service: OrganismsService = None,
                  whole_chromosomes_service: WholeChromosomesService = None,
                  repeats_service: RepeatsService = None,
-                 recursive_repeats_whole_chromosomes_service: RecursiveRepeatsWholeChromosomesService = None):
+                 recursive_repeats_whole_chromosomes_service: RecursiveRepeatsWholeChromosomesService = None,
+                 whole_mi_grids_service: WholeMiGridsService = None):
 
         self.chromosome_id = None
         self.organism_id = None
@@ -38,6 +44,7 @@ class SequenceManager(SequenceManagerInterface):
         self.organisms_service = organisms_service
         self.repeats_service = repeats_service
         self.recursive_repeats_whole_chromosomes_service = recursive_repeats_whole_chromosomes_service
+        self.whole_mi_grids_service = whole_mi_grids_service
 
 
         self.n_largest_mi_grid_values_strings_for_k = None
@@ -65,10 +72,40 @@ class SequenceManager(SequenceManagerInterface):
         self.cover_percentage = None
         self._10_largest_values_from_k_10_to_4 = None
 
-    def generate_mfa(self):
-        self.mfa_results = self.mfa_generator.multifractal_discrimination_analysis()
 
+
+    def generate_mfa(self, GCF):
+        mi_grid_whole_chromosome_id = self.whole_mi_grids_service\
+            .get_whole_chromosome_id_if_mi_grid_exists_by_refseq_accession_number(self.refseq_accession_number)
+        if mi_grid_whole_chromosome_id is None:
+            chromosome_id = self._insert_chromosome(GCF)
+            logger.info(f"No previous results found in mi_grids table for {self.refseq_accession_number} - executing CGR algorithm")
+            initial_cgr = self.mfa_generator.generate_initial_grid()
+            self._save_initial_grid_to_database(initial_cgr, chromosome_id)
+            cgr_results = self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(initial_cgr)
+        else:
+            logger.info(f"Extracting {self.refseq_accession_number} mi_grid from DB")
+            retrieved_data = self.whole_mi_grids_service.extract_mi_grid_by_chromosome_id(mi_grid_whole_chromosome_id)
+            initial_cgr = np.frombuffer(retrieved_data, dtype=np.float64)
+            initial_cgr = initial_cgr.reshape((self.mfa_generator.get_grid_sizes()[0],
+                                               self.mfa_generator.get_grid_sizes()[0]))
+            cgr_results = self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(initial_cgr)
+
+        self.mfa_results = self.mfa_generator.multifractal_discrimination_analysis(cgrs_mi_grids=cgr_results)
+        logger.info(f"MFA results were generated for chromosome: {self.refseq_accession_number}")
         self.fq = self.mfa_generator.get_fq()
+
+    def _save_initial_grid_to_database(self, cgr_largest_mi_grid, whole_chromosome_id):
+        cgr_largest_mi_grid_np = np.array(cgr_largest_mi_grid, dtype=np.float64)
+
+        binary_data_numpy = cgr_largest_mi_grid_np.tobytes()
+
+        del cgr_largest_mi_grid_np
+        self.whole_mi_grids_service.insert(record=(binary_data_numpy, whole_chromosome_id,
+                                                   self.mfa_generator.get_epsilons()[0]))
+        del binary_data_numpy
+        gc.collect()
+
 
     def generate_degree_of_multifractality(self):
         self.degree_of_multifractality = self.mfa_generator.get_DDq()
@@ -162,15 +199,9 @@ class SequenceManager(SequenceManagerInterface):
     def get_refseq_accession_number(self) -> str:
         return self.refseq_accession_number
 
-    def save_to_db_during_execution(self, GCF):
-        """
-        [(val1, val2), (val1, val2)]
-        ["chromosome_id", "Dq_values", "tau_q_values", "DDq"]
-        [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
-        """
-        self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
 
-        self.chromosome_id = self._insert_mfa_results_to_whole_chromosomes_table()
+    def save_results_to_db_during_execution(self, GCF):
+        self._insert_chromosome(GCF)
         self.whole_results_service.insert(record=(self.chromosome_id, self.mfa_results['Dq_values'].tolist(),
                                              self.mfa_results['tau_q_values'].tolist(),
                                              self.mfa_results['DDq']))
@@ -189,7 +220,7 @@ class SequenceManager(SequenceManagerInterface):
 
         self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
 
-        self.chromosome_id = self._insert_mfa_results_to_whole_chromosomes_table()
+        self.chromosome_id = self._insert_chromosome()
 
         for kmers in kmers_list:
             nucleotides_strings = kmers.get_nucleotides_strings()
@@ -202,10 +233,21 @@ class SequenceManager(SequenceManagerInterface):
                             str(coordinates[index])))
 
 
-    def _insert_mfa_results_to_whole_chromosomes_table(self) -> int:
-        return self.whole_chromosomes_service.insert(
-            record=(self.mfa_results['sequence_name'], self.sequence.get_refseq_accession_number(), self.organism_id,
-                    self.cover_percentage,
-                    self.cover,
-                    self.mfa_results['sequence_size']))
+    def _insert_chromosome(self, GCF) -> int:
+        self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
+        whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(self.refseq_accession_number)
+        if whole_chromosome_id is None:
+            return self.whole_chromosomes_service.insert(
+                record=(self.sequence.get_name(), self.refseq_accession_number, self.organism_id,
+                        self.cover_percentage,
+                        self.cover,
+                        self.sequence.get_size()))
+        else:
+            return self.whole_chromosomes_service.update(
+                pk_value=whole_chromosome_id,
+                record=(self.sequence.get_name(), self.refseq_accession_number, self.organism_id,
+                        self.cover_percentage,
+                        self.cover,
+                        self.sequence.get_size()))
+
 

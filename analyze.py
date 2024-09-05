@@ -28,7 +28,16 @@ def whole_MFA_genome(organism_name, gcf, data, save_to_db):
     genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
     #genome_manager.save_to_db_after_execution(GCF=gcf)
     #genome_manager.graph_linear_fit()
-    # genome_manager.generate_df_results()
+    #genome_manager.generate_df_results()
+
+@DBConnection
+@Timer
+def whole_MFA_sequence(gcf, sequence, save_to_db):
+    sequence_manager = SequenceManager(sequence=sequence)
+    sequence_manager.calculate_multifractal_analysis_values(gcf)
+
+    if save_to_db:
+        sequence_manager.save_results_to_db_during_execution(GCF=gcf)
 
 @DBConnection
 @Timer
@@ -38,20 +47,13 @@ def find_kmers_recursively_in_genome(organism_name, gcf, data, save_to_db):
         GCF=gcf, save_to_db=save_to_db, method_to_find_it="Recursively")
 
 
-@DBConnection
-@Timer
-def whole_MFA_sequence(gcf, sequence, save_to_db):
-    sequence_manager = SequenceManager(sequence=sequence)
-    sequence_manager.calculate_multifractal_analysis_values()
 
-    if save_to_db:
-        sequence_manager.save_to_db_during_execution(GCF=gcf)
 
 @DBConnection
 @Timer
 def find_kmers_recursively_in_sequence(gcf, sequence, save_to_db):
     sequence_manager = SequenceManager(sequence=sequence)
-    sequence_manager.calculate_multifractal_analysis_values()
+    sequence_manager.calculate_multifractal_analysis_values(gcf)
     kmers_list = sequence_manager.find_only_kmers_recursively()
     if save_to_db:
         sequence_manager.save_repeats_found_recursively_to_db(
@@ -72,8 +74,8 @@ def regions_MFA_genome(organism_name, gcf, data, regions_number, save_to_db):
 def regions_MFA_sequence(gcf, sequence, regions_number, save_to_db):
 
     region_sequence_manager = RegionSequenceManager(sequence=sequence, regions_number=regions_number)
-    region_sequence_manager.calculate_multifractal_analysis_values()
+    region_sequence_manager.calculate_multifractal_analysis_values(gcf)
 
     if save_to_db:
-        region_sequence_manager.save_to_db_during_execution(GCF=gcf)
+        region_sequence_manager.save_results_to_db_during_execution(GCF=gcf)
 
