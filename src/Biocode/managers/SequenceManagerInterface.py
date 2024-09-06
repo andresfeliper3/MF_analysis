@@ -1,12 +1,18 @@
 from typing import List
 from src.Biocode.dataclasses.MiGridCoordinatesValuesAndNucleotides import MiGridCoordinatesValuesAndNucleotides
+from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
+from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
+
+from utils.logger import logger
+from src.Biocode.utils.utils import remove_region_part
+
 
 class SequenceManagerInterface:
     def generate_mfa_generator(self):
         """Generate the MFA class"""
         pass
 
-    def generate_mfa(self):
+    def generate_mfa(self, GCF, mi_grids_service, chromosomes_service):
         """Generate mfa_results with the MFA values"""
         pass
 
@@ -41,9 +47,7 @@ class SequenceManagerInterface:
     def calculate_multifractal_analysis_values(self, GCF):
         """Generate mfa generators, generate mfa values, attach the degrees of multifractality, the cover and cover
         percentage"""
-        self.generate_mfa(GCF)
-        self.generate_degree_of_multifractality()
-        self._attach_cover_data()
+        pass
 
     def graph_multifractal_analysis(self, _3d_cgr=False, linear_fit=True, degrees_of_multifractality=None,
                                     multifractal_spectrum=True, correlation_exponent=True):
@@ -82,3 +86,27 @@ class SequenceManagerInterface:
     def save_results_to_db_during_execution(self, GCF: str):
        """ Save to DB after each sequence is executed"""
        pass
+
+    def _insert_chromosome(self, GCF, chromosomes_service) -> int:
+        self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
+        chromosome_id = chromosomes_service.extract_id_by_refseq_accession_number(self.refseq_accession_number)
+
+        if isinstance(chromosomes_service, WholeChromosomesService):
+            record = (self.sequence.get_name(), self.refseq_accession_number, self.organism_id, self.cover_percentage,
+                        self.cover, self.sequence.get_size())
+            if chromosome_id is None:
+                return chromosomes_service.insert(record=record)
+            else:
+                return chromosomes_service.update(pk_value=chromosome_id, record=record)
+
+        elif isinstance(chromosomes_service, RegionChromosomesService):
+            whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
+                remove_region_part(self.sequence.get_refseq_accession_number()))
+
+            record = (self.sequence_name, self.refseq_accession_number, self.organism_id,
+                            self.cover_percentage, self.cover, self.sequence.get_regions_total(),
+                            self.sequence.get_region_number(), self.sequence.get_size(), whole_chromosome_id)
+            if chromosome_id is None:
+                return chromosomes_service.insert(record=record)
+            else:
+                return chromosomes_service.update(pk_value=chromosome_id, record=record)

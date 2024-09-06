@@ -16,6 +16,8 @@ class Sequence:
         self.cover = []
         self.cover_percentage = 0.0
         self.organism_name = organism_name
+        self.region_number = 1
+        self.regions_total = 0
 
     def get_sequence(self) -> str:
         return self.sequence
@@ -49,3 +51,15 @@ class Sequence:
 
     def set_organism_name(self, organism_name):
         self.organism_name = organism_name
+
+    def set_region_number(self, region_number):
+        self.region_number = region_number
+
+    def set_regions_total(self, regions_total):
+        self.regions_total = regions_total
+
+    def get_region_number(self):
+        return self.region_number
+
+    def get_regions_total(self):
+        return self.regions_total

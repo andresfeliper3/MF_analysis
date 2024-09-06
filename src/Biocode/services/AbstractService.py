@@ -21,3 +21,6 @@ class AbstractService:
 
     def extract_with_custom_query(self, query):
         return DBConnectionManager.extract_with_custom_query(query)
+
+    def get_table_name(self):
+        return self.table_name

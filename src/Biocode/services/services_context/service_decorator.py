@@ -6,10 +6,10 @@ def Service(cls):
     singleton_cls = Singleton(cls)
 
     # Add additional features if necessary
-    def get_instance(*args, **kwargs):
-        return singleton_cls(*args, **kwargs)
+    cls.get_instance = lambda *args, **kwargs: singleton_cls(*args, **kwargs)
 
-    return get_instance
+    return cls
+
 
 
 
