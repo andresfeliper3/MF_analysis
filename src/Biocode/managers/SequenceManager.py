@@ -83,12 +83,13 @@ class SequenceManager(SequenceManagerInterface):
         mi_grid_chromosome_id = mi_grids_service\
             .get_chromosome_id_if_mi_grid_exists_by_refseq_accession_number(self.refseq_accession_number)
         if mi_grid_chromosome_id is None:
-            chromosome_id = self._insert_chromosome(GCF, chromosomes_service)
+            self.chromosome_id = self._insert_chromosome(GCF, chromosomes_service)
             logger.info(f"No previous results found in mi_grids table {mi_grids_service.get_table_name()} for {self.refseq_accession_number} - executing CGR algorithm")
             initial_cgr = self.mfa_generator.generate_initial_grid()
-            self._save_initial_grid_to_database(initial_cgr, chromosome_id, mi_grids_service)
+            self._save_initial_grid_to_database(initial_cgr, self.chromosome_id, mi_grids_service)
             cgr_results = self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(initial_cgr)
         else:
+            self.chromosome_id = mi_grid_chromosome_id
             logger.info(f"Extracting {self.refseq_accession_number} mi_grid from table {mi_grids_service.get_table_name()}")
             retrieved_data = mi_grids_service.extract_mi_grid_by_chromosome_id(mi_grid_chromosome_id)
             initial_cgr = np.frombuffer(retrieved_data, dtype=np.float64)
@@ -230,8 +231,6 @@ class SequenceManager(SequenceManagerInterface):
                                              method_to_find_it: str = "Recursively"):
 
         self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
-
-        self.chromosome_id = self._insert_chromosome() # check this
 
         for kmers in kmers_list:
             nucleotides_strings = kmers.get_nucleotides_strings()

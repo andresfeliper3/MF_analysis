@@ -23,4 +23,4 @@ class RegionMiGridsService(AbstractService):
         if result is None or result.empty:
             return None
         else:
-            return result.loc[0, 'id']
+            return int(result.loc[0, 'id'])

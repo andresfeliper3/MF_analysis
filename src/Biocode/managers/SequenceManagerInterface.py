@@ -97,7 +97,8 @@ class SequenceManagerInterface:
             if chromosome_id is None:
                 return chromosomes_service.insert(record=record)
             else:
-                return chromosomes_service.update(pk_value=chromosome_id, record=record)
+                result = chromosomes_service.update_when_null(pk_value=chromosome_id, record=record)
+                return result
 
         elif isinstance(chromosomes_service, RegionChromosomesService):
             whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
@@ -109,4 +110,4 @@ class SequenceManagerInterface:
             if chromosome_id is None:
                 return chromosomes_service.insert(record=record)
             else:
-                return chromosomes_service.update(pk_value=chromosome_id, record=record)
+                return chromosomes_service.update_when_null(pk_value=chromosome_id, record=record)

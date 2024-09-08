@@ -6,7 +6,7 @@ class AbstractService:
     def insert(self, record: tuple) -> int :
         return DBConnectionManager.insert(table_name=self.table_name, columns=self.columns, pk=self.pk_column,
                                           record=record)
-    def update(self, pk_value, record: tuple) -> int:
+    def update_when_null(self, pk_value, record: tuple) -> int:
         return DBConnectionManager.update_when_null(table_name=self.table_name, columns=self.columns, pk_col=self.pk_column,
                                           pk_value=pk_value, record=record)
     def extract_all(self):

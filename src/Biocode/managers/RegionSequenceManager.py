@@ -202,8 +202,8 @@ class RegionSequenceManager(SequenceManagerInterface):
             self.sequence.get_refseq_accession_number())
         for index, result in enumerate(self.mfa_results):
             chromosome_id = self.region_chromosomes_service.extract_id_by_refseq_accession_number(self.regions[index].get_refseq_accession_number())
-            chromosome_id = self.region_chromosomes_service.update(pk_value=chromosome_id,
-                                                                   record=(self.regions[index].get_name(),
+            chromosome_id = self.region_chromosomes_service.update_when_null(pk_value=chromosome_id,
+                                                                             record=(self.regions[index].get_name(),
                                                                            self.regions[index].get_refseq_accession_number(),
                                                                            organism_id,
                                                                            self.cover_percentage[index],
