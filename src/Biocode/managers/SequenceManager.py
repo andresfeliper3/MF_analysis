@@ -86,7 +86,7 @@ class SequenceManager(SequenceManagerInterface):
             chromosome_id = self._insert_chromosome(GCF, chromosomes_service)
             logger.info(f"No previous results found in mi_grids table {mi_grids_service.get_table_name()} for {self.refseq_accession_number} - executing CGR algorithm")
             initial_cgr = self.mfa_generator.generate_initial_grid()
-            self._save_initial_grid_to_database(initial_cgr, chromosome_id)
+            self._save_initial_grid_to_database(initial_cgr, chromosome_id, mi_grids_service)
             cgr_results = self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(initial_cgr)
         else:
             logger.info(f"Extracting {self.refseq_accession_number} mi_grid from table {mi_grids_service.get_table_name()}")
@@ -100,14 +100,14 @@ class SequenceManager(SequenceManagerInterface):
         logger.info(f"MFA results were generated for chromosome: {self.refseq_accession_number}")
         self.fq = self.mfa_generator.get_fq()
 
-    def _save_initial_grid_to_database(self, cgr_largest_mi_grid, whole_chromosome_id):
+    def _save_initial_grid_to_database(self, cgr_largest_mi_grid, chromosome_id, mi_grids_service):
         cgr_largest_mi_grid_np = np.array(cgr_largest_mi_grid, dtype=np.float64)
 
         binary_data_numpy = cgr_largest_mi_grid_np.tobytes()
 
         del cgr_largest_mi_grid_np
-        self.whole_mi_grids_service.insert(record=(binary_data_numpy, whole_chromosome_id,
-                                                   self.mfa_generator.get_epsilons()[0]))
+        mi_grids_service.insert(record=(binary_data_numpy, chromosome_id,
+                                        self.mfa_generator.get_epsilons()[0]))
         del binary_data_numpy
         gc.collect()
 
