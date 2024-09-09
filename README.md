@@ -1,4 +1,27 @@
 # MF_analysis
+# Table of Contents
+
+1. [Configurable Files](#configurable-files)
+2. [Commands Examples](#commands-examples)
+   - [Download FASTA Sequences](#download-fasta-sequences)
+   - [Analyze](#analyze)
+   - [Analyze and Find kmers Recursively](#analyze-and-find-kmers-recursively)
+3. [Graph](#graph)
+   - [Graph and XLSX File](#graph-and-xlsx-file)
+   - [Graph the RepeatMasker Results from a RM Results File](#graph-the-repeatmasker-results-from-a-rm-results-file)
+   - [Graph Using a Genome Folder of .out Result Files](#graph-using-a-genome-folder-of-out-result-files)
+   - [Graph Using a RefSeq Accession Number and the Database](#graph-using-a-refseq-accession-number-and-the-database)
+   - [Graph the Recursively Found Repeats Results from the Database](#graph-the-recursively-found-repeats-results-from-the-database)
+     - [Graph per Sequence/Chromosome](#graph-per-sequencechromosome)
+     - [Graph per Genome](#graph-per-genome)
+   - [Graph Genes Data](#graph-genes-data)
+     - [Graph from .gtf File](#graph-from-gtf-file)
+     - [Graph from Database](#graph-from-database)
+4. [Repeats using RepeatMasker](#repeats-using-repeatmasker)
+   - [Save RepeatMasker Results to Database](#save-repeatmasker-results-to-database)
+     - [Using a Folder with the Results of a Genome](#using-a-folder-with-the-results-of-a-genome)
+5. [Genes using a .gtf File](#genes-using-a-gtf-file)
+   - [Save the .gtf File Data to Database](#save-the-gtf-file-data-to-database)
 
 
 ## Configurable files
@@ -48,7 +71,7 @@ This command can be used to execute the whole genome.
 
 This command can be used to execute a single chromosome.
 
-    py .\command.py find_kmers_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -method r -name "caenorhabditis elegans" 
+    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method r -name "caenorhabditis elegans" 
 
 Saving kmers to database is NOT implemented yet.
 
@@ -69,16 +92,16 @@ The graphs are saved in the /out directory in the sequence folder.
 
 It is mandatory to specify the
 - path of the RM results file.
-- name - scientific name of the organism that will be used as the folder name to save the graph.
+  - name - scientific name of the organism that will be used as the folder name to save the graph.
 
 Other possible parameters are:
 - partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
     300 by default.
-- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
-- plot_type - style of plot (line or bar), line is by default.
-- save - save the graph in the local directory specified /out (true or false).
+  - regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+  - plot_type - style of plot (line or bar), line is by default.
+  - save - save the graph in the local directory specified /out (true or false).
 
-       py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+         py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
         
 The command without the optional parameters would be:
 
@@ -87,16 +110,16 @@ The command without the optional parameters would be:
 #### Graphing using a genome folder of .out result files 
 It is mandatory to specify the
 - path of the RM results folder.
-- name - scientific name of the organism that will be used as the folder name to save the graph.
+  - name - scientific name of the organism that will be used as the folder name to save the graph.
 
 Other possible parameters are:
 - partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
     300 by default.
-- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
-- plot_type - style of plot (line or bar), line is by default.
-- save - save the graph in the local directory specified /out (true or false).
+  - regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+  - plot_type - style of plot (line or bar), line is by default.
+  - save - save the graph in the local directory specified /out (true or false).
 
-       py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+         py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
         
 The command without the optional parameters would be:
 
@@ -106,16 +129,16 @@ The command without the optional parameters would be:
 ### Graph the RepeatMasker results using a refseq accession number and the database
 It is mandatory to specify the
 - ran - refseq accession number, to identify the sequence.
-- name - scientific name of the organism that will be used as the folder name to save the graph.
+  - name - scientific name of the organism that will be used as the folder name to save the graph.
 
 Other possible parameters are:
 - partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
     300 by default.
-- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
-- plot_type - style of plot (line or bar), line is by default.
-- save - save the graph in the local directory specified /out (true or false).
+  - regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+  - plot_type - style of plot (line or bar), line is by default.
+  - save - save the graph in the local directory specified /out (true or false).
 
-       py .\command.py graph_rm_database_sequence -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+         py .\command.py graph_rm_database_sequence -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
 
 The command without the optional parameters would be:
 
@@ -124,16 +147,16 @@ The command without the optional parameters would be:
 #### Graphing using a genome GCF and the database
 It is mandatory to specify the
 - gcf - GCF to identity the organism genome.
-- name - scientific name of the organism that will be used as the folder name to save the graph.
+  - name - scientific name of the organism that will be used as the folder name to save the graph.
 
 Other possible parameters are:
 - partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
     300 by default.
-- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
-- plot_type - style of plot (line or bar), line is by default.
-- save - save the graph in the local directory specified /out (true or false).
+  - regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+  - plot_type - style of plot (line or bar), line is by default.
+  - save - save the graph in the local directory specified /out (true or false).
 
-       py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+         py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
         
 The command without the optional parameters would be:
 
@@ -161,14 +184,14 @@ The genome is identified by the GCF (-gcf).
 #### Graph from .gtf file
 It is mandatory to specify the
 - path - relative path of the .gtf file.
-- name - scientific name of the organism that will be used as the folder name to save the graph.
+  - name - scientific name of the organism that will be used as the folder name to save the graph.
 
 Other possible parameters are:
 - partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
     300 by default.
-- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
-- plot_type - style of plot (line or bar), line is by default.
-- save - save the graph in the local directory specified /out (true or false).
+  - regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+  - plot_type - style of plot (line or bar), line is by default.
+  - save - save the graph in the local directory specified /out (true or false).
 
 Example using the command:
 
@@ -181,8 +204,8 @@ Short version:
 #### Graph from database
 It is mandatory to specify the
 - gcf - GCF of the organism/genome.
-- ran - refseq accession number of the sequence/chromosome.
-- name - scientific name of the organism that will be used as the folder name to save the graph.
+  - ran - refseq accession number of the sequence/chromosome.
+  - name - scientific name of the organism that will be used as the folder name to save the graph.
 
 **If GCF is entered, it is NOT necessary to enter a RAN. If RAN is entered, it is NOT necessary to enter
 a GCF. If RAN is entered, any GCF added will be ignored.**
@@ -190,9 +213,9 @@ a GCF. If RAN is entered, any GCF added will be ignored.**
 Other possible parameters are:
 - partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
     300 by default.
-- regions - amount of regions in which the graph will be divided using vertical line. 3 by default
-- plot_type - style of plot (line or bar), line is by default.
-- save - save the graph in the local directory specified /out (true or false).
+  - regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+  - plot_type - style of plot (line or bar), line is by default.
+  - save - save the graph in the local directory specified /out (true or false).
 
 Example using the command:
 

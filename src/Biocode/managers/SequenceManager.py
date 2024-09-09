@@ -84,6 +84,7 @@ class SequenceManager(SequenceManagerInterface):
             .get_chromosome_id_if_mi_grid_exists_by_refseq_accession_number(self.refseq_accession_number)
         if mi_grid_chromosome_id is None:
             self.chromosome_id = self._insert_chromosome(GCF, chromosomes_service)
+            logger.debug(f"generate_mfa: {self.chromosome_id}")
             logger.info(f"No previous results found in mi_grids table {mi_grids_service.get_table_name()} for {self.refseq_accession_number} - executing CGR algorithm")
             initial_cgr = self.mfa_generator.generate_initial_grid()
             self._save_initial_grid_to_database(initial_cgr, self.chromosome_id, mi_grids_service)
@@ -92,14 +93,15 @@ class SequenceManager(SequenceManagerInterface):
             self.chromosome_id = mi_grid_chromosome_id
             logger.info(f"Extracting {self.refseq_accession_number} mi_grid from table {mi_grids_service.get_table_name()}")
             retrieved_data = mi_grids_service.extract_mi_grid_by_chromosome_id(mi_grid_chromosome_id)
-            initial_cgr = np.frombuffer(retrieved_data, dtype=np.float64)
-            initial_cgr = initial_cgr.reshape((self.mfa_generator.get_grid_sizes()[0],
+            initial_cgr = np.frombuffer(retrieved_data, dtype=np.float64).reshape((self.mfa_generator.get_grid_sizes()[0],
                                                self.mfa_generator.get_grid_sizes()[0]))
+            self.mfa_generator.set_cgr_initial_grid(initial_cgr)
             cgr_results = self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(initial_cgr)
 
         self.mfa_results = self.mfa_generator.multifractal_discrimination_analysis(cgrs_mi_grids=cgr_results)
         logger.info(f"MFA results were generated for chromosome: {self.refseq_accession_number}")
         self.fq = self.mfa_generator.get_fq()
+
 
     def _save_initial_grid_to_database(self, cgr_largest_mi_grid, chromosome_id, mi_grids_service):
         cgr_largest_mi_grid_np = np.array(cgr_largest_mi_grid, dtype=np.float64)
@@ -107,6 +109,7 @@ class SequenceManager(SequenceManagerInterface):
         binary_data_numpy = cgr_largest_mi_grid_np.tobytes()
 
         del cgr_largest_mi_grid_np
+        logger.debug(f"save_initial {chromosome_id}")
         mi_grids_service.insert(record=(binary_data_numpy, chromosome_id,
                                         self.mfa_generator.get_epsilons()[0]))
         del binary_data_numpy
@@ -152,15 +155,17 @@ class SequenceManager(SequenceManagerInterface):
         super().graph_multifractal_analysis(_3d_cgr, linear_fit, degrees_of_multifractality,
                                             multifractal_spectrum, correlation_exponent)
         if degrees_of_multifractality:
-            print(f"The degree of multifractality of {self.sequence_name} is {self.degree_of_multifractality}")
+            logger.info(f"The degree of multifractality of {self.sequence_name} is {self.degree_of_multifractality}")
 
     def graph_coverage(self, subfolder="whole"):
         Graphs.graph_coverage(values=self.cover, sequence_name=self.sequence_name, name=f"{self.organism_name}/{subfolder}")
 
 
-    def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step:int, amount_sequences: int) -> List[MiGridCoordinatesValuesAndNucleotides]:
+    def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step:int, amount_sequences: int) -> \
+            List[MiGridCoordinatesValuesAndNucleotides]:
         recursive_sequences_finder = RecursiveSequencesFinder(grid_exponents=self.mfa_generator.GRID_EXPONENTS,
-                                                              cgrs_mi_grids=self.mfa_generator.get_cgrs_mi_grids())
+                        cgrs_mi_grids=self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(
+                            self.mfa_generator.get_cgr_initial_grid()))
         self.n_largest_mi_grid_values_strings_for_k = recursive_sequences_finder.get_largest_mi_grid_values_strings_for_different_k(
             k1=k1, k2=k2, k_step=k_step, amount_sequences=amount_sequences
         )

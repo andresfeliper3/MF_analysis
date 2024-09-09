@@ -14,7 +14,7 @@ class Sequence:
             self.refseq_accession_number = sequence_data['refseq_accession_number']
         self.size = len(self.sequence)
         self.cover = []
-        self.cover_percentage = 0.0
+        self.cover_percentage = None
         self.organism_name = organism_name
         self.region_number = 1
         self.regions_total = 0
