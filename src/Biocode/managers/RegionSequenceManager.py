@@ -9,6 +9,7 @@ from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src. Biocode.services.RegionChromosomesService import RegionChromosomesService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
+from src.Biocode.services.RegionMiGridService import RegionMiGridsService
 
 from utils.logger import logger
 
@@ -17,19 +18,22 @@ from utils.decorators import Inject
 @Inject(region_results_service = RegionResultsService,
         organisms_service = OrganismsService,
         region_chromosomes_service = RegionChromosomesService,
-        whole_chromosomes_service = WholeChromosomesService)
+        whole_chromosomes_service = WholeChromosomesService,
+        region_mi_grids_service = RegionMiGridsService)
 class RegionSequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, regions: list[Sequence] = None,
                  sequence_name: str = None, organism_name: str = None, regions_number: int = 0,
                  region_results_service: RegionResultsService = None,
                  organisms_service: OrganismsService = None,
                  region_chromosomes_service: RegionChromosomesService = None,
-                 whole_chromosomes_service: WholeChromosomesService = None):
+                 whole_chromosomes_service: WholeChromosomesService = None,
+                 region_mi_grids_service: RegionMiGridsService = None):
 
         self.region_results_service = region_results_service
         self.organisms_service = organisms_service
         self.region_chromosomes_service = region_chromosomes_service
         self.whole_chromosomes_service = whole_chromosomes_service
+        self.region_mi_grids_service = region_mi_grids_service
 
         self.regions_total = regions_number
         if sequence:
@@ -78,9 +82,14 @@ class RegionSequenceManager(SequenceManagerInterface):
         for region in self.regions:
             self.managers.append(SequenceManager(sequence=region, sequence_name=region.get_name()))
 
-    def generate_mfa(self):
+    def calculate_multifractal_analysis_values(self, GCF):
+        self.generate_mfa(GCF, self.region_mi_grids_service, self.region_chromosomes_service)
+        self.generate_degree_of_multifractality()
+        self._attach_cover_data()
+
+    def generate_mfa(self, GCF, mi_grids_service, chromosomes_service):
         for manager in self.managers:
-            manager.generate_mfa()
+            manager.generate_mfa(GCF, mi_grids_service, chromosomes_service)
             self.mfa_results.append(manager.get_mfa_results())
             self.fq.append(manager.get_fq())
 
@@ -188,14 +197,15 @@ class RegionSequenceManager(SequenceManagerInterface):
         """
         #try:
 
-        organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
-        whole_chromosome_id = int(self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
-            self.sequence.get_refseq_accession_number()))
-
+        self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
+        whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
+            self.sequence.get_refseq_accession_number())
         for index, result in enumerate(self.mfa_results):
-            chromosome_id = self.region_chromosomes_service.insert(record=(result['sequence_name'],
-                                                                           self.sequence.get_refseq_accession_number(),
-                                                                           organism_id,
+            chromosome_id = self.region_chromosomes_service.extract_id_by_refseq_accession_number(self.regions[index].get_refseq_accession_number())
+            self.region_chromosomes_service.update_when_null(pk_value=chromosome_id,
+                                                                             record=(self.regions[index].get_name(),
+                                                                           self.regions[index].get_refseq_accession_number(),
+                                                                           self.organism_id,
                                                                            self.cover_percentage[index],
                                                                            self.cover[index],
                                                                            self.regions_total,

@@ -27,7 +27,13 @@ class RegionSequence(Sequence):
                 end = (i + 1) * self.region_common_size if i < self.regions_number - 1 else None
                 region = self.sequence[start:end]
                 region_name = f"{self.name}_region_{i + 1}"
-                self.regions.append(Sequence(sequence=region, name=region_name))
+                refseq_accession_number = f"{self.refseq_accession_number}_region_{i + 1}"
+                region_sequence = Sequence(sequence=region, name=region_name,
+                                             refseq_accession_number=refseq_accession_number,
+                                             organism_name=self.organism_name)
+                region_sequence.set_region_number(i + 1)
+                region_sequence.set_regions_total(self.regions_number)
+                self.regions.append(region_sequence)
                 self.regions_names.append(region_name)
 
     def get_regions(self) -> list[Sequence]:

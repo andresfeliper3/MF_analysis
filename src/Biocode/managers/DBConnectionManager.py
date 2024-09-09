@@ -136,7 +136,6 @@ class DBConnectionManager:
         # If there is at least one row with a NULL value, proceed with the update
         if row_with_nulls:
             update_query = f'UPDATE {table_name} SET {", ".join([f"{col} = {placeholder}" for col in columns if col != pk_col])} WHERE {pk_col} = {pk_value};'
-            logger.debug(update_query)
             logger.info(f"Updating row in table {table_name} with {pk_col} = {pk_value} where NULL values existed")
             return DBConnectionManager._execute_query(update_query, converted_record)
         else:
