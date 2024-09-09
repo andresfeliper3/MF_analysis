@@ -71,7 +71,7 @@ This command can be used to execute the whole genome.
 
 This command can be used to execute a single chromosome.
 
-    py .\command.py find_kmers_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -method r -name "caenorhabditis elegans" 
+    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method r -name "caenorhabditis elegans" 
 
 Saving kmers to database is NOT implemented yet.
 

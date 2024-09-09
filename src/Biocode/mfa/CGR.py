@@ -143,3 +143,6 @@ class CGR:
 
     def get_cover_percentage(self) -> float:
         return self.cover_percentage
+
+    def get_sequence(self) -> Sequence:
+        return self.sequence

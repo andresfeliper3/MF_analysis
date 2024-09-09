@@ -15,6 +15,8 @@ import gc
 
 class MFA:
     def __init__(self, sequence: Sequence):
+        self.cgr_gen = None
+        self.cgr_initial_grid = None
         self._10_largest_mi_grid_values_for_k_from_10_to_4 = None
         self.DDq = None
         self.Dqmin = None
@@ -78,7 +80,8 @@ class MFA:
 
     def generate_initial_grid(self):
         self.cgr_gen = CGR(self.sequence)
-        return self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
+        self.cgr_initial_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
+        return self.cgr_initial_grid
 
     def _generate_cgr_mi_grids_quickly(self) -> list:
         self.cgr_gen = CGR(self.sequence)
@@ -149,8 +152,8 @@ class MFA:
         self.DDq = self.Dqmax - self.Dqmin
 
         # plt.show()
-        print("finished chromosome:", self.sequence.get_name())
-        print("*************************************")
+        logger.info(f"Finished chromosome: {self.sequence.get_name()}")
+        logger.info("*************************************")
         self.result = {
             'q_values': self.q_values,
             'Dq_values': self.Dq_values,
@@ -170,7 +173,7 @@ class MFA:
 
     def print_degree_of_multifractality(self):
         # Print the DDq value
-        print(f"Degree of Multifractality (DDq): {self.DDq}")
+        logger.info(f"Degree of Multifractality (DDq): {self.DDq}")
 
     def graph_multifractal_spectrum(self):
         # Dq vs q
@@ -206,8 +209,11 @@ class MFA:
     def get_total_fractal_points(self) -> float:
         return self.total_fractal_points
 
-    def get_cgrs_mi_grids(self) -> list: #CHECK THIS
-        return self.cgrs_mi_grids
+    def get_cgr_initial_grid(self):
+        return self.cgr_initial_grid
+
+    def set_cgr_initial_grid(self, cgr_initial_grid):
+        self.cgr_initial_grid = cgr_initial_grid
 
     def get_epsilons(self) -> list[float]:
         return self.epsilons
