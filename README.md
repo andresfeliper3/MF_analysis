@@ -125,6 +125,29 @@ The command without the optional parameters would be:
 
        py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -name "Caenorhabditis elegans" 
 
+### Graph the Plantrep.cn repeats using the file
+The graphs are saved in the /out directory in the sequence folder. 
+Keep in mind that the repeats file contains the repeats of the entire genome of the organism,
+not only a single chromosome. 
+
+It is mandatory to specify the
+- path of the repeats file.
+- dir - scientific name of the organism that will be used as the folder name to save the graph.
+
+Other possible parameters are:
+  - partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
+    300 by default.
+  - regions - amount of regions in which the graph will be divided using vertical line. 3 by default
+  - plot_type - style of plot (line or bar), line is by default.
+  - save - save the graph in the local directory specified /out (true or false).
+
+         py .\command.py graph_genome_repeats_from_file -path resources/RM_resources/musa_acuminata/157_Musa_acuminata_rm.out -partitions 300 -regions 3 -plot_type line -dir musa_acuminata --save true
+        
+The command without the optional parameters would be:
+
+       py .\command.py graph_genome_repeats_from_file -path resources/RM_resources/musa_acuminata/157_Musa_acuminata_rm.out -dir musa_acuminata
+ 
+
 
 ### Graph the RepeatMasker results using a refseq accession number and the database
 It is mandatory to specify the

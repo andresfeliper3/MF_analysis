@@ -9,7 +9,7 @@ from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_M
 from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, \
     graph_rm_results_from_database, graph_recursive_from_database, graph_recursive_genome_from_database, \
     graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database, graph_gtf_from_file, \
-    graph_gtf_from_database
+    graph_gtf_from_database, graph_genome_repeats_from_file
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
 from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder
 from genes import load_genes_from_file
@@ -100,6 +100,20 @@ def main():
     graph_rm_database_genome_parser.add_argument('-name',
                                              help="Enter the scientific name of the organism to use it as a folder name")
 
+    graph_genome_repeats_from_file = subparsers.add_parser('graph_genome_repeats_from_file', help='Graph genome repeats results from'
+                                                                                        'a single file (such as Plantrep.cn results)')
+    graph_genome_repeats_from_file.add_argument('-path', help="Enter the path of a genome results file")
+    graph_genome_repeats_from_file.add_argument('-partitions',
+                                      help="Enter the number of partitions to use to divide the sequence and "
+                                           "merge the repeats")
+    graph_genome_repeats_from_file.add_argument('-regions',
+                                      help="Enter the amount of regions to separate the graph using vertical lines")
+    graph_genome_repeats_from_file.add_argument('-plot_type', help="Plot type: line or bar")
+    graph_genome_repeats_from_file.add_argument('--save', choices=['true', 'false'], default='true',
+                                      help='Save graphs locally in /out directory')
+    graph_genome_repeats_from_file.add_argument('-dir',
+                                      help="Enter the scientific name of the organism to use it as a folder name")
+
     graph_recursive_parser = subparsers.add_parser('graph_recursive', help='Graph results found by Recursive algorithm')
     graph_recursive_parser.add_argument('-ran', help="Enter the refseq accession number of the sequence/chromosome")
     graph_recursive_parser.add_argument('--save', choices=['true', 'false'], default='true',
@@ -185,6 +199,8 @@ def main():
         graph_rm_file_genome_command(args)
     elif args.command == 'graph_rm_database_genome':
         graph_rm_database_genome_command(args)
+    elif args.command == 'graph_genome_repeats_from_file':
+        graph_genome_repeats_from_file_command(args)
     elif args.command == 'graph_recursive':
         graph_recursive_command(args)
     elif args.command == 'graph_recursive_genome':
@@ -387,8 +403,12 @@ def graph_rm_file_genome_command(args):
 
 @TryExcept
 def graph_rm_database_genome_command(args):
-        graph_rm_results_of_genome_from_database(GCF=args.gcf, partitions=args.partitions, regions=args.regions,
+    graph_rm_results_of_genome_from_database(GCF=args.gcf, partitions=args.partitions, regions=args.regions,
                                                  plot_type=args.plot_type, save=args.save, name=args.name)
+@TryExcept
+def graph_genome_repeats_from_file_command(args):
+    graph_genome_repeats_from_file(path=args.path, dir=args.dir, partitions=args.partitions, regions=args.regions,
+                                   plot_type=args.plot_type, save=args.save)
 
 @TryExcept
 def graph_recursive_command(args):
