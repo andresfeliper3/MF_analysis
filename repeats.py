@@ -15,7 +15,7 @@ import pandas as pd
 @Timer
 def load_RM_repeats_from_file(path):
     logger.info(f"Loading repeats results from RepeatMasker from {path}")
-    df = FileReader.read_RM_results_file(path)
+    df = FileReader.read_repeats_results_file(path)
     repeats_service = RepeatsService()
     rm_repeats_whole_chromosomes_service= RMRepeatsWholeChromosomesService()
     whole_chromosomes_service = WholeChromosomesService()

@@ -6,7 +6,7 @@ from utils.logger import  logger
 class FileReader:
 
     @staticmethod
-    def read_RM_results_file(path: str):
+    def read_repeats_results_file(path: str):
         data = []
 
         with open(path, 'r') as file:

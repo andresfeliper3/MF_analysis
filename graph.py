@@ -117,7 +117,7 @@ def graph_rm_results_from_file(path: str, partitions:int, regions: int,
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
     DEFAULT_REPEATS_LIMIT = 20
-    df = FileReader.read_RM_results_file(path)
+    df = FileReader.read_repeats_results_file(path)
     refseq_accession_number = df['refseq_accession_number'][0]
 
     whole_chromosomes_service = WholeChromosomesService()
@@ -207,6 +207,52 @@ def graph_rm_results_of_genome_from_database(GCF: str, partitions: int, regions:
 
     for refseq_accession_number in chromosomes_ran_list:
         graph_rm_results_from_database(refseq_accession_number, partitions, regions, plot_type, save, name)
+
+@DBConnection
+@Timer
+def graph_genome_repeats_from_file(path: str, dir: str, partitions: int, regions:int, plot_type: str, save: bool):
+    DEFAULT_REGIONS = 3
+    DEFAULT_PARTITIONS = 300
+    DEFAULT_REPEATS_LIMIT = 20
+    df = FileReader.read_repeats_results_file(path)
+    df_list = FileReader.divide_genome_df_rows_by_chromosome(df)
+
+    whole_chromosomes_service = WholeChromosomesService()
+
+    for index, df in enumerate(df_list):
+        refseq_accession_number = df['refseq_accession_number'][0]
+        filename, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
+            refseq_accession_number)
+
+        partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
+        regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+        plot_type = plot_type or "line"
+
+        logger.info(f"Starting generating graphs for chromosome {index + 1} - {refseq_accession_number}")
+        Graphs.graph_distribution_of_repeats_merged_from_file(df=df, size=size, partitions=partitions,
+                                                              regions=regions, plot_type=plot_type, save=save,
+                                                              name=dir, filename=filename)
+
+        Graphs.graph_frequency_of_repeats_grouped_from_file(df=df, col="class_family", filtering=False, n_max=10, save=save,
+                                                            name=dir, filename=filename)
+        Graphs.graph_frequency_of_repeats_grouped_from_file(df=df, col="repeat", filtering=False, n_max=10, save=save,
+                                                            name=dir, filename=filename)
+
+        Graphs.graph_distribution_of_repeats_from_file(df=df, col="class_family", legend=True, plot_type=plot_type,
+                                                       limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=dir,
+                                                       filename=filename)
+        Graphs.graph_distribution_of_repeats_from_file(df=df, col="repeat", legend=True, plot_type=plot_type,
+                                                       limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save, name=dir,
+                                                       filename=filename)
+
+        Graphs.graph_distribution_of_repeats_subplots_from_file(df=df, col="class_family", legend=True,
+                                                                limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
+                                                                name=dir, filename=filename)
+        Graphs.graph_distribution_of_repeats_subplots_from_file(df=df, col="repeat", legend=True,
+                                                                limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
+                                                                name=dir, filename=filename)
+        logger.info(f"Completed the generation of graphs for chromosome {index} - {refseq_accession_number}")
+
 
 
 @DBConnection
