@@ -11,7 +11,7 @@ from graph import load_data_whole, graph_whole, load_data_regions, graph_regions
     graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database, graph_gtf_from_file, \
     graph_gtf_from_database, graph_genome_repeats_from_file
 from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
-from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder
+from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder, load_genome_repeats_file
 from genes import load_genes_from_file
 
 from src.Biocode.sequences.Sequence import Sequence
@@ -175,6 +175,11 @@ def main():
     load_RM_repeats_folder_parser.add_argument('-path', help='Add the relative path of the folder of RM results. For example: '
                                                       'resources/RM_resources/caenorhabditis_elegans')
 
+    load_genome_repeats_file_parser = subparsers.add_parser('load_genome_repeats_file', help='Load repeats of an entire genome'
+                                                                                             'from a single results file')
+    load_genome_repeats_file_parser.add_argument('-path', help='Add the relative path of the file of genome repeats. For example: '
+                                                      'resources/RM_resources/musa_acuminata/157_Musa_acuminata_rm.out')
+
     load_genes_parser = subparsers.add_parser('load_genes', help='Load genes file to database using a file path')
     load_genes_parser.add_argument('-path', help='Add the relative path of the genes file. For example: '
                                                       'resources/dna_sequences/caenorhabditis_elegans/gtf/file.gtf')
@@ -215,6 +220,8 @@ def main():
         load_RM_repeats(args)
     elif args.command == 'load_RM_repeats_folder':
         load_RM_repeats_folder(args)
+    elif args.command == 'load_genome_repeats_file':
+        load_genome_repeats_file_command(args)
     elif args.command == 'load_genes':
         load_genes(args)
 
@@ -384,6 +391,10 @@ def load_RM_repeats(args):
 @TryExcept
 def load_RM_repeats_folder(args):
     load_RM_repeats_from_folder(args.path)
+
+@TryExcept
+def load_genome_repeats_file_command(args):
+    load_genome_repeats_file(args.path)
 
 @TryExcept
 def graph_rm_file_command(args):

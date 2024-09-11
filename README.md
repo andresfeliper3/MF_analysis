@@ -1,12 +1,16 @@
 # MF_analysis
 # Table of Contents
 
+
 1. [Configurable Files](#configurable-files)
 2. [Commands Examples](#commands-examples)
    - [Download FASTA Sequences](#download-fasta-sequences)
    - [Analyze](#analyze)
    - [Analyze and Find kmers Recursively](#analyze-and-find-kmers-recursively)
-3. [Graph](#graph)
+3. [Executing RepeatMasker](#executing-repeatmasker)
+   - [RepeatMasker for a Single Sequence](#repeatmasker-for-a-single-sequence)
+   - [RepeatMasker Execution for Genome Folder](#repeatmasker-execution-for-genome-folder)
+4. [Graph](#graph)
    - [Graph and XLSX File](#graph-and-xlsx-file)
    - [Graph the RepeatMasker Results from a RM Results File](#graph-the-repeatmasker-results-from-a-rm-results-file)
    - [Graph Using a Genome Folder of .out Result Files](#graph-using-a-genome-folder-of-out-result-files)
@@ -17,16 +21,18 @@
    - [Graph Genes Data](#graph-genes-data)
      - [Graph from .gtf File](#graph-from-gtf-file)
      - [Graph from Database](#graph-from-database)
-4. [Repeats using RepeatMasker](#repeats-using-repeatmasker)
+5. [Repeats Using RepeatMasker](#repeats-using-repeatmasker)
    - [Save RepeatMasker Results to Database](#save-repeatmasker-results-to-database)
      - [Using a Folder with the Results of a Genome](#using-a-folder-with-the-results-of-a-genome)
-5. [Genes using a .gtf File](#genes-using-a-gtf-file)
+6. [Genes Using a .gtf File](#genes-using-a-gtf-file)
    - [Save the .gtf File Data to Database](#save-the-gtf-file-data-to-database)
 
 
 ## Configurable files
-The file _resources/sequences.yaml_ contains the chromosomes info to execute the MFA analysis. It can be modified following the predefined format.
+* _resources/sequences.yaml_ contains the chromosomes info to execute the MFA analysis. It can be modified following the predefined format.
 The organism name and GCF expressed in that file are the ones to be used in the commands.
+
+* _resources/db_config.yaml_ contains the configuration of the selected database to work with. Modify the *type* value in order to select the type of database.
 
 ## Commands examples
 
@@ -74,6 +80,33 @@ This command can be used to execute a single chromosome.
     py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method r -name "caenorhabditis elegans" 
 
 Saving kmers to database is NOT implemented yet.
+
+## Executing RepeatMasker
+In order to use RepeatMasker from a Docker container. 
+Execute the container using the following command:
+
+    docker run -it --rm --mount type=bind,source="D:/TG/MFA_analysis/resources",target=/working --mount type=bind,source="E:/lib",target=/opt/RepeatMasker/Libraries/famdb dfam/tetools:latest bash 
+
+The first *source* is the path to the /resources folder of the project. 
+The second *source* is the path to the /lib folder where all the partitions of the Dfam database are located.
+
+### RepeatMasker for a single sequence
+In the Docker container, go to the /working directory and execute the following command:
+
+    RepeatMasker -species nematode -dir /working/RM_resources/caenorhabditis_elegans /working/dna_sequences/Caenorhabditis_elegans/c_elegans_chromosome_X.fasta
+
+You can change the *-dir* parameter to change the destination folder. The next parameter is the path to the .fasta or 
+.fna sequence.
+
+### RepeatMasker execution for genome folder
+In the Docker container, go to the /working directory and execute the following command. 
+
+    ./repeatmasker_species_runner.sh /working/dna_sequences/Acropora_millepora/ /working/RM_resources/acropora_millepora/ cnidaria
+
+The first parameter is the *input directory* and the second parameter is the *output directory*.
+Change the input directory organism name <Acropora_millepora> in order to change the organism to be executed.
+Change the output directory organism name <acropora_millepora> in order to change the output folder of the results.
+Remember to have all the chromosomes files .fna or .fasta in the input directoryy.
 
 ## Graph
 
@@ -266,6 +299,12 @@ Example using the command:
 Example using the command:
 
     py .\command.py load_RM_repeats_folder -path resources/RM_resources/caenorhabditis_elegans
+
+#### Using a file with the results of a genome
+The file is segmented in chromosomes before saving it to the database.
+Example using the command:
+
+    py .\command.py load_genome_repeats_file -path resources/RM_resources/musa_acuminata/157_Musa_acuminata_rm.out
 
 
 ## Genes using a .gtf file
