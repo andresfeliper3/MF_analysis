@@ -1,1 +1,13 @@
-  g
+repeats:
+  distribution_of_repeats_merged: true
+  frequency_of_repeats_class_family: true
+  frequency_of_repeats_repeat: true
+  distribution_of_repeats_class_family: true
+  distribution_of_repeats_repeat: true
+  distribution_of_repeats_subplots_class_family: true
+  distribution_of_repeats_subplots_repeat: true
+
+recursive_repeats:
+  recursive_repeats_largest_values: true
+  grouped_by_recursive_repeat_length: true
+  individual_plots_by_recursive_repeat_length: true
