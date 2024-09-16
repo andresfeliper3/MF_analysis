@@ -7,7 +7,7 @@ class DBConnectionManager:
     conn = None
     cursor = None
     yaml_file = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')),
-                                "resources/db_config.yaml")
+                                "config/db_config.yaml")
     is_sqlite = False
     is_postgresql = False
     is_mysql = False

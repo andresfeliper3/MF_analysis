@@ -19,7 +19,7 @@ from utils.FileReader import FileReader
 import yaml
 
 def load_config():
-    with open(f"resources/graphs_config.yaml", 'r') as file:
+    with open(f"config/graphs_config.yaml", 'r') as file:
         return yaml.safe_load(file)
 
 
