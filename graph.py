@@ -16,6 +16,11 @@ from utils.logger import logger
 from utils.folder import apply_function_to_files_in_folder
 from utils.FileReader import FileReader
 
+import yaml
+
+def load_config(path: str):
+    with open(f"{path}", 'r') as file:
+        return yaml.safe_load(file)
 
 
 @DBConnection
