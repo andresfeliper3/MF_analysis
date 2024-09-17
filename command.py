@@ -1,7 +1,6 @@
 import argparse
 
-from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_MFA_sequence, regions_MFA_sequence, \
-    find_kmers_recursively_in_genome, find_kmers_recursively_in_sequence
+from Analyzer import Analyzer
 from download import remove_files, execute_download_command, uncompress_all_files
 from genes import load_genes_from_file
 from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, \
@@ -10,9 +9,7 @@ from graph import load_data_whole, graph_whole, load_data_regions, graph_regions
     graph_gtf_from_database, graph_genome_repeats_from_file
 from load import loader
 from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder, load_genome_repeats_file
-from src.Biocode.sequences.Sequence import Sequence
 from utils.decorators import TryExcept
-from utils.logger import logger
 
 
 def main():
@@ -184,15 +181,16 @@ def main():
                                                       'resources/dna_sequences/caenorhabditis_elegans/gtf/file.gtf')
 
     args = parser.parse_args()
+    analyzer = Analyzer()
 
     if args.command == 'analyze_genome':
-        analyze_genome_command(args)
+        analyzer.analyze_genome_command(args)
     elif args.command == 'analyze_sequence':
-        analyze_sequence_command(args)
+        analyzer.analyze_sequence_command(args)
     elif args.command == 'find_kmers_genome':
-        find_kmers_genome_command(args)
+        analyzer.find_kmers_genome_command(args)
     elif args.command == 'find_kmers_sequence':
-        find_kmers_sequence_command(args)
+        analyzer.find_kmers_sequence_command(args)
     elif args.command == 'graph':
         graph_command(args)
     elif args.command == 'graph_rm_file_sequence':
@@ -225,52 +223,6 @@ def main():
         load_genes(args)
 
 
-
-organism = ""
-
-@TryExcept
-def find_kmers_genome_command(args):
-    global organism
-
-    save_to_db = False if args.save_to_db == 'false' else True
-
-    if args.method:
-        if args.method == 'r':
-            organism = args.name
-            loader.set_organism(organism)
-            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                          amount_chromosomes=loader.get_amount_chromosomes())
-            find_kmers_recursively_in_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                                             data=loader.get_data(),save_to_db=save_to_db)
-        elif args.method == 'rm':
-            logger.warning("Feature not implemented yet")
-
-@TryExcept
-def find_kmers_sequence_command(args):
-    global organism
-
-    if args.name:
-        organism = args.name
-        loader.set_organism(organism)
-    else:
-        raise Exception("Please provide either a -name (lowercase name or GCF).")
-
-    if args.path:
-        if args.method == 'r':
-            sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path),
-                                name=loader.extract_file_name(file_path=args.path),
-                                organism_name=loader.get_organism_name(),
-                                refseq_accession_number=loader.extract_refseq_accession_number(args.path))
-            save_to_db = False if args.save_to_db == 'false' else True
-
-            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                          amount_chromosomes=loader.get_amount_chromosomes())
-            find_kmers_recursively_in_sequence(gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
-        elif args.method == 'rm':
-            logger.warning("Feature not implemented yet")
-    else:
-        raise Exception("Please provide a .fasta file path relative to command.py file")
-
 @TryExcept
 def download_command(args):
     global organism
@@ -289,73 +241,6 @@ def download_command(args):
     else:
         raise Exception("Please provide either a -name (lowercase name or GCF).")
 
-@TryExcept
-def analyze_genome_command(args):
-    global organism
-
-    save_to_db = False if args.save_to_db == 'false' else True
-
-    if args.name:
-        organism = args.name
-        loader.set_organism(organism)
-        _validate_mode_analyzing_genome(args, save_to_db=save_to_db)
-
-    else:
-        raise Exception("Please provide either a -name (lowercase name or GCF).")
-
-def _validate_mode_analyzing_genome(args, save_to_db: bool):
-    if args.mode:
-        if args.mode == 'whole':
-            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                          amount_chromosomes=loader.get_amount_chromosomes())
-            whole_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data(),
-                             save_to_db=save_to_db)
-        elif args.mode == 'regions':
-            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                          amount_chromosomes=loader.get_amount_chromosomes())
-            regions_MFA_genome(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(), data=loader.get_data(),
-                               regions_number=loader.get_regions_number(), save_to_db=save_to_db)
-        else:
-            raise Exception("Enter a valid mode (whole or regions)")
-    else:
-        raise Exception("Enter a valid mode (whole or regions)")
-
-@TryExcept
-def analyze_sequence_command(args):
-    global organism
-
-    if args.name:
-        organism = args.name
-        loader.set_organism(organism)
-    else:
-       raise Exception("Please provide either a -name (lowercase name or GCF).")
-
-    if args.path:
-        sequence = Sequence(sequence=loader.read_fasta_sequence(file_path=args.path),
-                            name=loader.extract_file_name(file_path=args.path),
-                            organism_name=loader.get_organism_name(),
-                            refseq_accession_number=loader.extract_refseq_accession_number(args.path))
-        save_to_db = False if args.save_to_db == 'false' else True
-        _validate_mode_analyzing_sequence(args, sequence, save_to_db=save_to_db)
-    else:
-        raise Exception("Please provide a .fasta file path relative to command.py file")
-
-
-def _validate_mode_analyzing_sequence(args, sequence: Sequence, save_to_db: bool):
-    if args.mode:
-        if args.mode == 'whole':
-            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                          amount_chromosomes=loader.get_amount_chromosomes())
-            whole_MFA_sequence(gcf=loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
-        elif args.mode == 'regions':
-            load_organism(organism_name=loader.get_organism_name(), gcf=loader.get_gcf(),
-                          amount_chromosomes=loader.get_amount_chromosomes())
-            regions_MFA_sequence(gcf=loader.get_gcf(), sequence=sequence,
-                                 regions_number=loader.get_regions_number(), save_to_db=save_to_db)
-        else:
-            raise Exception("Enter a valid mode (whole or regions)")
-    else:
-        raise Exception("Enter a valid mode (whole or regions)")
 
 @TryExcept
 def graph_command(args):
