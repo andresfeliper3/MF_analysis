@@ -33,6 +33,9 @@ def load_data_whole(gcf) -> dict:
 
 @Timer
 def graph_whole(dataframe, organism_name, data):
+    config = load_config()
+    graphs_config = config.get('MFA', {})
+
     genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
     desired_keys_ddq = ['DDq', 'sequence_name']
     desired_keys_dq_tauq = ['Dq_values', 'tau_q_values']
@@ -62,10 +65,14 @@ def graph_whole(dataframe, organism_name, data):
 
     genome_manager.generate_df_results()
 
-    genome_manager.graph_degrees_of_multifractality()
-    genome_manager.graph_multifractal_analysis_merged()
+    if graphs_config.get('degrees_of_multifractality', False):
+        genome_manager.graph_degrees_of_multifractality()
 
-    genome_manager.graph_coverage()
+    if graphs_config.get('multifractal_analysis_merged', False):
+        genome_manager.graph_multifractal_analysis_merged()
+
+    if graphs_config.get('coverage', False):
+        genome_manager.graph_coverage()
 
 
 @DBConnection
@@ -78,9 +85,11 @@ def load_data_regions(gcf) -> list[dict]:
 
 @Timer
 def graph_regions(dataframe, organism_name, data, regions_number):
+    config = load_config()
+    graphs_config = config.get('MFA', {})
+
     region_genome_manager = RegionGenomeManager(genome_data=data, organism_name=organism_name,
                                                 regions_number=regions_number)
-
     desired_keys_ddq = ['DDq', 'sequence_name']
     desired_keys_dq_tauq = ['Dq_values', 'tau_q_values']
 
@@ -110,10 +119,14 @@ def graph_regions(dataframe, organism_name, data, regions_number):
 
     region_genome_manager.generate_df_results()
 
-    region_genome_manager.graph_degrees_of_multifractality()
-    region_genome_manager.graph_multifractal_analysis_merged()
+    if graphs_config.get('degrees_of_multifractality', False):
+        region_genome_manager.graph_degrees_of_multifractality()
 
-    region_genome_manager.graph_coverage()
+    if graphs_config.get('multifractal_analysis_merged', False):
+        region_genome_manager.graph_multifractal_analysis_merged()
+
+    if graphs_config.get('coverage', False):
+        region_genome_manager.graph_coverage()
 
 @DBConnection
 @Timer
@@ -352,9 +365,12 @@ def graph_recursive_genome_from_database(GCF: str, save: bool, name: str, n_max:
 
 @DBConnection
 @Timer
-def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str, save: bool, name: str):
+def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str, save: bool, name: str, config_path: str = "config.yaml"):
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
+
+    config = load_config()
+    graphs_config = config.get('genes', {})
 
     partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
     regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
@@ -365,26 +381,34 @@ def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str
     file_df = FileReader.read_gtf_file(path)
     chromosomes_df_list = FileReader.divide_genome_df_rows_by_chromosome(file_df)
 
-
     for df in chromosomes_df_list:
         refseq_accession_number = df['refseq_accession_number'][0]
         logger.info(f"Graphing for the sequence {refseq_accession_number}")
         try:
             chromosome_name, size = whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
-                            refseq_accession_number)
+                refseq_accession_number)
         except Exception as e:
             logger.error(
                 f"Failed to extract whole chromosome ID for refseq_accession_number {refseq_accession_number}: {e}")
             break
 
-        Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
-                                                bool(save))
-        Graphs.graph_distribution_of_genes(df, name, legend=True, plot_type=plot_type, limit=20, regions=regions,
-                                           chromosome_name=chromosome_name, save=bool(save))
+        if graphs_config.get('distribution_of_genes_merged', False):
+            Graphs.graph_distribution_of_genes_merged(
+                df, name, size, partitions, regions, plot_type, chromosome_name, bool(save)
+            )
+
+        if graphs_config.get('distribution_of_genes', False):
+            Graphs.graph_distribution_of_genes(
+                df, name, legend=True, plot_type=plot_type, limit=20, regions=regions,
+                chromosome_name=chromosome_name, save=bool(save)
+            )
 
 
 def _graph_gtf_single_chromosome_from_database(refseq_accession_number: str, name: str, partitions: int, regions: int,
                                                plot_type: str, save: bool):
+    config = load_config()
+    graphs_config = config.get('genes', {})
+
     gtf_genes_service = GtfGenesService()
     whole_chromosomes_service = WholeChromosomesService()
     logger.info(f"Graphing for the sequence {refseq_accession_number}")
@@ -392,8 +416,10 @@ def _graph_gtf_single_chromosome_from_database(refseq_accession_number: str, nam
                                 refseq_accession_number)
     df = gtf_genes_service. extract_genes_by_chromosome(refseq_accession_number)
 
-    Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
+    if graphs_config.get('distribution_of_genes_merged', False):
+        Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
                                               bool(save))
+
 
 @DBConnection
 @Timer

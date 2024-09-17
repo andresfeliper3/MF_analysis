@@ -115,8 +115,8 @@ Load and graph the data:
 
         py .\command.py graph -name "caenorhabditis elegans" -mode whole
         py .\command.py graph -name "caenorhabditis elegans" -mode regions
-        py .\command.py graph -name GCF_000002985_4 -mode regions
-        py .\command.py graph -name GCF_000002985_4 -mode whole
+        py .\command.py graph -name GCF_000002985_6 -mode regions
+        py .\command.py graph -name GCF_000002985_6 -mode whole
 
 Compare results with branch main and changeAlgorithm.
 

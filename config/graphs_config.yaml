@@ -11,3 +11,13 @@ recursive_repeats:
   recursive_repeats_largest_values: true
   grouped_by_recursive_repeat_length: true
   individual_plots_by_recursive_repeat_length: true
+
+MFA:
+  degrees_of_multifractality: true
+  multifractal_analysis_merged: true
+  coverage: false
+
+genes:
+  distribution_of_genes_merged: true
+  distribution_of_genes: true
+
