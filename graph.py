@@ -1,22 +1,21 @@
-from src.Biocode.services.OrganismsService import OrganismsService
-from src.Biocode.services.WholeResultsService import WholeResultsService
-from src.Biocode.services.RegionResultsService import RegionResultsService
-from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
-from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
-from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
-from src.Biocode.services.GtfGenesService import GtfGenesService
-from src.Biocode.managers.DBConnectionManager import DBConnectionManager
+import yaml
+
+from src.Biocode.graphs.Graphs import Graphs
 from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
-from src.Biocode.graphs.Graphs import Graphs
-from load import loader
+from src.Biocode.services.GtfGenesService import GtfGenesService
+from src.Biocode.services.OrganismsService import OrganismsService
+from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
+from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
+from src.Biocode.services.RegionResultsService import RegionResultsService
+from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
+from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.utils.utils import str_to_list
-from utils.decorators import Timer, DBConnection
-from utils.logger import logger
-from utils.folder import apply_function_to_files_in_folder
 from utils.FileReader import FileReader
+from utils.decorators import Timer, DBConnection
+from utils.folder import apply_function_to_files_in_folder
+from utils.logger import logger
 
-import yaml
 
 def load_config():
     with open(f"config/graphs_config.yaml", 'r') as file:

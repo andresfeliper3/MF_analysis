@@ -1,15 +1,12 @@
+from src.Biocode.graphs.Graphs import Graphs
 from src.Biocode.managers.GenomeManagerInterface import GenomeManagerInterface
 from src.Biocode.sequences.Genome import Genome
 from src.Biocode.sequences.Sequence import Sequence
-from src.Biocode.graphs.Graphs import Graphs
-
-from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
-
+from src.Biocode.services.WholeResultsService import WholeResultsService
 from utils.decorators import Inject
 
-from utils.logger import logger
 
 @Inject(whole_results_service = WholeResultsService,
         organisms_service = OrganismsService,
