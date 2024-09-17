@@ -1,14 +1,8 @@
 from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
-from src.Biocode.managers.DBConnectionManager import DBConnectionManager
-from src.Biocode.services.OrganismsService import OrganismsService
-from src.Biocode.managers.SequenceManager import SequenceManager
 from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
-
-from src.Biocode.services.RepeatsService import RepeatsService
-from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
-
-from load import loader
+from src.Biocode.managers.SequenceManager import SequenceManager
+from src.Biocode.services.OrganismsService import OrganismsService
 from utils.decorators import Timer, DBConnection
 from utils.logger import logger
 

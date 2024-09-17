@@ -1,20 +1,19 @@
 import argparse
-import traceback
-from load import loader
-from utils.logger import logger
-from utils.decorators import TryExcept
 
 from analyze import load_organism, whole_MFA_genome, regions_MFA_genome, whole_MFA_sequence, regions_MFA_sequence, \
     find_kmers_recursively_in_genome, find_kmers_recursively_in_sequence
+from download import remove_files, execute_download_command, uncompress_all_files
+from genes import load_genes_from_file
 from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, \
     graph_rm_results_from_database, graph_recursive_from_database, graph_recursive_genome_from_database, \
     graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database, graph_gtf_from_file, \
     graph_gtf_from_database, graph_genome_repeats_from_file
-from download import remove_files, execute_download_command, clean_directory, uncompress_all_files
+from load import loader
 from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder, load_genome_repeats_file
-from genes import load_genes_from_file
-
 from src.Biocode.sequences.Sequence import Sequence
+from utils.decorators import TryExcept
+from utils.logger import logger
+
 
 def main():
     parser = argparse.ArgumentParser(description='Command line utility')
