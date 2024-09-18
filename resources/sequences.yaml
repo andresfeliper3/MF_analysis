@@ -5,7 +5,7 @@ caenorhabditis elegans 2008: &c_elegans_2008
   GCF: "GCF_000002985.4"
   download_url: ""
   regions_number: 3
-GCF_000002985_4: *c_elegans_2008
+GCF_000002985.4: *c_elegans_2008
 
 caenorhabditis elegans 2008 split:
   organism_name: "caenorhabditis_elegans 2008 split"
@@ -20,44 +20,44 @@ caenorhabditis elegans: &c_elegans
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/"
   regions_number: 3
-GCF_000002985_6: *c_elegans
+GCF_000002985.6: *c_elegans
 
 micromonas commoda: &m_commoda
-  organism_name: "Micromonas commoda"
+  organism_name: "micromonas_commoda"
   GCF: "GCF_000090985.2"
   download_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Micromonas_commoda/latest_assembly_versions/GCF_000090985.2_ASM9098v2/GCF_000090985.2_ASM9098v2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/'
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Micromonas_commoda/latest_assembly_versions/GCF_000090985.2_ASM9098v2/"
   amount_chromosomes: 17
   regions_number: 3
-GCF_000090985_2: *m_commoda
+GCF_000090985.2: *m_commoda
 
 musa acuminata: &musa_acuminata
   organism_name: "musa_acuminata"
   GCF: "GCF_000313855.2"
   download_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/latest_assembly_versions/GCF_000313855.2_ASM31385v2/GCF_000313855.2_ASM31385v2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/'
   regions_number: 3
-GCF_000313855_2: *musa_acuminata
+GCF_000313855.2: *musa_acuminata
 
 drosophila melanogaster: &d_melanogaster
-  organism_name: "Drosophila melanogaster"
+  organism_name: "drosophila_melanogaster"
   GCF: "GCF_000001215.4"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_melanogaster/latest_assembly_versions/GCF_000001215.4_Release_6_plus_ISO1_MT/GCF_000001215.4_Release_6_plus_ISO1_MT_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   regions_number: 3
-GCF_000001215_4: *d_melanogaster
+GCF_000001215.4: *d_melanogaster
 
 nematostella vectensis: &n_vectensis
-  organism_name: "Nematostella vectensis"
+  organism_name: "nematostella_vectensis"
   GCF: "GCF_932526225.1"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Nematostella_vectensis/all_assembly_versions/GCF_932526225.1_jaNemVect1.1/GCF_932526225.1_jaNemVect1.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   regions_number: 3
-GCF_932526225_1: *n_vectensis
+GCF_932526225.1: *n_vectensis
 
 acropora millepora: &a_millepora
-  organism_name: "Acropora millepora"
+  organism_name: "acropora_millepora"
   GCF: "GCF_013753865.1"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Acropora_millepora/latest_assembly_versions/GCF_013753865.1_Amil_v2.1/GCF_013753865.1_Amil_v2.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   regions_number:
-GCF_013753865_1: *a_millepora
+GCF_013753865.1: *a_millepora
 
 # NOT EXECUTED
 #organism_name: "Rhipicephalus microplus"
@@ -66,9 +66,9 @@ GCF_013753865_1: *a_millepora
 #regions_number: 3
 
 octopus sinensis: &o_sinensis
-  organism_name: "Octopus sinensis"
+  organism_name: "octopus_sinensis"
   GCF: "GCF_006345805.1"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Octopus_sinensis/all_assembly_versions/GCF_006345805.1_ASM634580v1/GCF_006345805.1_ASM634580v1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   regions_number: 3
-GCF_006345805_1: *o_sinensis
+GCF_006345805.1: *o_sinensis
 
