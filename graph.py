@@ -130,7 +130,7 @@ def graph_regions(dataframe, organism_name, data, regions_number):
 @DBConnection
 @Timer
 def graph_rm_results_from_file(path: str, partitions:int, regions: int,
-                               plot_type:str = "line", save: bool = True, name: str = None):
+                               plot_type:str = "line", save: bool = True, dir: str = None):
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
     DEFAULT_REPEATS_LIMIT = 20
@@ -151,45 +151,45 @@ def graph_rm_results_from_file(path: str, partitions:int, regions: int,
     if graphs_config.get('distribution_of_repeats_merged', False):
         Graphs.graph_distribution_of_repeats_merged_from_file(
             df=df, size=size, partitions=partitions, regions=regions,
-            plot_type=plot_type, save=save, name=name, filename=filename)
+            plot_type=plot_type, save=save, name=dir, filename=filename)
 
     if graphs_config.get('frequency_of_repeats_class_family', False):
         Graphs.graph_frequency_of_repeats_grouped_from_file(
             df=df, col="class_family", filtering=False, n_max=10,
-            save=save, name=name, filename=filename)
+            save=save, name=dir, filename=filename)
 
     if graphs_config.get('frequency_of_repeats_repeat', False):
         Graphs.graph_frequency_of_repeats_grouped_from_file(
             df=df, col="repeat", filtering=False, n_max=10,
-            save=save, name=name, filename=filename)
+            save=save, name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_class_family', False):
         Graphs.graph_distribution_of_repeats_from_file(
             df=df, col="class_family", legend=True, plot_type=plot_type,
             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
-            name=name, filename=filename)
+            name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_repeat', False):
         Graphs.graph_distribution_of_repeats_from_file(
             df=df, col="repeat", legend=True, plot_type=plot_type,
             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
-            name=name, filename=filename)
+            name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_subplots_class_family', False):
         Graphs.graph_distribution_of_repeats_subplots_from_file(
             df=df, col="class_family", legend=True, limit=DEFAULT_REPEATS_LIMIT,
-            regions=regions, save=save, name=name, filename=filename)
+            regions=regions, save=save, name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_subplots_repeat', False):
         Graphs.graph_distribution_of_repeats_subplots_from_file(
             df=df, col="repeat", legend=True, limit=DEFAULT_REPEATS_LIMIT,
-            regions=regions, save=save, name=name, filename=filename)
+            regions=regions, save=save, name=dir, filename=filename)
 
 
 @DBConnection
 @Timer
 def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, regions: int,
-                               plot_type:str = "line", save: bool = True, name: str = None):
+                                   plot_type:str = "line", save: bool = True, dir: str = None):
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
     DEFAULT_REPEATS_LIMIT = 20
@@ -210,56 +210,56 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
     if graphs_config.get('distribution_of_repeats_merged', False):
         Graphs.graph_distribution_of_repeats_merged_from_database(
             data=data, size=size, partitions=partitions, regions=regions,
-            plot_type=plot_type, save=save, name=name, filename=filename)
+            plot_type=plot_type, save=save, name=dir, filename=filename)
 
     if graphs_config.get('frequency_of_repeats_class_family', False):
         Graphs.graph_frequency_of_repeats_grouped_from_database(
             data=data, col="class_family", filtering=False, n_max=10,
-            save=save, name=name, filename=filename)
+            save=save, name=dir, filename=filename)
 
     if graphs_config.get('frequency_of_repeats_repeat', False):
         Graphs.graph_frequency_of_repeats_grouped_from_database(
             data=data, col="repeat", filtering=False, n_max=10,
-            save=save, name=name, filename=filename)
+            save=save, name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_class_family', False):
         Graphs.graph_distribution_of_repeats_from_database(
             data=data, col="class_family", legend=True, plot_type=plot_type,
             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
-            name=name, filename=filename)
+            name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_repeat', False):
         Graphs.graph_distribution_of_repeats_from_database(
             data=data, col="repeat", legend=True, plot_type=plot_type,
             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
-            name=name, filename=filename)
+            name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_subplots_class_family', False):
         Graphs.graph_distribution_of_repeats_subplots_from_database(
             data=data, col="class_family", legend=True, limit=DEFAULT_REPEATS_LIMIT,
-            regions=regions, save=save, name=name, filename=filename)
+            regions=regions, save=save, name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_subplots_repeat', False):
         Graphs.graph_distribution_of_repeats_subplots_from_database(
             data=data, col="repeat", legend=True, limit=DEFAULT_REPEATS_LIMIT,
-            regions=regions, save=save, name=name, filename=filename)
+            regions=regions, save=save, name=dir, filename=filename)
 
 @DBConnection
 @Timer
 def graph_rm_results_from_files_in_folder(directory_path: str, partitions: int, regions: int, plot_type: str, save: bool,
-                                          name: str):
+                                          dir: str):
     apply_function_to_files_in_folder(directory_path, graph_rm_results_from_file, partitions, regions,
-                                      plot_type, save, name)
+                                      plot_type, save, dir)
 
 @DBConnection
 @Timer
 def graph_rm_results_of_genome_from_database(GCF: str, partitions: int, regions: int, plot_type: str, save: bool,
-                                             name: str):
+                                             dir: str):
     organisms_service = OrganismsService()
     chromosomes_ran_list = organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
 
     for refseq_accession_number in chromosomes_ran_list:
-        graph_rm_results_from_database(refseq_accession_number, partitions, regions, plot_type, save, name)
+        graph_rm_results_from_database(refseq_accession_number, partitions, regions, plot_type, save, dir)
 
 @DBConnection
 @Timer
@@ -354,17 +354,17 @@ def graph_recursive_from_database(refseq_accession_number: str, save: bool, name
 
 @DBConnection
 @Timer
-def graph_recursive_genome_from_database(GCF: str, save: bool, name: str, n_max: int):
+def graph_recursive_genome_from_database(GCF: str, save: bool, dir: str, n_max: int):
     n_max = n_max and int(n_max)
     organism_service = OrganismsService()
     refseq_accession_numbers = organism_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
 
     for refseq_accession_number in refseq_accession_numbers:
-        graph_recursive_from_database(refseq_accession_number, save, name, n_max)
+        graph_recursive_from_database(refseq_accession_number, save, dir, n_max)
 
 @DBConnection
 @Timer
-def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str, save: bool, name: str, config_path: str = "config.yaml"):
+def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str, save: bool, dir: str):
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
 
@@ -393,12 +393,12 @@ def graph_gtf_from_file(path: str, partitions: int, regions: int, plot_type: str
 
         if graphs_config.get('distribution_of_genes_merged', False):
             Graphs.graph_distribution_of_genes_merged(
-                df, name, size, partitions, regions, plot_type, chromosome_name, bool(save)
+                df, dir, size, partitions, regions, plot_type, chromosome_name, bool(save)
             )
 
         if graphs_config.get('distribution_of_genes', False):
             Graphs.graph_distribution_of_genes(
-                df, name, legend=True, plot_type=plot_type, limit=20, regions=regions,
+                df, dir, legend=True, plot_type=plot_type, limit=20, regions=regions,
                 chromosome_name=chromosome_name, save=bool(save)
             )
 
@@ -423,7 +423,7 @@ def _graph_gtf_single_chromosome_from_database(refseq_accession_number: str, nam
 @DBConnection
 @Timer
 def graph_gtf_from_database(GCF: str, refseq_accession_number: str, partitions: int, regions: int, plot_type: str,
-                            save: bool, name: str):
+                            save: bool, dir: str):
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
 
@@ -433,18 +433,18 @@ def graph_gtf_from_database(GCF: str, refseq_accession_number: str, partitions: 
 
     if GCF:
         if refseq_accession_number:
-           _graph_gtf_single_chromosome_from_database(refseq_accession_number, name, partitions, regions, plot_type,
+           _graph_gtf_single_chromosome_from_database(refseq_accession_number, dir, partitions, regions, plot_type,
                                                       save)
         else:
             organisms_service = OrganismsService()
             chromosomes_ran_list = organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
             logger.info(f"Graphing for the genome: {GCF}")
             for refseq_accession_number in chromosomes_ran_list:
-                _graph_gtf_single_chromosome_from_database(refseq_accession_number, name, partitions, regions,
+                _graph_gtf_single_chromosome_from_database(refseq_accession_number, dir, partitions, regions,
                                                            plot_type, save)
     elif refseq_accession_number:
-        _graph_gtf_single_chromosome_from_database(refseq_accession_number, name, partitions, regions, plot_type,
-                                                       save)
+        _graph_gtf_single_chromosome_from_database(refseq_accession_number, dir, partitions, regions, plot_type,
+                                                   save)
     else:
         logger.error("Specify whether a GCF (organism/genome) or a refseq accession number (sequence/chromosome)")
         return

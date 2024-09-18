@@ -53,7 +53,7 @@ def main():
     graph_rm_file_parser.add_argument('-regions', help="Enter the amount of regions to separate the graph using vertical lines")
     graph_rm_file_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_rm_file_parser.add_argument('--save', choices=['true', 'false'], default='true', help='Save graphs locally in /out directory')
-    graph_rm_file_parser.add_argument('-name', help="Enter the scientific name of the organism to use it as a folder name")
+    graph_rm_file_parser.add_argument('-dir', help="Enter the scientific name of the organism to use it as a folder name")
 
     graph_rm_database_parser = subparsers.add_parser('graph_rm_database_sequence', help='Graph RepeatMasker results')
     graph_rm_database_parser.add_argument('-ran', help="Enter the refseq accession number of the sequence/chromosome")
@@ -65,7 +65,7 @@ def main():
     graph_rm_database_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_rm_database_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                       help='Save graphs locally in /out directory')
-    graph_rm_database_parser.add_argument('-name',
+    graph_rm_database_parser.add_argument('-dir',
                                       help="Enter the scientific name of the organism to use it as a folder name")
 
 
@@ -79,7 +79,7 @@ def main():
     graph_rm_file_genome_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_rm_file_genome_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                       help='Save graphs locally in /out directory')
-    graph_rm_file_genome_parser.add_argument('-name',
+    graph_rm_file_genome_parser.add_argument('-dir',
                                       help="Enter the scientific name of the organism to use it as a folder name")
 
     graph_rm_database_genome_parser = subparsers.add_parser('graph_rm_database_genome',
@@ -93,7 +93,7 @@ def main():
     graph_rm_database_genome_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_rm_database_genome_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                              help='Save graphs locally in /out directory')
-    graph_rm_database_genome_parser.add_argument('-name',
+    graph_rm_database_genome_parser.add_argument('-dir',
                                              help="Enter the scientific name of the organism to use it as a folder name")
 
     graph_genome_repeats_from_file = subparsers.add_parser('graph_genome_repeats_from_file', help='Graph genome repeats results from'
@@ -123,7 +123,7 @@ def main():
     graph_recursive_genome_parser.add_argument('-gcf', help="Enter the GCF id of the organism")
     graph_recursive_genome_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                           help='Save graphs locally in /out directory')
-    graph_recursive_genome_parser.add_argument('-name',
+    graph_recursive_genome_parser.add_argument('-dir',
                                           help="Enter the scientific name of the organism to use it as a folder name")
     graph_recursive_genome_parser.add_argument('-n_max', help="(Optional) Graph only the top n largest values per sequence")
 
@@ -138,7 +138,7 @@ def main():
     graph_gtf_file_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_gtf_file_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                       help='Save graphs locally in /out directory')
-    graph_gtf_file_parser.add_argument('-name',
+    graph_gtf_file_parser.add_argument('-dir',
                                       help="Enter the scientific name of the organism to use it as a folder name")
 
     graph_gtf_file_parser = subparsers.add_parser('graph_gtf_database', help='Graph genes from .gtf file')
@@ -152,7 +152,7 @@ def main():
     graph_gtf_file_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_gtf_file_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                        help='Save graphs locally in /out directory')
-    graph_gtf_file_parser.add_argument('-name',
+    graph_gtf_file_parser.add_argument('-dir',
                                        help="Enter the scientific name of the organism to use it as a folder name")
 
 
@@ -283,23 +283,23 @@ def load_genome_repeats_file_command(args):
 @TryExcept
 def graph_rm_file_command(args):
     graph_rm_results_from_file(path=args.path, partitions=args.partitions, regions=args.regions,
-                                   plot_type=args.plot_type, save=args.save, name=args.name)
+                                   plot_type=args.plot_type, save=args.save, dir=args.dir)
 
 @TryExcept
 def graph_rm_database_command(args):
     graph_rm_results_from_database(refseq_accession_number=args.ran, partitions=args.partitions,
-                                   regions=args.regions, plot_type=args.plot_type, save=args.save, name=args.name)
+                                   regions=args.regions, plot_type=args.plot_type, save=args.save, dir=args.dir)
 
 
 @TryExcept
 def graph_rm_file_genome_command(args):
     graph_rm_results_from_files_in_folder(directory_path=args.path, partitions=args.partitions, regions=args.regions,
-                                              plot_type=args.plot_type, save=args.save, name=args.name)
+                                              plot_type=args.plot_type, save=args.save, dir=args.dir)
 
 @TryExcept
 def graph_rm_database_genome_command(args):
     graph_rm_results_of_genome_from_database(GCF=args.gcf, partitions=args.partitions, regions=args.regions,
-                                                 plot_type=args.plot_type, save=args.save, name=args.name)
+                                                 plot_type=args.plot_type, save=args.save, dir=args.dir)
 @TryExcept
 def graph_genome_repeats_from_file_command(args):
     graph_genome_repeats_from_file(path=args.path, dir=args.dir, partitions=args.partitions, regions=args.regions,
@@ -311,18 +311,18 @@ def graph_recursive_command(args):
 
 @TryExcept
 def graph_recursive_genome_command(args):
-    graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, name=args.name, n_max=args.n_max)
+    graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, dir=args.dir, n_max=args.n_max)
 
 
 @TryExcept
 def graph_gtf_file(args):
     graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
-                            save=args.save, name=args.name)
+                            save=args.save, dir=args.dir)
 
 @TryExcept
 def graph_gtf_database(args):
     graph_gtf_from_database(GCF=args.gcf, refseq_accession_number=args.ran, partitions=args.partitions,
-                                regions=args.regions, plot_type=args.plot_type, save=args.save, name=args.name)
+                                regions=args.regions, plot_type=args.plot_type, save=args.save, dir=args.dir)
 
 @TryExcept
 def  load_genes(args):

@@ -93,7 +93,7 @@ The second *source* is the path to the /lib folder where all the partitions of t
 ### RepeatMasker for a single sequence
 In the Docker container, go to the /working directory and execute the following command:
 
-    RepeatMasker -species nematode -dir /working/RM_resources/caenorhabditis_elegans /working/dna_sequences/Caenorhabditis_elegans/c_elegans_chromosome_X.fasta
+    RepeatMasker -species nematode -dir /working/RM_resources/caenorhabditis_elegans /working/dna_sequences/caenorhabditis_elegans/c_elegans_chromosome_X.fasta
 
 You can change the *-dir* parameter to change the destination folder. The next parameter is the path to the .fasta or 
 .fna sequence.
@@ -125,7 +125,7 @@ The graphs are saved in the /out directory in the sequence folder.
 
 It is mandatory to specify the
 - path of the RM results file.
-  - name - scientific name of the organism that will be used as the folder name to save the graph.
+- dir - scientific name of the organism that will be used as the folder name to save the graph.
 
 Other possible parameters are:
 - partitions - number of partitions to use in the graph generation. Each partition will represent one point in the graph.
@@ -134,11 +134,11 @@ Other possible parameters are:
   - plot_type - style of plot (line or bar), line is by default.
   - save - save the graph in the local directory specified /out (true or false).
 
-         py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
+         py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -partitions 300 -regions 3 -plot_type line -dir caenorhabditis_elegans --save true
         
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -name "caenorhabditis_elegans" 
+       py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -dir caenorhabditis_elegans
  
 #### Graphing using a genome folder of .out result files 
 It is mandatory to specify the
@@ -152,11 +152,11 @@ Other possible parameters are:
   - plot_type - style of plot (line or bar), line is by default.
   - save - save the graph in the local directory specified /out (true or false).
 
-         py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
+         py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -partitions 300 -regions 3 -plot_type line -dir caenorhabditis_elegans --save true
         
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -name "caenorhabditis_elegans" 
+       py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -dir caenorhabditis_elegans 
 
 ### Graph the Plantrep.cn repeats using the file
 The graphs are saved in the /out directory in the sequence folder. 
@@ -194,11 +194,11 @@ Other possible parameters are:
   - plot_type - style of plot (line or bar), line is by default.
   - save - save the graph in the local directory specified /out (true or false).
 
-         py .\command.py graph_rm_database_sequence -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
+         py .\command.py graph_rm_database_sequence -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -dir caenorhabditis_elegans --save true
 
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_database_sequence -ran NC_003279.8 -name "caenorhabditis_elegans" 
+       py .\command.py graph_rm_database_sequence -ran NC_003279.8 -dir caenorhabditis_elegans
 
 #### Graphing using a genome GCF and the database
 It is mandatory to specify the
@@ -212,11 +212,11 @@ Other possible parameters are:
   - plot_type - style of plot (line or bar), line is by default.
   - save - save the graph in the local directory specified /out (true or false).
 
-         py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
+         py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -dir caenorhabditis_elegans --save true
         
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -name "caenorhabditis_elegans" 
+       py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -dir caenorhabditis_elegans
 
 
 ### Graph the recursively found repeats results from the database
@@ -233,8 +233,8 @@ The chromosome is identified by the refseq_accession_number (-ran)
 The n_max parameter is optional. It represents the total amount of repeats shown in the general graphs.
 The genome is identified by the GCF (-gcf).
 
-    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis_elegans" 
-    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis_elegans" -n_max 10
+    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -dir caenorhabditis_elegans 
+    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -dir caenorhabditis_elegans -n_max 10
 
 ### Graph genes data
 #### Graph from .gtf file
@@ -251,11 +251,11 @@ Other possible parameters are:
 
 Example using the command:
 
-    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
+    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -partitions 300 -regions 3 -plot_type line -dir caenorhabditis_elegans --save true
 
 Short version:
 
-    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -name "caenorhabditis_elegans" 
+    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -dir caenorhabditis_elegans
 
 #### Graph from database
 It is mandatory to specify the
@@ -275,13 +275,13 @@ Other possible parameters are:
 
 Example using the command:
 
-    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
+    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -dir caenorhabditis_elegans --save true
 
 Short version:
 
-    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -name "caenorhabditis_elegans"  
-    py .\command.py graph_gtf_database -ran NC_003279.8  -name "caenorhabditis_elegans"  
-    py .\command.py graph_gtf_database -ran NC_003279.8  -name "caenorhabditis_elegans" -gcf anything_here
+    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -dir caenorhabditis_elegans
+    py .\command.py graph_gtf_database -ran NC_003279.8  -dir caenorhabditis_elegans 
+    py .\command.py graph_gtf_database -ran NC_003279.8  -dir caenorhabditis_elegans -gcf anything_here
 
 
 ## Repeats using RepeatMasker
