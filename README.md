@@ -40,21 +40,21 @@ The organism name and GCF expressed in that file are the ones to be used in the 
 Download and uncompress files
 
         py .\command.py download -name "caenorhabditis elegans"
-        py .\command.py download -name GCF_000002985_6
+        py .\command.py download -name GCF_000002985.6
 
 ### Analyze
 Analyze and load the organism and genome data. 
 
                     
         py .\command.py analyze_genome -name "caenorhabditis elegans" -mode regions
-        py .\command.py analyze_genome -name GCF_000002985_6 -mode regions
-        py .\command.py analyze_genome -name GCF_000002985_6 -mode whole
+        py .\command.py analyze_genome -name GCF_000002985.6 -mode regions
+        py .\command.py analyze_genome -name GCF_000002985.6 -mode whole
 
 Analyze only one sequence file (one chromosome) given a file path
     
 
-        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_6 -mode regions
-        py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name GCF_000002985_6 -mode whole
+        py .\command.py analyze_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name GCF_000002985.6 -mode regions
+        py .\command.py analyze_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name GCF_000002985.6 -mode whole
 
 It is possible to configure if the results should be saved to the database or not.
 The default behavior is to always save the data to database.
@@ -66,8 +66,8 @@ For the whole genome:
 
 For a single sequence:
 
-         py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode whole --save-to-db=false
-         py .\command.py analyze_sequence -path resources/dna_sequences/Caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode whole --save-to-db=true
+         py .\command.py analyze_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode whole --save-to-db=false
+         py .\command.py analyze_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -mode whole --save-to-db=true
 
 ### Analyze and find kmers recursively
 Analyze using MFA and find kmers recursively.
@@ -115,8 +115,8 @@ Load and graph the data:
 
         py .\command.py graph -name "caenorhabditis elegans" -mode whole
         py .\command.py graph -name "caenorhabditis elegans" -mode regions
-        py .\command.py graph -name GCF_000002985_6 -mode regions
-        py .\command.py graph -name GCF_000002985_6 -mode whole
+        py .\command.py graph -name GCF_000002985.6 -mode regions
+        py .\command.py graph -name GCF_000002985.6 -mode whole
 
 Compare results with branch main and changeAlgorithm.
 
@@ -134,11 +134,11 @@ Other possible parameters are:
   - plot_type - style of plot (line or bar), line is by default.
   - save - save the graph in the local directory specified /out (true or false).
 
-         py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+         py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
         
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -name "Caenorhabditis elegans" 
+       py .\command.py graph_rm_file_sequence -path resources/RM_resources/caenorhabditis_elegans/c_elegans_chromosome_I.fasta.out -name "caenorhabditis_elegans" 
  
 #### Graphing using a genome folder of .out result files 
 It is mandatory to specify the
@@ -152,11 +152,11 @@ Other possible parameters are:
   - plot_type - style of plot (line or bar), line is by default.
   - save - save the graph in the local directory specified /out (true or false).
 
-         py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+         py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
         
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -name "Caenorhabditis elegans" 
+       py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -name "caenorhabditis_elegans" 
 
 ### Graph the Plantrep.cn repeats using the file
 The graphs are saved in the /out directory in the sequence folder. 
@@ -194,11 +194,11 @@ Other possible parameters are:
   - plot_type - style of plot (line or bar), line is by default.
   - save - save the graph in the local directory specified /out (true or false).
 
-         py .\command.py graph_rm_database_sequence -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+         py .\command.py graph_rm_database_sequence -ran NC_003279.8 -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
 
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_database_sequence -ran NC_003279.8 -name "Caenorhabditis elegans" 
+       py .\command.py graph_rm_database_sequence -ran NC_003279.8 -name "caenorhabditis_elegans" 
 
 #### Graphing using a genome GCF and the database
 It is mandatory to specify the
@@ -212,11 +212,11 @@ Other possible parameters are:
   - plot_type - style of plot (line or bar), line is by default.
   - save - save the graph in the local directory specified /out (true or false).
 
-         py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+         py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
         
 The command without the optional parameters would be:
 
-       py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -name "Caenorhabditis elegans" 
+       py .\command.py graph_rm_database_genome -gcf GCF_000002985.6 -name "caenorhabditis_elegans" 
 
 
 ### Graph the recursively found repeats results from the database
@@ -226,15 +226,15 @@ The graphs are saved in the /out directory in the sequence folder.
 The n_max parameter is optional. It represents the total amount of repeats shown in the general graph.
 The chromosome is identified by the refseq_accession_number (-ran)
 
-    py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis elegans" 
-    py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis elegans" -n_max 10
+    py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis_elegans" 
+    py .\command.py graph_recursive -ran NC_003279.8 --save true -name "caenorhabditis_elegans" -n_max 10
 
 #### Graph per genome
 The n_max parameter is optional. It represents the total amount of repeats shown in the general graphs.
 The genome is identified by the GCF (-gcf).
 
-    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis elegans" 
-    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis elegans" -n_max 10
+    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis_elegans" 
+    py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -name "caenorhabditis_elegans" -n_max 10
 
 ### Graph genes data
 #### Graph from .gtf file
@@ -251,11 +251,11 @@ Other possible parameters are:
 
 Example using the command:
 
-    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
 
 Short version:
 
-    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -name "Caenorhabditis elegans" 
+    py .\command.py graph_gtf_file -path  resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf -name "caenorhabditis_elegans" 
 
 #### Graph from database
 It is mandatory to specify the
@@ -275,13 +275,13 @@ Other possible parameters are:
 
 Example using the command:
 
-    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "Caenorhabditis elegans" --save true
+    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -partitions 300 -regions 3 -plot_type line -name "caenorhabditis_elegans" --save true
 
 Short version:
 
-    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -name "Caenorhabditis elegans"  
-    py .\command.py graph_gtf_database -ran NC_003279.8  -name "Caenorhabditis elegans"
-    py .\command.py graph_gtf_database -ran NC_003279.8  -name "Caenorhabditis elegans" -gcf anything_here
+    py .\command.py graph_gtf_database -gcf GCF_000002985.6 -name "caenorhabditis_elegans"  
+    py .\command.py graph_gtf_database -ran NC_003279.8  -name "caenorhabditis_elegans"  
+    py .\command.py graph_gtf_database -ran NC_003279.8  -name "caenorhabditis_elegans" -gcf anything_here
 
 
 ## Repeats using RepeatMasker
