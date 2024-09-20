@@ -1,13 +1,12 @@
-import seaborn as sns
+import os
+from itertools import cycle
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from itertools import cycle
+import seaborn as sns
 
 from utils.logger import logger
-from utils.FileReader import FileReader
-
-import os
 
 
 class Graphs:
@@ -437,32 +436,11 @@ class Graphs:
         return repeat_lengths
 
     @staticmethod
-    def graph_distribution_of_repeats_merged_from_database(data: pd.DataFrame, size: int, partitions: int = 300,
-                                                       filter_string: str = None, filter_column: str = None,
-                                                       regions: int = 3, save: bool=True,
-                                                       name: str = None, filename: str = None,
-                                                       plot_type: str = "line"):
-        Graphs._graph_distribution_of_repeats_merged(data, size, partitions, filter_string,
-                                                     filter_column, regions, plot_type, save, name,
-                                                     filename)
-
-    @staticmethod
-    def graph_distribution_of_repeats_merged_from_file(df: pd.DataFrame, size: int, partitions: int = 300,
+    def graph_distribution_of_repeats_merged(df: pd.DataFrame, size: int, partitions: int = 300,
                                              filter_string: str = None,
                                              filter_column: str = None, regions: int = 3,
-                                             plot_type: str = "line", save: bool=True, name: str = None,
-                                             filename: str = None):
-        Graphs._graph_distribution_of_repeats_merged(df, size, partitions, filter_string,
-                                                     filter_column, regions, plot_type, save, name,
-                                                     filename)
-
-
-    @staticmethod
-    def _graph_distribution_of_repeats_merged(df, size: int, partitions: int = 300,
-                                              filter_string: str = None,
-                                              filter_column: str = None, regions: int = 3,
-                                              plot_type: str = "line", save: bool=True, name: str=None,
-                                              filename: str=None):
+                                             plot_type: str = "line", save: bool=True, name: str=None,
+                                             filename: str=None):
         if filter_string:
             df = Graphs._filter(df, filter_string, filter_column)
 
@@ -502,23 +480,9 @@ class Graphs:
         return data[~data[filter_column].str.contains(filter_string)]
 
     @staticmethod
-    def graph_frequency_of_repeats_grouped_from_database(data, col=None, filtering=False, filter_string=None,
-                                                     filter_column=None, n_max=10, save: bool = True, name: str = None,
-                                                     filename: str = None):
-        Graphs._graph_frequency_of_repeats_grouped(data, col, filtering, filter_string, filter_column, n_max, save,
-                                                   name, filename)
-
-    @staticmethod
-    def graph_frequency_of_repeats_grouped_from_file(df: pd.DataFrame, col=None, filtering=False, filter_string=None,
-                                              filter_column=None, n_max=10, save: bool=True, name: str=None,
-                                              filename: str=None):
-        Graphs._graph_frequency_of_repeats_grouped(df, col, filtering, filter_string, filter_column, n_max, save,
-                                                   name, filename)
-
-    @staticmethod
-    def _graph_frequency_of_repeats_grouped(data, col=None, filtering=False, filter_string=None,
-                                            filter_column=None, n_max=10, save: bool=True, name: str=None,
-                                            filename: str=None):
+    def graph_frequency_of_repeats_grouped(data, col=None, filtering=False, filter_string=None,
+                                           filter_column=None, n_max=10, save: bool=True, name: str=None,
+                                           filename: str=None):
         grouped_data_sorted = Graphs._group_columns(data, col, "repeat_length", filtering, filter_string, filter_column)
         grouped_data_sorted = grouped_data_sorted.head(n_max)
 
@@ -545,25 +509,10 @@ class Graphs:
         grouped_data_sorted = grouped_data.sort_values(by=sum_col, ascending=False)
         return grouped_data_sorted
 
-
     @staticmethod
-    def graph_distribution_of_repeats_from_file(df: pd.DataFrame, col, legend, plot_type, limit, regions, save, name,
-                                                filename):
+    def graph_distribution_of_repeats(df, col, legend=True, plot_type="line", limit=20,
+                                      regions=3, save=True, name=None, filename=None):
         grouped_data_sorted = Graphs._group_columns(df, col, "repeat_length")
-        Graphs._graph_distribution_of_repeats(df, grouped_data_sorted, col, legend, plot_type, limit, regions,
-                                              save, name, filename)
-
-    @staticmethod
-    def graph_distribution_of_repeats_from_database(data, col, legend, plot_type, limit, regions, save, name,
-                                                filename):
-        grouped_data_sorted = Graphs._group_columns(data, col, "repeat_length")
-        Graphs._graph_distribution_of_repeats(data, grouped_data_sorted, col, legend, plot_type, limit, regions,
-                                              save, name, filename)
-
-
-    @staticmethod
-    def _graph_distribution_of_repeats(df, grouped_data_sorted, col, legend=True, plot_type="line", limit=20,
-                                       regions=3, save=True, name=None, filename=None):
         if df.empty or grouped_data_sorted.empty:
             logger.warning("Empty DataFrame provided for Distribution of repeats graph; skipping plot.")
             return
@@ -625,27 +574,11 @@ class Graphs:
             Graphs._savefig(title, f"{name}/repeats/RM/distribution_separately")
         plt.show()
 
-
     @staticmethod
-    def graph_distribution_of_repeats_subplots_from_file(df: pd.DataFrame, col="class_family", legend=True, limit=20, regions=3,
-                                               shared_y_axis=False, save=True, name=None, filename=None):
+    def graph_distribution_of_repeats_subplots(df, col="class_family", legend=True, limit=20,
+                                               regions=3, shared_y_axis=False, save=True, name=None,
+                                               filename=None):
         grouped_data_sorted = Graphs._group_columns(df, col, "repeat_length")
-        Graphs._graph_distribution_of_repeats_subplots(df, grouped_data_sorted, col, legend, limit, regions,
-                                                       shared_y_axis, save, name, filename)
-
-    @staticmethod
-    def graph_distribution_of_repeats_subplots_from_database(data, col="class_family", legend=True, limit=20, regions=3,
-                                                             shared_y_axis=False, save=None, name=None,
-                                                            filename=None):
-        grouped_data_sorted = Graphs._group_columns(data, col, "repeat_length")
-        Graphs._graph_distribution_of_repeats_subplots(data, grouped_data_sorted, col, legend, limit, regions,
-                                                       shared_y_axis, save, name, filename)
-
-
-    @staticmethod
-    def _graph_distribution_of_repeats_subplots(df, grouped_data_sorted, col="class_family", legend=True, limit=20,
-                                                regions=3, shared_y_axis=False, save=True, name=None,
-                                                filename=None):
         # Extract unique class/family values
         unique_class_family = grouped_data_sorted.head(limit)[col].tolist()
 

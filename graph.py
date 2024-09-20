@@ -149,39 +149,39 @@ def graph_rm_results_from_file(path: str, partitions:int, regions: int,
     plot_type = plot_type or "line"
 
     if graphs_config.get('distribution_of_repeats_merged', False):
-        Graphs.graph_distribution_of_repeats_merged_from_file(
+        Graphs.graph_distribution_of_repeats_merged(
             df=df, size=size, partitions=partitions, regions=regions,
             plot_type=plot_type, save=save, name=dir, filename=filename)
 
     if graphs_config.get('frequency_of_repeats_class_family', False):
-        Graphs.graph_frequency_of_repeats_grouped_from_file(
-            df=df, col="class_family", filtering=False, n_max=10,
+        Graphs.graph_frequency_of_repeats_grouped(
+            data=df, col="class_family", filtering=False, n_max=10,
             save=save, name=dir, filename=filename)
 
     if graphs_config.get('frequency_of_repeats_repeat', False):
-        Graphs.graph_frequency_of_repeats_grouped_from_file(
-            df=df, col="repeat", filtering=False, n_max=10,
+        Graphs.graph_frequency_of_repeats_grouped(
+            data=df, col="repeat", filtering=False, n_max=10,
             save=save, name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_class_family', False):
-        Graphs.graph_distribution_of_repeats_from_file(
+        Graphs.graph_distribution_of_repeats(
             df=df, col="class_family", legend=True, plot_type=plot_type,
             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
             name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_repeat', False):
-        Graphs.graph_distribution_of_repeats_from_file(
+        Graphs.graph_distribution_of_repeats(
             df=df, col="repeat", legend=True, plot_type=plot_type,
             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
             name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_subplots_class_family', False):
-        Graphs.graph_distribution_of_repeats_subplots_from_file(
+        Graphs.graph_distribution_of_repeats_subplots(
             df=df, col="class_family", legend=True, limit=DEFAULT_REPEATS_LIMIT,
             regions=regions, save=save, name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_subplots_repeat', False):
-        Graphs.graph_distribution_of_repeats_subplots_from_file(
+        Graphs.graph_distribution_of_repeats_subplots(
             df=df, col="repeat", legend=True, limit=DEFAULT_REPEATS_LIMIT,
             regions=regions, save=save, name=dir, filename=filename)
 
@@ -208,40 +208,40 @@ def graph_rm_results_from_database(refseq_accession_number:str, partitions:int, 
     data = rm_repeats_whole_chromosomes_service.extract_info_by_chromosome(refseq_accession_number)
 
     if graphs_config.get('distribution_of_repeats_merged', False):
-        Graphs.graph_distribution_of_repeats_merged_from_database(
-            data=data, size=size, partitions=partitions, regions=regions,
+        Graphs.graph_distribution_of_repeats_merged(
+            df=data, size=size, partitions=partitions, regions=regions,
             plot_type=plot_type, save=save, name=dir, filename=filename)
 
     if graphs_config.get('frequency_of_repeats_class_family', False):
-        Graphs.graph_frequency_of_repeats_grouped_from_database(
+        Graphs.graph_frequency_of_repeats_grouped(
             data=data, col="class_family", filtering=False, n_max=10,
             save=save, name=dir, filename=filename)
 
     if graphs_config.get('frequency_of_repeats_repeat', False):
-        Graphs.graph_frequency_of_repeats_grouped_from_database(
+        Graphs.graph_frequency_of_repeats_grouped(
             data=data, col="repeat", filtering=False, n_max=10,
             save=save, name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_class_family', False):
-        Graphs.graph_distribution_of_repeats_from_database(
-            data=data, col="class_family", legend=True, plot_type=plot_type,
+        Graphs.graph_distribution_of_repeats(
+            df=data, col="class_family", legend=True, plot_type=plot_type,
             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
             name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_repeat', False):
-        Graphs.graph_distribution_of_repeats_from_database(
-            data=data, col="repeat", legend=True, plot_type=plot_type,
+        Graphs.graph_distribution_of_repeats(
+            df=data, col="repeat", legend=True, plot_type=plot_type,
             limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
             name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_subplots_class_family', False):
-        Graphs.graph_distribution_of_repeats_subplots_from_database(
-            data=data, col="class_family", legend=True, limit=DEFAULT_REPEATS_LIMIT,
+        Graphs.graph_distribution_of_repeats_subplots(
+            df=data, col="class_family", legend=True, limit=DEFAULT_REPEATS_LIMIT,
             regions=regions, save=save, name=dir, filename=filename)
 
     if graphs_config.get('distribution_of_repeats_subplots_repeat', False):
-        Graphs.graph_distribution_of_repeats_subplots_from_database(
-            data=data, col="repeat", legend=True, limit=DEFAULT_REPEATS_LIMIT,
+        Graphs.graph_distribution_of_repeats_subplots(
+            df=data, col="repeat", legend=True, limit=DEFAULT_REPEATS_LIMIT,
             regions=regions, save=save, name=dir, filename=filename)
 
 @DBConnection
@@ -288,39 +288,39 @@ def graph_genome_repeats_from_file(path: str, dir: str, partitions: int, regions
         logger.info(f"Starting generating graphs for chromosome {index + 1} - {refseq_accession_number}")
 
         if graphs_config.get('distribution_of_repeats_merged', False):
-            Graphs.graph_distribution_of_repeats_merged_from_file(
+            Graphs.graph_distribution_of_repeats_merged(
                 df=df, size=size, partitions=partitions, regions=regions,
                 plot_type=plot_type, save=save, name=dir, filename=filename)
 
         if graphs_config.get('frequency_of_repeats_class_family', False):
-            Graphs.graph_frequency_of_repeats_grouped_from_file(
-                df=df, col="class_family", filtering=False, n_max=10,
+            Graphs.graph_frequency_of_repeats_grouped(
+                data=df, col="class_family", filtering=False, n_max=10,
                 save=save, name=dir, filename=filename)
 
         if graphs_config.get('frequency_of_repeats_repeat', False):
-            Graphs.graph_frequency_of_repeats_grouped_from_file(
-                df=df, col="repeat", filtering=False, n_max=10,
+            Graphs.graph_frequency_of_repeats_grouped(
+                data=df, col="repeat", filtering=False, n_max=10,
                 save=save, name=dir, filename=filename)
 
         if graphs_config.get('distribution_of_repeats_class_family', False):
-            Graphs.graph_distribution_of_repeats_from_file(
+            Graphs.graph_distribution_of_repeats(
                 df=df, col="class_family", legend=True, plot_type=plot_type,
                 limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                 name=dir, filename=filename)
 
         if graphs_config.get('distribution_of_repeats_repeat', False):
-            Graphs.graph_distribution_of_repeats_from_file(
+            Graphs.graph_distribution_of_repeats(
                 df=df, col="repeat", legend=True, plot_type=plot_type,
                 limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                 name=dir, filename=filename)
 
         if graphs_config.get('distribution_of_repeats_subplots_class_family', False):
-            Graphs.graph_distribution_of_repeats_subplots_from_file(
+            Graphs.graph_distribution_of_repeats_subplots(
                 df=df, col="class_family", legend=True, limit=DEFAULT_REPEATS_LIMIT,
                 regions=regions, save=save, name=dir, filename=filename)
 
         if graphs_config.get('distribution_of_repeats_subplots_repeat', False):
-            Graphs.graph_distribution_of_repeats_subplots_from_file(
+            Graphs.graph_distribution_of_repeats_subplots(
                 df=df, col="repeat", legend=True, limit=DEFAULT_REPEATS_LIMIT,
                 regions=regions, save=save, name=dir, filename=filename)
 
