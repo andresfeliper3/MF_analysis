@@ -1,13 +1,12 @@
-import seaborn as sns
+import os
+from itertools import cycle
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from itertools import cycle
+import seaborn as sns
 
 from utils.logger import logger
-from utils.FileReader import FileReader
-
-import os
 
 
 class Graphs:
@@ -22,7 +21,7 @@ class Graphs:
         if not os.path.exists(actual_path):
             os.makedirs(actual_path)
         plt.ioff()
-        plt.savefig(f'  {actual_path}/{title}.png')
+        plt.savefig(f'{actual_path}/{title}.png')
         plt.close()
 
     @staticmethod
