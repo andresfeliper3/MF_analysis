@@ -2,7 +2,7 @@ import argparse
 
 from Analyzer import Analyzer
 from Downloader import Downloader
-from genes import load_genes_from_file
+from GenesLoader import GenesLoader
 from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, \
     graph_rm_results_from_database, graph_recursive_from_database, graph_recursive_genome_from_database, \
     graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database, graph_gtf_from_file, \
@@ -183,6 +183,7 @@ def main():
     args = parser.parse_args()
     analyzer = Analyzer()
     downloader = Downloader()
+    genes_loader = GenesLoader()
 
     if args.command == 'analyze_genome':
         analyzer.analyze_genome_command(args)
@@ -221,7 +222,7 @@ def main():
     elif args.command == 'load_genome_repeats_file':
         load_genome_repeats_file_command(args)
     elif args.command == 'load_genes':
-        load_genes(args)
+        genes_loader.load_genes_from_file(args.path)
 
 
 
@@ -309,9 +310,7 @@ def graph_gtf_database(args):
     graph_gtf_from_database(GCF=args.gcf, refseq_accession_number=args.ran, partitions=args.partitions,
                                 regions=args.regions, plot_type=args.plot_type, save=args.save, dir=args.dir)
 
-@TryExcept
-def  load_genes(args):
-    load_genes_from_file(path=args.path)
+
 
 
 if __name__ == "__main__":
