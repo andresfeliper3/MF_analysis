@@ -1,7 +1,7 @@
 import argparse
 
 from Analyzer import Analyzer
-from download import remove_files, execute_download_command, uncompress_all_files
+from Downloader import Downloader
 from genes import load_genes_from_file
 from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, \
     graph_rm_results_from_database, graph_recursive_from_database, graph_recursive_genome_from_database, \
@@ -182,6 +182,7 @@ def main():
 
     args = parser.parse_args()
     analyzer = Analyzer()
+    downloader = Downloader()
 
     if args.command == 'analyze_genome':
         analyzer.analyze_genome_command(args)
@@ -212,7 +213,7 @@ def main():
     elif args.command == 'graph_gtf_database':
         graph_gtf_database(args)
     elif args.command == 'download':
-        download_command(args)
+        downloader.download_command(args)
     elif args.command == 'load_RM_repeats':
         load_RM_repeats(args)
     elif args.command == 'load_RM_repeats_folder':
@@ -223,23 +224,7 @@ def main():
         load_genes(args)
 
 
-@TryExcept
-def download_command(args):
-    global organism
 
-    if args.name:
-        organism = args.name
-        loader.set_organism(organism)
-        remove_files(folder=loader.get_organism_folder())
-        execute_download_command(folder=loader.get_organism_folder(), download_url=loader.get_download_url(),
-                                 suffix=".gz")
-        uncompress_all_files(folder=loader.get_organism_folder())
-        if bool(args.gff):
-            execute_download_command(folder=loader.get_organism_gtf_subfolder(),
-                                     download_url=loader.get_download_gff_url(), suffix=".gtf.gz")
-            uncompress_all_files(folder=loader.get_organism_gtf_subfolder())
-    else:
-        raise Exception("Please provide either a -name (lowercase name or GCF).")
 
 
 @TryExcept
