@@ -8,7 +8,7 @@ from graph import load_data_whole, graph_whole, load_data_regions, graph_regions
     graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database, graph_gtf_from_file, \
     graph_gtf_from_database, graph_genome_repeats_from_file
 from load import loader
-from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder, load_genome_repeats_file
+from RepeatsLoader import RepeatsLoader
 from utils.decorators import TryExcept
 
 
@@ -184,6 +184,7 @@ def main():
     analyzer = Analyzer()
     downloader = Downloader()
     genes_loader = GenesLoader()
+    repeats_loader = RepeatsLoader()
 
     if args.command == 'analyze_genome':
         analyzer.analyze_genome_command(args)
@@ -216,16 +217,13 @@ def main():
     elif args.command == 'download':
         downloader.download_command(args)
     elif args.command == 'load_RM_repeats':
-        load_RM_repeats(args)
+        repeats_loader.load_RM_repeats_from_file(args.path)
     elif args.command == 'load_RM_repeats_folder':
-        load_RM_repeats_folder(args)
+        repeats_loader.load_RM_repeats_from_folder(args.path)
     elif args.command == 'load_genome_repeats_file':
-        load_genome_repeats_file_command(args)
+       repeats_loader.load_genome_repeats_file(args.path)
     elif args.command == 'load_genes':
         genes_loader.load_genes_from_file(args.path)
-
-
-
 
 
 @TryExcept
@@ -254,17 +252,6 @@ def _validate_mode_graphing(args):
     else:
         raise Exception("Enter a valid mode (whole or regions)")
 
-@TryExcept
-def load_RM_repeats(args):
-    load_RM_repeats_from_file(args.path)
-
-@TryExcept
-def load_RM_repeats_folder(args):
-    load_RM_repeats_from_folder(args.path)
-
-@TryExcept
-def load_genome_repeats_file_command(args):
-    load_genome_repeats_file(args.path)
 
 @TryExcept
 def graph_rm_file_command(args):
