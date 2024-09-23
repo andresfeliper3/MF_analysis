@@ -22,6 +22,7 @@ class GenomeManagerInterface:
         self.n_largest_mi_grid_values_strings = None
         self.df_results = None
         self.regions_number = regions_number
+        self.genome = None
         if genome:
             self.genome = genome
         elif genome_data:
@@ -30,7 +31,9 @@ class GenomeManagerInterface:
             self.genome = Genome(chromosomes=chromosomes, regions_number=regions_number)
 
         # Managers
-        if self.genome:
+        if not self.genome:
+            logger.warning(f"There is not self.genome object in GenomeManagerInterface")
+        else:
             self.managers = []
             if regions_number < 0:
                 raise Exception("Not a valid regions_number for the GenomeManager constructor")

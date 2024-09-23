@@ -1,6 +1,6 @@
 import yaml
 
-from load import loader
+from Loader import Loader
 from src.Biocode.graphs.Graphs import Graphs
 from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
@@ -13,18 +13,19 @@ from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.utils.utils import str_to_list
 from utils.FileReader import FileReader
-from utils.decorators import Timer, DBConnection, TryExcept
+from utils.decorators import Timer, DBConnection, TryExcept, Inject
 from utils.folder import apply_function_to_files_in_folder
 from utils.logger import logger
 
 
-@Inject(region_genome_manager = RegionGenomeManager,
-        whole_results_service = WholeResultsService,
+@Inject(whole_results_service = WholeResultsService,
         region_results_service = RegionResultsService,
         whole_chromosomes_service = WholeChromosomesService,
         recursive_repeats_service = RecursiveRepeatsWholeChromosomesService,
+        rm_repeats_service = RMRepeatsWholeChromosomesService,
         organisms_service = OrganismsService,
-        gtf_genes_service = GtfGenesService)
+        gtf_genes_service = GtfGenesService,
+        loader = Loader)
 class Grapher:
 
     DEFAULT_REGIONS = 3
@@ -33,14 +34,17 @@ class Grapher:
 
     def __init__(self,
                  whole_results_service: WholeResultsService, region_results_service: RegionResultsService,
+                 rm_repeats_service: RMRepeatsWholeChromosomesService,
                  whole_chromosomes_service: WholeChromosomesService, recursive_repeats_service: RecursiveRepeatsWholeChromosomesService,
-                 organisms_service: OrganismsService, gtf_genes_service: GtfGenesService):
+                 organisms_service: OrganismsService, gtf_genes_service: GtfGenesService, loader: Loader):
         self.whole_results_service = whole_results_service
         self.region_results_service = region_results_service
+        self.rm_repeats_service = rm_repeats_service
         self.whole_chromosomes_service = whole_chromosomes_service
         self.recursive_repeats_service = recursive_repeats_service
         self.organisms_service = organisms_service
         self.gtf_genes_service = gtf_genes_service
+        self.loader = loader
         self.graphs_config_path = "config/graphs_config.yaml"
         self.organism = ""
 
@@ -54,7 +58,7 @@ class Grapher:
     def graph_command(self, args):
         if args.name:
             self.organism = args.name
-            loader.set_organism(self.organism)
+            self.loader.set_organism(self.organism)
             self._validate_mode_graphing(args)
         else:
             raise Exception("Please provide either -id or -name.")
@@ -62,12 +66,12 @@ class Grapher:
     def _validate_mode_graphing(self, args):
         if args.mode:
             if args.mode == 'whole':
-                dic = self._load_data_whole(gcf=loader.get_gcf())
-                self._graph_whole(dataframe=dic, organism_name=loader.get_organism_name(), data=loader.get_data())
+                dic = self._load_data_whole(gcf=self.loader.get_gcf())
+                self._graph_whole(dataframe=dic, organism_name=self.loader.get_organism_name(), data=self.loader.get_data())
             elif args.mode == 'regions':
-                dic_list = self._load_data_regions(gcf=loader.get_gcf())
-                self._graph_regions(dataframe=dic_list, organism_name=loader.get_organism_name(), data=loader.get_data(),
-                                    regions_number=loader.get_regions_number())
+                dic_list = self._load_data_regions(gcf=self.loader.get_gcf())
+                self._graph_regions(dataframe=dic_list, organism_name=self.loader.get_organism_name(), data=self.loader.get_data(),
+                                    regions_number=self.loader.get_regions_number())
             else:
                 raise Exception("Enter a valid mode (whole or regions)")
         else:
@@ -181,7 +185,8 @@ class Grapher:
 
     def _graph_rm_options(self, graphs_config, df, size, partitions, regions, plot_type, save, dir, filename):
         if graphs_config.get('distribution_of_repeats_merged', False):
-            Graphs.graph_distribution_of_repeats_merged(df, size, partitions, regions, plot_type, save, dir, filename)
+            Graphs.graph_distribution_of_repeats_merged(df=df, size=size, partitions=partitions, regions=regions,
+                                                        plot_type=plot_type, save=save, name=dir, filename=filename)
 
         if graphs_config.get('frequency_of_repeats_class_family', False):
             Graphs.graph_frequency_of_repeats_grouped(df, col="class_family", n_max=10, save=save, name=dir,
@@ -195,23 +200,23 @@ class Grapher:
         if graphs_config.get('distribution_of_repeats_class_family', False):
             Graphs.graph_distribution_of_repeats(
                 df=df, col="class_family", legend=True, plot_type=plot_type,
-                limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
+                limit=self.DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                 name=dir, filename=filename)
 
         if graphs_config.get('distribution_of_repeats_repeat', False):
             Graphs.graph_distribution_of_repeats(
                 df=df, col="repeat", legend=True, plot_type=plot_type,
-                limit=DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
+                limit=self.DEFAULT_REPEATS_LIMIT, regions=regions, save=save,
                 name=dir, filename=filename)
 
         if graphs_config.get('distribution_of_repeats_subplots_class_family', False):
             Graphs.graph_distribution_of_repeats_subplots(
-                df=df, col="class_family", legend=True, limit=DEFAULT_REPEATS_LIMIT,
+                df=df, col="class_family", legend=True, limit=self.DEFAULT_REPEATS_LIMIT,
                 regions=regions, save=save, name=dir, filename=filename)
 
         if graphs_config.get('distribution_of_repeats_subplots_repeat', False):
             Graphs.graph_distribution_of_repeats_subplots(
-                df=df, col="repeat", legend=True, limit=DEFAULT_REPEATS_LIMIT,
+                df=df, col="repeat", legend=True, limit=self.DEFAULT_REPEATS_LIMIT,
                 regions=regions, save=save, name=dir, filename=filename)
 
     @DBConnection
@@ -264,8 +269,8 @@ class Grapher:
             filename, size = self.whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
                 refseq_accession_number)
 
-            partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
-            regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+            partitions = int(partitions) if isinstance(partitions, str) else self.DEFAULT_PARTITIONS
+            regions = int(regions) if isinstance(regions, str) else self.DEFAULT_REGIONS
             plot_type = plot_type or "line"
 
             logger.info(f"Starting generating graphs for chromosome {index + 1} - {refseq_accession_number}")
@@ -315,8 +320,8 @@ class Grapher:
         config = self.load_config()
         graphs_config = config.get('genes', {})
 
-        partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
-        regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+        partitions = int(partitions) if isinstance(partitions, str) else self.DEFAULT_PARTITIONS
+        regions = int(regions) if isinstance(regions, str) else self.DEFAULT_REGIONS
         plot_type = plot_type or "line"
 
         file_df = FileReader.read_gtf_file(path)
@@ -365,8 +370,8 @@ class Grapher:
     @Timer
     def graph_gtf_from_database(self, GCF: str, refseq_accession_number: str, partitions: int, regions: int, plot_type: str,
                                 save: bool, dir: str):
-        partitions = int(partitions) if isinstance(partitions, str) else DEFAULT_PARTITIONS
-        regions = int(regions) if isinstance(regions, str) else DEFAULT_REGIONS
+        partitions = int(partitions) if isinstance(partitions, str) else self.DEFAULT_PARTITIONS
+        regions = int(regions) if isinstance(regions, str) else self.DEFAULT_REGIONS
         plot_type = plot_type or "line"
 
         if GCF:

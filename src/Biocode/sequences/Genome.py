@@ -3,7 +3,7 @@ from src.Biocode.sequences.Sequence import Sequence
 
 from src.Biocode.sequences.RegionSequence import RegionSequence
 
-from load import loader
+from Loader import Loader
 from utils.logger import logger
 
 class Genome:

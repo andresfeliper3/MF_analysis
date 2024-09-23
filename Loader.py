@@ -131,5 +131,3 @@ class Loader:
         return len(self.get_data())
 
 
-loader = Loader()
-

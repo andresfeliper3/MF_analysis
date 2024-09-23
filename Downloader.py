@@ -3,16 +3,15 @@ import subprocess
 import gzip
 import shutil
 
-from load import loader
-from utils.decorators import Timer, TryExcept
+from Loader import Loader
+from utils.decorators import Timer, TryExcept, Inject
 from utils.logger import logger
 
-
-
-
+@Inject(loader = Loader)
 class Downloader:
 
-    def __init__(self):
+    def __init__(self, loader: Loader = None):
+        self.loader = loader
         self.folder_path = "resources/dna_sequences/"
         self.organism = ""
 
@@ -20,16 +19,16 @@ class Downloader:
     def download_command(self, args):
         if args.name:
             self.organism = args.name
-            loader.set_organism(self.organism)
-            self.remove_files(folder=loader.get_organism_folder())
-            self.download_from_repository(folder=loader.get_organism_folder(),
-                                                download_url=loader.get_download_url(),
+            self.loader.set_organism(self.organism)
+            self.remove_files(folder=self.loader.get_organism_folder())
+            self.download_from_repository(folder=self.loader.get_organism_folder(),
+                                                download_url=self.loader.get_download_url(),
                                                 suffix=".gz")
-            self.uncompress_all_files(folder=loader.get_organism_folder())
+            self.uncompress_all_files(folder=self.loader.get_organism_folder())
             if bool(args.gff):
-                self.download_from_repository(folder=loader.get_organism_gtf_subfolder(),
-                                                    download_url=loader.get_download_gff_url(), suffix=".gtf.gz")
-                self.uncompress_all_files(folder=loader.get_organism_gtf_subfolder())
+                self.download_from_repository(folder=self.loader.get_organism_gtf_subfolder(),
+                                                    download_url=self.loader.get_download_gff_url(), suffix=".gtf.gz")
+                self.uncompress_all_files(folder=self.loader.get_organism_gtf_subfolder())
         else:
             raise Exception("Please provide either a -name (lowercase name or GCF).")
 

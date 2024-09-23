@@ -4,9 +4,7 @@ from Analyzer import Analyzer
 from Downloader import Downloader
 from GenesLoader import GenesLoader
 from Grapher import Grapher
-from load import loader
 from RepeatsLoader import RepeatsLoader
-from utils.decorators import TryExcept
 
 
 def main():
