@@ -1,14 +1,11 @@
 import argparse
 
 from Analyzer import Analyzer
-from download import remove_files, execute_download_command, uncompress_all_files
-from genes import load_genes_from_file
-from graph import load_data_whole, graph_whole, load_data_regions, graph_regions, graph_rm_results_from_file, \
-    graph_rm_results_from_database, graph_recursive_from_database, graph_recursive_genome_from_database, \
-    graph_rm_results_from_files_in_folder, graph_rm_results_of_genome_from_database, graph_gtf_from_file, \
-    graph_gtf_from_database, graph_genome_repeats_from_file
+from Downloader import Downloader
+from GenesLoader import GenesLoader
+from Grapher import Grapher
 from load import loader
-from repeats import load_RM_repeats_from_file, load_RM_repeats_from_folder, load_genome_repeats_file
+from RepeatsLoader import RepeatsLoader
 from utils.decorators import TryExcept
 
 
@@ -182,6 +179,10 @@ def main():
 
     args = parser.parse_args()
     analyzer = Analyzer()
+    downloader = Downloader()
+    genes_loader = GenesLoader()
+    repeats_loader = RepeatsLoader()
+    grapher = Grapher()
 
     if args.command == 'analyze_genome':
         analyzer.analyze_genome_command(args)
@@ -192,141 +193,42 @@ def main():
     elif args.command == 'find_kmers_sequence':
         analyzer.find_kmers_sequence_command(args)
     elif args.command == 'graph':
-        graph_command(args)
+        grapher.graph_command(args)
     elif args.command == 'graph_rm_file_sequence':
-        graph_rm_file_command(args)
-    elif args.command == 'graph_rm_database_sequence':
-        graph_rm_database_command(args)
-    elif args.command == 'graph_rm_file_genome':
-        graph_rm_file_genome_command(args)
-    elif args.command == 'graph_rm_database_genome':
-        graph_rm_database_genome_command(args)
-    elif args.command == 'graph_genome_repeats_from_file':
-        graph_genome_repeats_from_file_command(args)
-    elif args.command == 'graph_recursive':
-        graph_recursive_command(args)
-    elif args.command == 'graph_recursive_genome':
-        graph_recursive_genome_command(args)
-    elif args.command == 'graph_gtf_file':
-        graph_gtf_file(args)
-    elif args.command == 'graph_gtf_database':
-        graph_gtf_database(args)
-    elif args.command == 'download':
-        download_command(args)
-    elif args.command == 'load_RM_repeats':
-        load_RM_repeats(args)
-    elif args.command == 'load_RM_repeats_folder':
-        load_RM_repeats_folder(args)
-    elif args.command == 'load_genome_repeats_file':
-        load_genome_repeats_file_command(args)
-    elif args.command == 'load_genes':
-        load_genes(args)
-
-
-@TryExcept
-def download_command(args):
-    global organism
-
-    if args.name:
-        organism = args.name
-        loader.set_organism(organism)
-        remove_files(folder=loader.get_organism_folder())
-        execute_download_command(folder=loader.get_organism_folder(), download_url=loader.get_download_url(),
-                                 suffix=".gz")
-        uncompress_all_files(folder=loader.get_organism_folder())
-        if bool(args.gff):
-            execute_download_command(folder=loader.get_organism_gtf_subfolder(),
-                                     download_url=loader.get_download_gff_url(), suffix=".gtf.gz")
-            uncompress_all_files(folder=loader.get_organism_gtf_subfolder())
-    else:
-        raise Exception("Please provide either a -name (lowercase name or GCF).")
-
-
-@TryExcept
-def graph_command(args):
-    global organism
-
-    if args.name:
-        organism = args.name
-        loader.set_organism(organism)
-        _validate_mode_graphing(args)
-    else:
-        raise Exception("Please provide either -id or -name.")
-
-
-def _validate_mode_graphing(args):
-    if args.mode:
-        if args.mode == 'whole':
-            dic = load_data_whole(gcf=loader.get_gcf())
-            graph_whole(dataframe=dic, organism_name=loader.get_organism_name(), data=loader.get_data())
-        elif args.mode == 'regions':
-            dic_list = load_data_regions(gcf=loader.get_gcf())
-            graph_regions(dataframe=dic_list, organism_name=loader.get_organism_name(), data=loader.get_data(),
-                          regions_number=loader.get_regions_number())
-        else:
-            raise Exception("Enter a valid mode (whole or regions)")
-    else:
-        raise Exception("Enter a valid mode (whole or regions)")
-
-@TryExcept
-def load_RM_repeats(args):
-    load_RM_repeats_from_file(args.path)
-
-@TryExcept
-def load_RM_repeats_folder(args):
-    load_RM_repeats_from_folder(args.path)
-
-@TryExcept
-def load_genome_repeats_file_command(args):
-    load_genome_repeats_file(args.path)
-
-@TryExcept
-def graph_rm_file_command(args):
-    graph_rm_results_from_file(path=args.path, partitions=args.partitions, regions=args.regions,
+        grapher.graph_rm_results_from_file(path=args.path, partitions=args.partitions, regions=args.regions,
                                    plot_type=args.plot_type, save=args.save, dir=args.dir)
-
-@TryExcept
-def graph_rm_database_command(args):
-    graph_rm_results_from_database(refseq_accession_number=args.ran, partitions=args.partitions,
+    elif args.command == 'graph_rm_database_sequence':
+        grapher.graph_rm_results_from_database(refseq_accession_number=args.ran, partitions=args.partitions,
                                    regions=args.regions, plot_type=args.plot_type, save=args.save, dir=args.dir)
-
-
-@TryExcept
-def graph_rm_file_genome_command(args):
-    graph_rm_results_from_files_in_folder(directory_path=args.path, partitions=args.partitions, regions=args.regions,
-                                              plot_type=args.plot_type, save=args.save, dir=args.dir)
-
-@TryExcept
-def graph_rm_database_genome_command(args):
-    graph_rm_results_of_genome_from_database(GCF=args.gcf, partitions=args.partitions, regions=args.regions,
+    elif args.command == 'graph_rm_file_genome':
+        grapher.graph_rm_results_from_files_in_folder(directory_path=args.path, partitions=args.partitions, regions=args.regions,
+                                             plot_type=args.plot_type, save=args.save, dir=args.dir)
+    elif args.command == 'graph_rm_database_genome':
+        grapher.graph_rm_results_of_genome_from_database(GCF=args.gcf, partitions=args.partitions, regions=args.regions,
                                                  plot_type=args.plot_type, save=args.save, dir=args.dir)
-@TryExcept
-def graph_genome_repeats_from_file_command(args):
-    graph_genome_repeats_from_file(path=args.path, dir=args.dir, partitions=args.partitions, regions=args.regions,
+    elif args.command == 'graph_genome_repeats_from_file':
+        grapher.graph_genome_repeats_from_file(path=args.path, dir=args.dir, partitions=args.partitions, regions=args.regions,
                                    plot_type=args.plot_type, save=args.save)
-
-@TryExcept
-def graph_recursive_command(args):
-    graph_recursive_from_database(refseq_accession_number=args.ran, save=args.save, name=args.name, n_max=args.n_max)
-
-@TryExcept
-def graph_recursive_genome_command(args):
-    graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, dir=args.dir, n_max=args.n_max)
-
-
-@TryExcept
-def graph_gtf_file(args):
-    graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
+    elif args.command == 'graph_recursive':
+        grapher.graph_recursive_from_database(refseq_accession_number=args.ran, save=args.save, name=args.name, n_max=args.n_max)
+    elif args.command == 'graph_recursive_genome':
+        grapher.graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, dir=args.dir, n_max=args.n_max)
+    elif args.command == 'graph_gtf_file':
+        grapher.graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
                             save=args.save, dir=args.dir)
-
-@TryExcept
-def graph_gtf_database(args):
-    graph_gtf_from_database(GCF=args.gcf, refseq_accession_number=args.ran, partitions=args.partitions,
+    elif args.command == 'graph_gtf_database':
+        grapher.graph_gtf_from_database(GCF=args.gcf, refseq_accession_number=args.ran, partitions=args.partitions,
                                 regions=args.regions, plot_type=args.plot_type, save=args.save, dir=args.dir)
-
-@TryExcept
-def  load_genes(args):
-    load_genes_from_file(path=args.path)
+    elif args.command == 'download':
+        downloader.download_command(args)
+    elif args.command == 'load_RM_repeats':
+        repeats_loader.load_RM_repeats_from_file(args.path)
+    elif args.command == 'load_RM_repeats_folder':
+        repeats_loader.load_RM_repeats_from_folder(args.path)
+    elif args.command == 'load_genome_repeats_file':
+       repeats_loader.load_genome_repeats_file(args.path)
+    elif args.command == 'load_genes':
+        genes_loader.load_genes_from_file(args.path)
 
 
 if __name__ == "__main__":
