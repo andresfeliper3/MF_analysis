@@ -13,6 +13,7 @@ class Downloader:
     def __init__(self, loader: Loader = None):
         self.loader = loader
         self.folder_path = "resources/dna_sequences/"
+        self.genes_folder_path= "resources/genes/"
         self.organism = ""
 
     @TryExcept
@@ -21,14 +22,15 @@ class Downloader:
             self.organism = args.name
             self.loader.set_organism(self.organism)
             self.remove_files(folder=self.loader.get_organism_folder())
-            self.download_from_repository(folder=self.loader.get_organism_folder(),
-                                                download_url=self.loader.get_download_url(),
-                                                suffix=".gz")
-            self.uncompress_all_files(folder=self.loader.get_organism_folder())
-            if bool(args.gff):
-                self.download_from_repository(folder=self.loader.get_organism_gtf_subfolder(),
-                                                    download_url=self.loader.get_download_gff_url(), suffix=".gtf.gz")
-                self.uncompress_all_files(folder=self.loader.get_organism_gtf_subfolder())
+            self.download_genome_from_repository(folder=self.loader.get_organism_folder(),
+                                                 download_url=self.loader.get_download_url(),
+                                                 suffix=".gz")
+
+            self.uncompress_all_files(directory_path=f"{self.folder_path}{self.loader.get_organism_folder()}")
+            if bool(args.gtf):
+                self.download_genes_from_repository(folder=self.loader.get_organism_gtf_subfolder(),
+                                                     download_url=self.loader.get_download_gtf_url(), suffix=".gtf.gz")
+                self.uncompress_all_files(directory_path=f"{self.genes_folder_path}{self.loader.get_organism_gtf_subfolder()}")
         else:
             raise Exception("Please provide either a -name (lowercase name or GCF).")
 
@@ -62,8 +64,16 @@ class Downloader:
 
 
     @Timer
-    def download_from_repository(self,folder: str, download_url: str, suffix: str):
+    def download_genome_from_repository(self, folder: str, download_url: str, suffix: str):
         directory_path = f"{self.folder_path}{folder}"
+        self._download_from_repository(directory_path, download_url, suffix)
+
+    @Timer
+    def download_genes_from_repository(self, folder: str, download_url: str, suffix: str):
+        directory_path = f"{self.genes_folder_path}{folder}"
+        self._download_from_repository(directory_path, download_url, suffix)
+
+    def _download_from_repository(self, directory_path: str, download_url: str, suffix: str):
         download_command = f'wget --recursive -np -e robots=off --reject "index.html" --no-host-directories ' \
                         f'--cut-dirs=10 --accept "*{suffix}" {download_url} -P {directory_path}'
 
@@ -88,8 +98,7 @@ class Downloader:
 
 
     @Timer
-    def uncompress_all_files(self, folder):
-        directory_path = f"{self.folder_path}{folder}"
+    def uncompress_all_files(self, directory_path):
         files = os.listdir(directory_path)
 
         for file in files:

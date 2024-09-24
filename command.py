@@ -154,8 +154,8 @@ def main():
     download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
                                                              'specified in the sequences.yaml file.')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
-    download_parser.add_argument('--gff', choices=['true', 'false'], default='true',
-                                      help='Save the genes .gff file from the link specified in the sequence.yaml file')
+    download_parser.add_argument('--gtf', choices=['true', 'false'], default='true',
+                                      help='Save the genes .gtf file from the link specified in the sequence.yaml file')
 
     load_RM_repeats_parser = subparsers.add_parser('load_RM_repeats', help='Load repeats from results file generated '
                                             'by RepeatMasker')
