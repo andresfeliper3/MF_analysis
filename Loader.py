@@ -115,7 +115,7 @@ class Loader:
             logger.error("Invalid download url %s", e)
             return ""
 
-    def get_download_gff_url(self) -> str:
+    def get_download_gtf_url(self) -> str:
         try:
             return self.config[self.organism]['download_files_url']
         except KeyError as e:
