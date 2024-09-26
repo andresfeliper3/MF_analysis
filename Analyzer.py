@@ -46,7 +46,8 @@ class Analyzer:
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__regions_MFA_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(), data=self.loader.get_data(),
-                                          regions_number=self.loader.get_regions_number(), save_to_db=save_to_db)
+                                          regions_number=args.regions_number, window_length=args.window_length,
+                                          save_to_db=save_to_db)
             else:
                 raise Exception("Enter a valid mode (whole or regions)")
         else:
@@ -58,9 +59,11 @@ class Analyzer:
         #genome_manager.graph_linear_fit()
         #genome_manager.generate_df_results()
 
-    def __regions_MFA_genome(self, organism_name, gcf, data, regions_number, save_to_db):
+    def __regions_MFA_genome(self, organism_name, gcf, data, regions_number, window_length, save_to_db):
+        window_length = int(window_length) if window_length else None
+        regions_number = int(regions_number) if regions_number else None
         region_genome_manager = RegionGenomeManager(genome_data=data, regions_number=regions_number,
-                                                    organism_name=organism_name)
+                                                    window_length=window_length, organism_name=organism_name)
         region_genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
 
     @DBConnection
@@ -93,7 +96,8 @@ class Analyzer:
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__regions_MFA_sequence(gcf=self.loader.get_gcf(), sequence=sequence,
-                                     regions_number=self.loader.get_regions_number(), save_to_db=save_to_db)
+                                     regions_number=args.regions_number, window_length=args.window_length,
+                                            save_to_db=save_to_db)
             else:
                 raise Exception("Enter a valid mode (whole or regions)")
         else:
@@ -106,8 +110,11 @@ class Analyzer:
         if save_to_db:
             sequence_manager.save_results_to_db_during_execution(GCF=gcf)
 
-    def __regions_MFA_sequence(self, gcf, sequence, regions_number, save_to_db):
-        region_sequence_manager = RegionSequenceManager(sequence=sequence, regions_number=regions_number)
+    def __regions_MFA_sequence(self, gcf, sequence, regions_number, window_length, save_to_db):
+        window_length = int(window_length) if window_length else None
+        regions_number = int(regions_number) if regions_number else None
+        region_sequence_manager = RegionSequenceManager(sequence=sequence, regions_number=regions_number,
+                                                        window_length=window_length)
         region_sequence_manager.calculate_multifractal_analysis_values(gcf)
 
         if save_to_db:
