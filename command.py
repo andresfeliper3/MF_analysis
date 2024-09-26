@@ -14,11 +14,15 @@ def main():
     analyze_genome_parser = subparsers.add_parser('analyze_genome', help='Analyze command for a whole genome')
     analyze_genome_parser.add_argument('-name', help='Name or GCF for analysis')
     analyze_genome_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    analyze_genome_parser.add_argument('-regions_number', help='Enter the amount of regions')
+    analyze_genome_parser.add_argument('-window_length', help='Enter the length of the windows')
     analyze_genome_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 
     analyze_sequence_parser = subparsers.add_parser('analyze_sequence', help='Analyze command for a sequence')
     analyze_sequence_parser.add_argument('-path', help='Path of the .fasta sequence file relative to command.py file')
     analyze_sequence_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    analyze_sequence_parser.add_argument('-regions_number', help='Enter the amount of regions')
+    analyze_sequence_parser.add_argument('-window_length', help='Enter the length of the windows')
     analyze_sequence_parser.add_argument('-name', help='Name or GCF for analysis')
     analyze_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 

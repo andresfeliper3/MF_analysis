@@ -22,7 +22,7 @@ from utils.decorators import Inject
         region_mi_grids_service = RegionMiGridsService)
 class RegionSequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, regions: list[Sequence] = None,
-                 sequence_name: str = None, organism_name: str = None, regions_number: int = 0,
+                 sequence_name: str = None, organism_name: str = None, regions_number: int = 0, window_length: int = 0,
                  region_results_service: RegionResultsService = None,
                  organisms_service: OrganismsService = None,
                  region_chromosomes_service: RegionChromosomesService = None,
@@ -34,8 +34,8 @@ class RegionSequenceManager(SequenceManagerInterface):
         self.region_chromosomes_service = region_chromosomes_service
         self.whole_chromosomes_service = whole_chromosomes_service
         self.region_mi_grids_service = region_mi_grids_service
-
         self.regions_total = regions_number
+
         if sequence:
             if type(sequence) == RegionSequence:
                 self.sequence = sequence
@@ -45,21 +45,25 @@ class RegionSequenceManager(SequenceManagerInterface):
                     self.sequence.set_organism_name(organism_name)
             elif type(sequence) == Sequence:
                 self.sequence = RegionSequence(sequence=sequence.get_sequence(), regions_number=regions_number,
-                                               name=sequence.get_name(),
+                                               name=sequence.get_name(), window_length=window_length,
                                                refseq_accession_number=sequence.get_refseq_accession_number())
             self.sequence_name = self.sequence.get_name()
             self.organism_name = self.sequence.get_organism_name()
 
         elif sequence_data:
             self.sequence = RegionSequence(sequence_data=sequence_data, regions_number=regions_number,
-                                           name=sequence_data['name'])
+                                           name=sequence_data['name'], window_length=window_length)
             self.sequence_name = sequence_data['name']
             self.organism_name = sequence_data['organism_name'] or organism_name
         elif regions:
             temp = ''.join(region.get_sequence() for region in regions)
-            self.sequence = RegionSequence(sequence=temp, regions_number=regions_number, name=sequence_name)
+            self.sequence = RegionSequence(sequence=temp, regions_number=regions_number, window_length=window_length,
+                                           name=sequence_name)
             self.sequence_name = sequence_name
             self.organism_name = organism_name
+
+        self.regions_total = self.sequence.get_regions_total()
+        self.window_length = self.sequence.get_window_length()
 
         # list of regions (Sequences)
         self.regions = self.sequence.get_regions()

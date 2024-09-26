@@ -17,7 +17,7 @@ import gc
 class GenomeManagerInterface:
 
     def __init__(self, genome: Genome = None, genome_data: list[dict] = None, chromosomes: list[Sequence] = None,
-                 organism_name: str = None,
+                 organism_name: str = None, window_length: int = 0,
                  regions_number: int = 0):
         self.n_largest_mi_grid_values_strings = None
         self.df_results = None
@@ -44,7 +44,7 @@ class GenomeManagerInterface:
             else:  # > 0
                 for chromosome in self.genome.get_chromosomes():
                     self.managers.append(RegionSequenceManager(sequence=chromosome, sequence_name=chromosome.get_name(),
-                                                               regions_number=regions_number,
+                                                               regions_number=regions_number, window_length=window_length,
                                                                organism_name=organism_name))
                 # regions names
                 self.regions_names = []
