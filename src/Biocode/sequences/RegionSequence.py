@@ -40,9 +40,9 @@ class RegionSequence(Sequence):
                 self.regions_names.append(region_name)
         elif self.window_length is not None and self.window_length > 0:
             regions_sequences = self._split_sequence_per_window_length(self.sequence, self.window_length)
-            regions_sequences_size = len(regions_sequences)
+            self.regions_number = len(regions_sequences)
             for i, region_sequence in enumerate(regions_sequences):
-                region_name = f"{self.name}_region_{i + 1}_of_{regions_sequences_size}"
+                region_name = f"{self.name}_region_{i + 1}_of_{self.regions_number}"
                 refseq_accession_number = f"{self.refseq_accession_number}_region_{i + 1}"
                 self.regions.append(Sequence(sequence=region_sequence, name=region_name,
                                              refseq_accession_number=refseq_accession_number,

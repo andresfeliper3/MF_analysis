@@ -19,11 +19,12 @@ class RegionGenomeManager(GenomeManagerInterface):
     def __init__(self, genome: Genome = None, genome_data: list[dict] = None, chromosomes: list[Sequence] = None,
                  organism_name: str = None,
                  regions_number: int = 0,
+                 window_length: int = 0,
                  region_results_service: RegionResultsService = None,
                  organisms_service: OrganismsService = None,
                  region_chromosomes_service: RegionChromosomesService = None
                  ):
-        super().__init__(genome, genome_data, chromosomes, organism_name, regions_number)
+        super().__init__(genome, genome_data, chromosomes, organism_name, window_length, regions_number)
         self.region_results_service = region_results_service
         self.organisms_service = organisms_service
         self.region_chromosomes_service = region_chromosomes_service
