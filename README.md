@@ -50,10 +50,15 @@ Analyze and load the organism and genome data.
         py .\command.py analyze_genome -name GCF_000002985.6 -mode regions
         py .\command.py analyze_genome -name GCF_000002985.6 -mode whole
 
-Analyze only one sequence file (one chromosome) given a file path
+Analyze only one sequence file (one chromosome) given a file path.
+When analyzing by regions, choose between dividing the sequence by amount of regions or by region length.
+Use one of these parameters:
+- window_length: size of the region/window in bps. The amount of windows will be deduced.
+- regions_number: amount of regions that will be used (all of them of the same size except for the last one). The window length is calculated.
     
 
-        py .\command.py analyze_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name GCF_000002985.6 -mode regions
+        py .\command.py analyze_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name GCF_000002985.6 -mode regions -window_length 300000
+        py .\command.py analyze_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name GCF_000002985.6 -mode regions -regions_number 3 
         py .\command.py analyze_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name GCF_000002985.6 -mode whole
 
 It is possible to configure if the results should be saved to the database or not.
@@ -115,7 +120,8 @@ Load and graph the data:
 
         py .\command.py graph -name "caenorhabditis elegans" -mode whole
         py .\command.py graph -name "caenorhabditis elegans" -mode regions
-        py .\command.py graph -name GCF_000002985.6 -mode regions
+        py .\command.py graph -name GCF_000002985.6 -mode regions -regions_number 3 
+        py .\command.py graph -name GCF_000002985.6 -mode regions -window_length 300000
         py .\command.py graph -name GCF_000002985.6 -mode whole
 
 Compare results with branch main and changeAlgorithm.

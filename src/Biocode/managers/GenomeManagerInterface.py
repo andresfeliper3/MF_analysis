@@ -17,27 +17,27 @@ import gc
 class GenomeManagerInterface:
 
     def __init__(self, genome: Genome = None, genome_data: list[dict] = None, chromosomes: list[Sequence] = None,
-                 organism_name: str = None, window_length: int = 0,
-                 regions_number: int = 0):
+                 organism_name: str = None, window_length: int = 0, regions_number: int = 0):
         self.n_largest_mi_grid_values_strings = None
         self.df_results = None
-        self.regions_number = regions_number
+
         self.genome = None
         if genome:
             self.genome = genome
         elif genome_data:
-            self.genome = Genome(chromosomes_data=genome_data, regions_number=regions_number)
+            self.genome = Genome(chromosomes_data=genome_data, regions_number=regions_number, window_length=window_length)
         elif chromosomes:
-            self.genome = Genome(chromosomes=chromosomes, regions_number=regions_number)
+            self.genome = Genome(chromosomes=chromosomes, regions_number=regions_number, window_length=window_length)
 
         # Managers
         if not self.genome:
             logger.warning(f"There is not self.genome object in GenomeManagerInterface")
         else:
             self.managers = []
-            if regions_number < 0:
-                raise Exception("Not a valid regions_number for the GenomeManager constructor")
-            elif regions_number == 0:
+            if (regions_number is None or regions_number <= 0) and (
+                    window_length is None or window_length <= 0):
+                raise Exception('Enter a valid regions number or window length for the GenomeManagerInterface')
+            elif regions_number == 0 and window_length == 0:
                 for chromosome in self.genome.get_chromosomes():
                     self.managers.append(SequenceManager(sequence=chromosome, sequence_name=chromosome.get_name(),
                                                          organism_name=organism_name))
@@ -50,6 +50,8 @@ class GenomeManagerInterface:
                 self.regions_names = []
                 self._attach_regions_names()
 
+        self.regions_number = regions_number or self.genome.get_chromosomes()[0].get_regions_number()
+        self.window_length = window_length
 
         # name of organism
         self.organism_name = organism_name

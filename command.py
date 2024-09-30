@@ -44,6 +44,8 @@ def main():
     graph_parser = subparsers.add_parser('graph', help='Graph command')
     graph_parser.add_argument('-name', help='Name or GCF for graphing')
     graph_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    graph_parser.add_argument('-regions_number', help='Amount of regions in which the sequence will be divided.')
+    graph_parser.add_argument('-window_length', help='Size (amount of bps) in which the windows/regions will be divided.')
 
     graph_rm_file_parser = subparsers.add_parser('graph_rm_file_sequence', help='Graph RepeatMasker results')
     graph_rm_file_parser.add_argument('-path', help="Enter the path of a RepeatMasker results file")

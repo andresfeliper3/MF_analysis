@@ -66,19 +66,19 @@ class Grapher:
     def _validate_mode_graphing(self, args):
         if args.mode:
             if args.mode == 'whole':
-                dic = self._load_data_whole(gcf=self.loader.get_gcf())
+                dic = self._extract_whole_data(gcf=self.loader.get_gcf())
                 self._graph_whole(dataframe=dic, organism_name=self.loader.get_organism_name(), data=self.loader.get_data())
             elif args.mode == 'regions':
-                dic_list = self._load_data_regions(gcf=self.loader.get_gcf())
+                dic_list = self._extract_regions_data(gcf=self.loader.get_gcf())
                 self._graph_regions(dataframe=dic_list, organism_name=self.loader.get_organism_name(), data=self.loader.get_data(),
-                                    regions_number=self.loader.get_regions_number())
+                                    regions_number=args.regions_number, window_length=args.window_length)
             else:
                 raise Exception("Enter a valid mode (whole or regions)")
         else:
             raise Exception("Enter a valid mode (whole or regions)")
 
 
-    def _load_data_whole(self, gcf) -> dict:
+    def _extract_whole_data(self, gcf) -> dict:
         df = self.whole_results_service.extract_results(GCF=gcf)
         return df.to_dict(orient='records')
 
@@ -100,17 +100,19 @@ class Grapher:
 
         self._graph_MFA_options(graphs_config, genome_manager)
 
-    def _load_data_regions(self, gcf) -> list[dict]:
+    def _extract_regions_data(self, gcf) -> list[dict]:
         region_results_service = RegionResultsService()
         df = region_results_service.extract_results(GCF=gcf)
         return df.to_dict(orient='records')
 
-    def _graph_regions(self, dataframe, organism_name, data, regions_number):
+    def _graph_regions(self, dataframe, organism_name, data, regions_number, window_length):
+        window_length = int(window_length) if window_length else None
+        regions_number = int(regions_number) if regions_number else None
         config = self.load_config()
         graphs_config = config.get('MFA', {})
 
         region_genome_manager = RegionGenomeManager(
-            genome_data=data, organism_name=organism_name, regions_number=regions_number
+            genome_data=data, organism_name=organism_name, regions_number=regions_number, window_length=window_length
         )
         mfa_results = self._prepare_mfa_results(dataframe)
 
@@ -118,8 +120,8 @@ class Grapher:
 
         region_genome_manager.set_mfa_results(mfa_results)
         region_genome_manager.set_flattened_mfa_results(mfa_results)
-        region_genome_manager.set_cover(cover)
-        region_genome_manager.set_cover_percentage(cover_percentage)
+        #region_genome_manager.set_cover(cover)
+        #region_genome_manager.set_cover_percentage(cover_percentage)
         region_genome_manager.set_degrees_of_multifractality(degrees_of_multifractality)
 
         region_genome_manager.generate_df_results()
