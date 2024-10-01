@@ -34,8 +34,8 @@ class GenomeManagerInterface:
             logger.warning(f"There is not self.genome object in GenomeManagerInterface")
         else:
             self.managers = []
-            if (regions_number is None or regions_number <= 0) and (
-                    window_length is None or window_length <= 0):
+            if (regions_number is None or regions_number < 0) and (
+                    window_length is None or window_length < 0):
                 raise Exception('Enter a valid regions number or window length for the GenomeManagerInterface')
             elif regions_number == 0 and window_length == 0:
                 for chromosome in self.genome.get_chromosomes():
@@ -50,7 +50,8 @@ class GenomeManagerInterface:
                 self.regions_names = []
                 self._attach_regions_names()
 
-        self.regions_number = regions_number or self.genome.get_chromosomes()[0].get_regions_number()
+        #self.regions_number = regions_number or self.genome.get_chromosomes()[0].get_regions_number()
+        #logger.warning(f"GenomeINterface: {self.regions_number}")
         self.window_length = window_length
 
         # name of organism

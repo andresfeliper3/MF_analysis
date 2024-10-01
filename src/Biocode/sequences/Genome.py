@@ -14,8 +14,8 @@ class Genome:
     def __init__(self, chromosomes: list[Sequence] = None, chromosomes_data: list[dict] = None,
                  regions_number: int = 0, window_length: int = 0, loader: Loader = None):
         self.loader = loader
-        if (regions_number is None or regions_number <= 0) and (
-                window_length is None or window_length <= 0):
+        if (regions_number is None or regions_number < 0) and (
+                window_length is None or window_length < 0):
             raise Exception('Enter a valid regions number or window length')
         elif regions_number == 0 and window_length == 0:
             if chromosomes:

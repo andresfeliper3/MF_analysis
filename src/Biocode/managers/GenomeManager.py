@@ -18,7 +18,7 @@ class GenomeManager(GenomeManagerInterface):
                  organisms_service:OrganismsService = None,
                  whole_chromosomes_service:WholeChromosomesService = None
                  ):
-        super().__init__(genome, genome_data, chromosomes, organism_name, 0)
+        super().__init__(genome, genome_data, chromosomes, organism_name, 0, 0)
         self.whole_results_service = whole_results_service
         self.organisms_service = organisms_service
         self.whole_chromosomes_service = whole_chromosomes_service

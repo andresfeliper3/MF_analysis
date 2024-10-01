@@ -14,7 +14,7 @@ from utils.logger import logger
 class Graphs:
 
     @staticmethod
-    def _savefig(title, name):
+    def _savefig(title, name, bbox_inches='tight'):
         directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), "out/graphs")
         os.makedirs(directory, exist_ok=True)
 
@@ -23,7 +23,7 @@ class Graphs:
         if not os.path.exists(actual_path):
             os.makedirs(actual_path)
         plt.ioff()
-        plt.savefig(f'{actual_path}/{title}.png')
+        plt.savefig(f'{actual_path}/{title}.png', bbox_inches=bbox_inches)
         plt.close()
 
     @staticmethod
@@ -69,41 +69,57 @@ class Graphs:
 
     @staticmethod
     def graph_many_grouped(results_array, X, Y, x_label, y_label, title, name, regions_number=None, markers_array=None,
-                           linestyles_array=None,
-                           colors_array=None, labels_array=None, markersize=6, color_by='region', save=True):
+                           linestyles_array=None, labels_array=None, markersize=6, color_by='region',
+                           colormap='viridis', save=True):
         if not (regions_number >= 0):
             raise Exception("Not a valid regions_number entered in the graph_many_grouped method of Graphs")
 
-        plt.figure(figsize=(10, 6))
+        # Keep the plot dimensions fixed
+        fig, ax = plt.subplots(figsize=(10, 6))
 
         markers = ['o', 's', '^', 'v', '>', '<', 'p', 'D', 'h']
-        colors = ['b', 'r', 'g', 'c', 'y', 'm', 'k', 'w']
-
         markers_cycle = cycle(markers[:regions_number]) if markers_array is None else cycle(markers_array)
-        colors_cycle = cycle(colors[:regions_number]) if colors_array is None else cycle(colors_array)
+
+        # Use a colormap to generate gradient colors
+        cmap = plt.get_cmap(colormap)  # Choose a colormap like 'viridis', 'plasma', 'coolwarm', etc.
+        norm = plt.Normalize(vmin=0, vmax=len(results_array))  # Normalize based on the number of results
+
+       # number_after_of = labels_array[0].split('_of_')[-1]
 
         for index, result in enumerate(results_array):
+            color = cmap(norm(index))  # Get the gradient color based on the index
+
             if color_by == 'region':
                 if index % regions_number == 0:
                     marker = markers_array[index] if markers_array else next(markers_cycle)
-                color = colors_array[index] if colors_array else next(colors_cycle)
             elif color_by == 'chromosome':
-                if index % regions_number == 0:
-                    color = colors_array[index] if colors_array else next(colors_cycle)
                 marker = markers_array[index] if markers_array else next(markers_cycle)
 
             linestyle = linestyles_array[index] if linestyles_array else '-'
             label = labels_array[index] if labels_array else None
-            plt.plot(result[X], result[Y], marker=marker, linestyle=linestyle, color=color, label=label,
-                     markersize=markersize)
+            ax.plot(result[X], result[Y], marker=marker, linestyle=linestyle, color=color, label=label,
+                    markersize=markersize)
 
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-        plt.title(title)
-        plt.grid()
-        plt.legend(loc='upper left', bbox_to_anchor=(1, 1),  ncol=2)
+        ax.set_xlabel(x_label)
+        ax.set_ylabel(y_label)
+        ax.set_title(title)
+        ax.grid()
+
+        # Set a reasonable number of columns based on the number of items in the legend
+        num_items = len(results_array)
+        max_legend_items_per_col = 12  # Max number of items per column
+        num_columns = max(1, num_items // max_legend_items_per_col)
+
+        # Place the legend outside the plot, to the right of the figure
+        legend = ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=num_columns)
+
+        # Keep the chart's dimensions unchanged, but expand the space for the legend
+        plt.subplots_adjust(right=0.7)  # Adjust the right margin to allocate space for the legend
+
         if save:
-            Graphs._savefig(title, name)
+            # Save the figure ensuring the legend is included fully in the output
+            Graphs._savefig(title, name, bbox_inches='tight')
+
         plt.show()
 
     @staticmethod
