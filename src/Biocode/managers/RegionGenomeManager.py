@@ -40,12 +40,10 @@ class RegionGenomeManager(GenomeManagerInterface):
                 manager.generate_degree_of_multifractality()
             self.degrees_of_multifractality += manager.get_degree_of_multifractality()
 
-    def graph_degrees_of_multifractality(self, y_range=None, legend_labels=None,
-                                         top_labels=False):
+    def graph_degrees_of_multifractality(self, y_range=None, top_labels=False):
         # Check if the lengths of x_array and y_array match
 
-        if legend_labels is None:
-            legend_labels = ['Left', 'Center', 'Right']
+        legend_labels = [f'R{i + 1}' for i in range(self.regions_number)]
         if len(self.regions_names) != len(self.degrees_of_multifractality):
             raise ValueError(
                 f"Number of chromosome names {len(self.genome.get_chromosomes_names())} ({self.genome.get_chromosomes_names()}) \
@@ -89,11 +87,10 @@ class RegionGenomeManager(GenomeManagerInterface):
     def graph_multifractal_analysis_merged(self, y_range_degrees_of_multifractality=None,
                                            degrees_of_multifractality=True,
                                            multifractal_spectrum=True, correlation_exponent=True,
-                                           regions_labels=['Left', 'Center', 'Right'],
+                                           regions_labels=None,
                                            color_by='region', top_labels=False):
         if degrees_of_multifractality:
             self.graph_degrees_of_multifractality(y_range=y_range_degrees_of_multifractality,
-                                                  legend_labels=regions_labels,
                                                   top_labels=top_labels)
         if multifractal_spectrum:
             self.graph_multifractal_spectrum(color_by=color_by)

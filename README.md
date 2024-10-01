@@ -47,7 +47,8 @@ Analyze and load the organism and genome data.
 
                     
         py .\command.py analyze_genome -name "caenorhabditis elegans" -mode regions
-        py .\command.py analyze_genome -name GCF_000002985.6 -mode regions
+        py .\command.py analyze_genome -name GCF_000002985.6 -mode regions -window_length 300000
+        py .\command.py analyze_genome -name GCF_000002985.6 -mode regions -regions_number 3
         py .\command.py analyze_genome -name GCF_000002985.6 -mode whole
 
 Analyze only one sequence file (one chromosome) given a file path.
