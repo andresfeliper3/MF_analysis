@@ -22,17 +22,25 @@ class Downloader:
             self.organism = args.name
             self.loader.set_organism(self.organism)
             self.remove_files(folder=self.loader.get_organism_folder())
+            self.check_directory(directory_path=os.path.join(self.folder_path, self.loader.get_organism_folder()))
             self.download_genome_from_repository(folder=self.loader.get_organism_folder(),
                                                  download_url=self.loader.get_download_url(),
                                                  suffix=".gz")
 
             self.uncompress_all_files(directory_path=f"{self.folder_path}{self.loader.get_organism_folder()}")
             if bool(args.gtf):
+                self.check_directory(directory_path=os.path.join(self.genes_folder_path, self.loader.get_organism_gtf_subfolder()))
                 self.download_genes_from_repository(folder=self.loader.get_organism_gtf_subfolder(),
                                                      download_url=self.loader.get_download_gtf_url(), suffix=".gtf.gz")
                 self.uncompress_all_files(directory_path=f"{self.genes_folder_path}{self.loader.get_organism_gtf_subfolder()}")
         else:
             raise Exception("Please provide either a -name (lowercase name or GCF).")
+
+
+    def check_directory(self, directory_path):
+        if not os.path.exists(directory_path) or not os.path.isdir(directory_path):
+            os.makedirs(directory_path)
+            logger.info(f"Directory created for {directory_path}")
 
     @Timer
     def remove_files(self, folder):
