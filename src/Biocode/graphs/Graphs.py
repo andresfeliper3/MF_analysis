@@ -2,6 +2,8 @@ import os
 from itertools import cycle
 
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -135,28 +137,27 @@ class Graphs:
         plt.show()
 
     @staticmethod
-    def graph_bars_grouped(x_array, y_array, title, name, regions_number=3, y_label=None, x_labels=None, legend_labels=None,
+    def graph_bars_grouped(x_array, y_array, title, name, regions_number=3, y_label=None, x_labels=None,
+                           legend_labels=None,
                            regions_colors=None, rotation=45, y_range: list[int] = None, top_labels=False, save=True):
-        fig, ax = plt.subplots()
+        X_SIZE = 20
+        fig, ax = plt.subplots(figsize=(X_SIZE, 6))  # Adjust figure size for better visibility
         bar_width = 0.1  # Width of each bar
         num_chromosomes = len(x_array) // regions_number
 
         if x_labels is None:
             x_labels = [f'Chromosome {i + 1}' for i in range(num_chromosomes)]
 
-        if regions_colors is None:
-            colors = ['b', 'r', 'g', 'c', 'y', 'm', 'k', 'w']
-            colors = colors[:regions_number]
-            colors_cycle = cycle(colors)
-        else:
-            colors_cycle = cycle(regions_colors)
+        # Generate a colormap based on the regions_number
+        cmap = cm.get_cmap('viridis', regions_number)
+        colors = [cmap(i / regions_number) for i in range(regions_number)]
 
         # Calculate the x-positions for the bars
         x_positions = [i * (regions_number + 2) + np.arange(regions_number) for i in range(num_chromosomes)]
 
         for i in range(num_chromosomes):
             for j in range(regions_number):
-                color = next(colors_cycle)
+                color = colors[j]
                 x_position = x_positions[i][j]
                 y_value = y_array[i * regions_number + j]
                 label = x_labels[i]
@@ -185,8 +186,15 @@ class Graphs:
         ax.set_xticks(x_tick_positions)
         ax.set_xticklabels(x_labels, rotation=rotation)
 
-        # Create a custom legend to clarify which region corresponds to which color
-        ax.legend(legend_labels, title="Region color")
+        # Place the legend to the side and divide into columns based on the number of regions
+        if legend_labels is None:
+            legend_labels = [f'R{i + 1}' for i in range(regions_number)]
+
+        # Adjust the number of columns for the legend
+        num_columns = max(1, len(legend_labels) // (X_SIZE // 2))  # Adjust 5 based on the size of the figure
+
+        # Create a custom legend to the side of the plot
+        ax.legend(legend_labels, title="Region color", loc='center left', bbox_to_anchor=(1, 0.5), ncol=num_columns)
 
         if save:
             Graphs._savefig(title, name)
