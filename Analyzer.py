@@ -42,16 +42,16 @@ class Analyzer:
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__whole_MFA_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(), data=self.loader.get_data(),
                                         save_to_db=save_to_db)
-            elif args.mode == 'regions':
+            elif args.mode == 'regions_1':
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__regions_MFA_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(), data=self.loader.get_data(),
                                           regions_number=args.regions_number, window_length=args.window_length,
                                           save_to_db=save_to_db)
             else:
-                raise Exception("Enter a valid mode (whole or regions)")
+                raise Exception("Enter a valid mode (whole or regions_1)")
         else:
-            raise Exception("Enter a valid mode (whole or regions)")
+            raise Exception("Enter a valid mode (whole or regions_1)")
 
     def __whole_MFA_genome(self, organism_name, gcf, data, save_to_db):
         genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
@@ -92,16 +92,16 @@ class Analyzer:
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__whole_MFA_sequence(gcf=self.loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
-            elif args.mode == 'regions':
+            elif args.mode == 'regions_1':
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__regions_MFA_sequence(gcf=self.loader.get_gcf(), sequence=sequence,
                                      regions_number=args.regions_number, window_length=args.window_length,
                                             save_to_db=save_to_db)
             else:
-                raise Exception("Enter a valid mode (whole or regions)")
+                raise Exception("Enter a valid mode (whole or regions_1)")
         else:
-            raise Exception("Enter a valid mode (whole or regions)")
+            raise Exception("Enter a valid mode (whole or regions_1)")
 
     def __whole_MFA_sequence(self, gcf, sequence, save_to_db):
         sequence_manager = SequenceManager(sequence=sequence)
@@ -113,6 +113,7 @@ class Analyzer:
     def __regions_MFA_sequence(self, gcf, sequence, regions_number, window_length, save_to_db):
         window_length = int(window_length) if window_length else None
         regions_number = int(regions_number) if regions_number else None
+        # regions_number is None here
         region_sequence_manager = RegionSequenceManager(sequence=sequence, regions_number=regions_number,
                                                         window_length=window_length)
         region_sequence_manager.calculate_multifractal_analysis_values(gcf)

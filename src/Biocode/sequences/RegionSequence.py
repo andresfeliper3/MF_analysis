@@ -22,7 +22,7 @@ class RegionSequence(Sequence):
 
     def calculate_regions(self):
         if (self.regions_number is None or self.regions_number < 0) and (self.window_length is None or self.window_length < 0):
-            raise Exception('Enter a valid regions number or window length')
+            raise Exception('Enter a valid regions_1 number or window length')
         elif self.regions_number is not None and self.regions_number > 0:
             self.region_common_size = self.get_size() // self.regions_number
             for i in range(self.regions_number):

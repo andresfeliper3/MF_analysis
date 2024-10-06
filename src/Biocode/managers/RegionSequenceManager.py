@@ -1,3 +1,6 @@
+import pandas as pd
+import os
+
 from src.Biocode.managers.SequenceManagerInterface import SequenceManagerInterface
 from src.Biocode.sequences.Sequence import Sequence
 
@@ -7,7 +10,7 @@ from src.Biocode.graphs.Graphs import Graphs
 
 from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.OrganismsService import OrganismsService
-from src. Biocode.services.RegionChromosomesService import RegionChromosomesService
+from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.services.RegionMiGridService import RegionMiGridsService
 
@@ -15,11 +18,12 @@ from utils.logger import logger
 
 from utils.decorators import Inject
 
-@Inject(region_results_service = RegionResultsService,
-        organisms_service = OrganismsService,
-        region_chromosomes_service = RegionChromosomesService,
-        whole_chromosomes_service = WholeChromosomesService,
-        region_mi_grids_service = RegionMiGridsService)
+
+@Inject(region_results_service=RegionResultsService,
+        organisms_service=OrganismsService,
+        region_chromosomes_service=RegionChromosomesService,
+        whole_chromosomes_service=WholeChromosomesService,
+        region_mi_grids_service=RegionMiGridsService)
 class RegionSequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, regions: list[Sequence] = None,
                  sequence_name: str = None, organism_name: str = None, regions_number: int = 0, window_length: int = 0,
@@ -76,7 +80,7 @@ class RegionSequenceManager(SequenceManagerInterface):
         # fq
         self.fq = []
         # degree of multifractality
-        self.degree_of_multifractality = []
+        self.degrees_of_multifractality = []
 
         # coverage
         self.cover_percentage = []
@@ -88,7 +92,7 @@ class RegionSequenceManager(SequenceManagerInterface):
 
     def calculate_multifractal_analysis_values(self, GCF):
         self.generate_mfa(GCF, self.region_mi_grids_service, self.region_chromosomes_service)
-        self.generate_degree_of_multifractality()
+        self.generate_degrees_of_multifractality()
         self._attach_cover_data()
 
     def generate_mfa(self, GCF, mi_grids_service, chromosomes_service):
@@ -97,10 +101,10 @@ class RegionSequenceManager(SequenceManagerInterface):
             self.mfa_results.append(manager.get_mfa_results())
             self.fq.append(manager.get_fq())
 
-    def generate_degree_of_multifractality(self):
+    def generate_degrees_of_multifractality(self):
         for manager in self.managers:
-            manager.generate_degree_of_multifractality()
-            self.degree_of_multifractality.append(manager.get_degree_of_multifractality())
+            manager.generate_degrees_of_multifractality()
+            self.degrees_of_multifractality.append(manager.get_degrees_of_multifractality())
 
     def graph_cgr(self):
         for manager in self.managers:
@@ -117,14 +121,14 @@ class RegionSequenceManager(SequenceManagerInterface):
                                     sequence_name=self.sequence.get_regions_names()[index],
                                     name=f"{self.organism_name}/regions")
 
-    def graph_degree_of_multifractality(self, y_range=None, top_labels=True):
+    def graph_degrees_of_multifractality(self, y_range=None, top_labels=False):
         # Check if the lengths of x_array and y_array match
-        if len(self.sequence.get_regions_names()) != len(self.degree_of_multifractality):
+        if len(self.sequence.get_regions_names()) != len(self.degrees_of_multifractality):
             raise ValueError(
                 f"Number of chromosome names {len(self.sequence.get_regions_names())} ({self.sequence.get_regions_names()}) \
-        does not match the number of degrees of multifractality {len(self.degree_of_multifractality)} ({self.degree_of_multifractality}).")
+        does not match the number of degrees of multifractality {len(self.degrees_of_multifractality)} ({self.degrees_of_multifractality}).")
 
-        Graphs.graph_bars(x_array=self.sequence.get_regions_names(), y_array=self.degree_of_multifractality,
+        Graphs.graph_bars(x_array=self.sequence.get_regions_names(), y_array=self.degrees_of_multifractality,
                           title=f"Degree of multifractality by regions for {self.sequence_name}",
                           name=f"{self.organism_name}/regions",
                           y_label="Degree of multifractality", y_range=y_range, top_labels=top_labels)
@@ -150,16 +154,80 @@ class RegionSequenceManager(SequenceManagerInterface):
         super().graph_multifractal_analysis(_3d_cgr, linear_fit, degrees_of_multifractality, multifractal_spectrum,
                                             correlation_exponent)
         if degrees_of_multifractality:
-            self.graph_degree_of_multifractality(y_range=y_range_degrees_of_multifractality, top_labels=top_labels)
+            self.graph_degrees_of_multifractality(y_range=y_range_degrees_of_multifractality, top_labels=top_labels)
 
     def graph_coverage(self):
         for manager in self.managers:
             manager.set_organism_name(self.organism_name)
             manager.graph_coverage(subfolder="regions")
 
+    def generate_df_results(self, selected_columns=None):
+        sheet = "With regions"
+        # Extract sequence names and use them as row labels
+        row_labels = self.sequence.get_regions_names()
+        # Extract sequence names and use them as row labels
+        q_min = self.get_managers()[0].get_mfa_generator().get_q_min()
+        q_max = self.get_managers()[0].get_mfa_generator().get_q_max()
+        # Create an empty DataFrame with the correct number of rows
+        self.df_results = pd.DataFrame(index=row_labels, columns=["D%d" % i for i in range(q_min, q_max + 1)])
+
+        # Code to populate the DataFrame
+        for i, data_dict in enumerate(self.flattened_mfa_results):
+            self.df_results.loc[row_labels[i]] = data_dict['Dq_values']
+
+        self.df_results['DDq'] = [data_dict['DDq'] for data_dict in self.flattened_mfa_results]
+        self.df_results['t(q=20)'] = [data_dict['tau_q_values'][-1] for data_dict in self.flattened_mfa_results]
+
+        # Set the index based on the type of row_labels
+        if any('_region_' in label for label in row_labels):
+            # Row labels correspond to chromosome regions
+            self.df_results.index.name = 'Region'
+        else:
+            # Row labels correspond to whole chromosomes
+            self.df_results.index.name = 'Chromosome'
+
+        selected_df_results = self.df_results[selected_columns] if selected_columns else self.df_results
+        self._save_df_results(selected_df_results, sheet)
+        return selected_df_results
+
+    def _save_df_results(self, df, sheet):
+        directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')),
+                                 "out/results")
+        os.makedirs(directory, exist_ok=True)
+
+        # File path for the Excel file
+        output_file = f'{directory}/{self.organism_name}.xlsx'
+
+        # Check if the file already exists
+        if os.path.exists(output_file):
+            # Load the existing Excel file
+            with pd.ExcelFile(output_file) as xls:
+                # Read the existing sheets into a dictionary of DataFrames
+                sheets = {sheet_name: xls.parse(sheet_name, index_col=0) for sheet_name in xls.sheet_names}
+
+            # Add the new sheet to the dictionary
+            sheets[sheet] = df
+            # Save all sheets back to the Excel file
+            with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+                for sheet_name, sheet_df in sheets.items():
+                    sheet_df.to_excel(writer, sheet_name=sheet_name, index=True)
+
+        else:
+            # If the file does not exist, create a new one
+            with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+                df.to_excel(writer, sheet_name=sheet, index=True)
 
     def set_sequence_name(self, sequence_name):
         self.sequence_name = sequence_name
+
+    def set_mfa_results(self, mfa_results: list):
+        self.mfa_results = mfa_results
+
+    def set_degrees_of_multifractality(self, degrees_of_multifractality: list):
+        self.degrees_of_multifractality = degrees_of_multifractality
+
+    def set_flattened_mfa_results(self, flattened_mfa_results: list):
+        self.flattened_mfa_results = flattened_mfa_results
 
     def set_cover(self, cover):
         for index, manager in enumerate(self.managers):
@@ -172,6 +240,9 @@ class RegionSequenceManager(SequenceManagerInterface):
     def get_sequence_name(self):
         return self.sequence_name
 
+    def get_sequence(self):
+        return self.sequence
+
     def get_mfa_results(self):
         return self.mfa_results
 
@@ -181,8 +252,8 @@ class RegionSequenceManager(SequenceManagerInterface):
     def get_regions(self):
         return self.regions
 
-    def get_degree_of_multifractality(self):
-        return self.degree_of_multifractality
+    def get_degrees_of_multifractality(self):
+        return self.degrees_of_multifractality
 
     def get_cover(self) -> list[list[int]]:
         return self.cover
@@ -200,28 +271,28 @@ class RegionSequenceManager(SequenceManagerInterface):
         [{"q_values", "Dq_values", "tau_q_values", "DDq"}]
         """
         #try:
-
         self.organism_id = self.organisms_service.extract_by_GCF(GCF=GCF)
         whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
             self.sequence.get_refseq_accession_number())
         for index, result in enumerate(self.mfa_results):
-            chromosome_id = self.region_chromosomes_service.extract_id_by_refseq_accession_number(self.regions[index].get_refseq_accession_number())
+            chromosome_id = self.region_chromosomes_service.extract_id_by_refseq_accession_number(
+                self.regions[index].get_refseq_accession_number())
             self.region_chromosomes_service.update_when_null(pk_value=chromosome_id,
-                                                                             record=(self.regions[index].get_name(),
-                                                                           self.regions[index].get_refseq_accession_number(),
-                                                                           self.organism_id,
-                                                                           self.cover_percentage[index],
-                                                                           self.cover[index],
-                                                                           self.regions_total,
-                                                                           index + 1,
-                                                                           result['sequence_size'],
-                                                                           whole_chromosome_id))
+                                                             record=(self.regions[index].get_name(),
+                                                                     self.regions[index].get_refseq_accession_number(),
+                                                                     self.organism_id,
+                                                                     self.cover_percentage[index],
+                                                                     self.cover[index],
+                                                                     self.sequence.get_regions_number(),
+                                                                     index + 1,
+                                                                     result['sequence_size'],
+                                                                     whole_chromosome_id))
             self.region_results_service.insert(
                 record=(chromosome_id, result['Dq_values'].tolist(),
-                       result['tau_q_values'].tolist(),
+                        result['tau_q_values'].tolist(),
                         result['DDq']))
         del self.mfa_results
-   # except AttributeError as e:
-    #    logger.error(f"Was not able to extract ids from organism and whole_chromosome to insert "
-    #                 f"a new region sequence {self.sequence_name} with error name: {e.name}")
+        # except AttributeError as e:
+        #    logger.error(f"Was not able to extract ids from organism and whole_chromosome to insert "
+        #                 f"a new region sequence {self.sequence_name} with error name: {e.name}")
         logger.info(f"************* Saved to DB {self.sequence_name} *************")

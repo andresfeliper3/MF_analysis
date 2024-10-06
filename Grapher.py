@@ -4,12 +4,14 @@ from Loader import Loader
 from src.Biocode.graphs.Graphs import Graphs
 from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
+from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 from src.Biocode.services.GtfGenesService import GtfGenesService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
 from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
+from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
 from src.Biocode.services.WholeResultsService import WholeResultsService
 from src.Biocode.utils.utils import str_to_list
 from utils.FileReader import FileReader
@@ -18,16 +20,16 @@ from utils.folder import apply_function_to_files_in_folder
 from utils.logger import logger
 
 
-@Inject(whole_results_service = WholeResultsService,
-        region_results_service = RegionResultsService,
-        whole_chromosomes_service = WholeChromosomesService,
-        recursive_repeats_service = RecursiveRepeatsWholeChromosomesService,
-        rm_repeats_service = RMRepeatsWholeChromosomesService,
-        organisms_service = OrganismsService,
-        gtf_genes_service = GtfGenesService,
-        loader = Loader)
+@Inject(whole_results_service=WholeResultsService,
+        region_results_service=RegionResultsService,
+        whole_chromosomes_service=WholeChromosomesService,
+        region_chromosomes_service=RegionChromosomesService,
+        recursive_repeats_service=RecursiveRepeatsWholeChromosomesService,
+        rm_repeats_service=RMRepeatsWholeChromosomesService,
+        organisms_service=OrganismsService,
+        gtf_genes_service=GtfGenesService,
+        loader=Loader)
 class Grapher:
-
     DEFAULT_REGIONS = 3
     DEFAULT_PARTITIONS = 300
     DEFAULT_REPEATS_LIMIT = 20
@@ -35,12 +37,15 @@ class Grapher:
     def __init__(self,
                  whole_results_service: WholeResultsService, region_results_service: RegionResultsService,
                  rm_repeats_service: RMRepeatsWholeChromosomesService,
-                 whole_chromosomes_service: WholeChromosomesService, recursive_repeats_service: RecursiveRepeatsWholeChromosomesService,
+                 whole_chromosomes_service: WholeChromosomesService,
+                 region_chromosomes_service: RegionChromosomesService,
+                 recursive_repeats_service: RecursiveRepeatsWholeChromosomesService,
                  organisms_service: OrganismsService, gtf_genes_service: GtfGenesService, loader: Loader):
         self.whole_results_service = whole_results_service
         self.region_results_service = region_results_service
         self.rm_repeats_service = rm_repeats_service
         self.whole_chromosomes_service = whole_chromosomes_service
+        self.region_chromosomes_service = region_chromosomes_service
         self.recursive_repeats_service = recursive_repeats_service
         self.organisms_service = organisms_service
         self.gtf_genes_service = gtf_genes_service
@@ -67,16 +72,17 @@ class Grapher:
         if args.mode:
             if args.mode == 'whole':
                 dic = self._extract_whole_data(gcf=self.loader.get_gcf())
-                self._graph_whole(dataframe=dic, organism_name=self.loader.get_organism_name(), data=self.loader.get_data())
+                self._graph_whole(dataframe=dic, organism_name=self.loader.get_organism_name(),
+                                  data=self.loader.get_data())
             elif args.mode == 'regions':
                 dic_list = self._extract_regions_data(gcf=self.loader.get_gcf())
-                self._graph_regions(dataframe=dic_list, organism_name=self.loader.get_organism_name(), data=self.loader.get_data(),
-                                    regions_number=args.regions_number, window_length=args.window_length)
+                self._graph_all_sequences_regions(dic_list=dic_list, organism_name=self.loader.get_organism_name(),
+                                                  data=self.loader.get_data(),
+                                                  regions_number=args.regions_number, window_length=args.window_length)
             else:
                 raise Exception("Enter a valid mode (whole or regions)")
         else:
             raise Exception("Enter a valid mode (whole or regions)")
-
 
     def _extract_whole_data(self, gcf) -> dict:
         df = self.whole_results_service.extract_results(GCF=gcf)
@@ -100,12 +106,14 @@ class Grapher:
 
         self._graph_MFA_options(graphs_config, genome_manager)
 
-    def _extract_regions_data(self, gcf) -> list[dict]:
+    def _extract_regions_data(self, gcf) -> list[list[dict]]:
         region_results_service = RegionResultsService()
         df = region_results_service.extract_results(GCF=gcf)
-        return df.to_dict(orient='records')
+        df['sequence_name_for_grouping'] = df['sequence_name'].str.split('_region').str[0]
+        dfs_per_sequence_list = [group for name, group in df.groupby('sequence_name_for_grouping')]
+        return [split_df.to_dict(orient='records') for split_df in dfs_per_sequence_list]
 
-    def _graph_regions(self, dataframe, organism_name, data, regions_number, window_length):
+    def _graph_all_sequences_regions(self, dic_list: list[list[dict]], organism_name, data, regions_number, window_length):
         window_length = int(window_length) if window_length else None
         regions_number = int(regions_number) if regions_number else None
         config = self.load_config()
@@ -114,25 +122,47 @@ class Grapher:
         region_genome_manager = RegionGenomeManager(
             genome_data=data, organism_name=organism_name, regions_number=regions_number, window_length=window_length
         )
-        mfa_results = self._prepare_mfa_results(dataframe)
 
-        cover, cover_percentage, degrees_of_multifractality = self._extract_cover_info(dataframe)
+        for index, region_sequence_manager in enumerate(region_genome_manager.get_managers()):
+            self.__graph_regions_of_one_sequence(dic_list=dic_list[index],
+                                                 region_sequence_manager=region_sequence_manager,
+                                                 graphs_config=graphs_config)
+
+        # HERE: REGIONS_NUMBER IS NOT SET YET
+
+    def __graph_regions_of_one_sequence(self, dic_list: list[dict], region_sequence_manager: RegionSequenceManager,
+                                        graphs_config):
+        mfa_results = self._prepare_mfa_results(dic_list)
+        cover, cover_percentage, degrees_of_multifractality = self._extract_cover_info(dic_list)
+        region_sequence_manager.set_mfa_results(mfa_results)
+        region_sequence_manager.set_flattened_mfa_results(mfa_results)
+        # region_genome_manager.set_cover(cover)
+        # region_genome_manager.set_cover_percentage(cover_percentage)
+        region_sequence_manager.set_degrees_of_multifractality(degrees_of_multifractality)
+
+        region_sequence_manager.generate_df_results()
+
+        self._graph_MFA_options(graphs_config, region_sequence_manager)
+
+    def __graph_regions_of_one_sequence_not_used(self, dic_list: list[dict], region_genome_manager: RegionGenomeManager,
+                                        graphs_config):
+        mfa_results = self._prepare_mfa_results(dic_list)
+        cover, cover_percentage, degrees_of_multifractality = self._extract_cover_info(dic_list)
 
         region_genome_manager.set_mfa_results(mfa_results)
         region_genome_manager.set_flattened_mfa_results(mfa_results)
-        #region_genome_manager.set_cover(cover)
-        #region_genome_manager.set_cover_percentage(cover_percentage)
+        # region_genome_manager.set_cover(cover)
+        # region_genome_manager.set_cover_percentage(cover_percentage)
         region_genome_manager.set_degrees_of_multifractality(degrees_of_multifractality)
 
         region_genome_manager.generate_df_results()
 
         self._graph_MFA_options(graphs_config, region_genome_manager)
 
-    def _prepare_mfa_results(self, dataframe):
+    def _prepare_mfa_results(self, dataframe) -> list[dict]:
         """Extract MFA results and return a list of dictionaries"""
         desired_keys_ddq = ['DDq', 'sequence_name']
         desired_keys_dq_tauq = ['Dq_values', 'tau_q_values']
-
         mfa_results = []
         for item in dataframe:
             result_entry = {
@@ -156,7 +186,8 @@ class Grapher:
             manager.graph_degrees_of_multifractality()
 
         if graphs_config.get('multifractal_analysis_merged', False):
-            manager.graph_multifractal_analysis_merged()
+            pass
+            #manager.graph_multifractal_analysis_merged()
 
         if graphs_config.get('coverage', False):
             manager.graph_coverage()
@@ -178,7 +209,8 @@ class Grapher:
         self._graph_rm_options(graphs_config, df, size, partitions, regions, plot_type, save, dir, filename)
 
     def _get_filename_and_size(self, refseq_accession_number):
-        return self.whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(refseq_accession_number)
+        return self.whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
+            refseq_accession_number)
 
     def _set_default_values(self, partitions, regions):
         partitions = int(partitions) if isinstance(partitions, str) else self.DEFAULT_PARTITIONS
@@ -236,19 +268,20 @@ class Grapher:
 
         self._graph_rm_options(graphs_config, data, size, partitions, regions, plot_type, save, dir, filename)
 
-
     @DBConnection
     @TryExcept
     @Timer
-    def graph_rm_results_from_files_in_folder(self, directory_path: str, partitions: int, regions: int, plot_type: str, save: bool,
+    def graph_rm_results_from_files_in_folder(self, directory_path: str, partitions: int, regions: int, plot_type: str,
+                                              save: bool,
                                               dir: str):
-        apply_function_to_files_in_folder(directory_path, graph_rm_results_from_file, partitions, regions,
+        apply_function_to_files_in_folder(directory_path, self.graph_rm_results_from_file, partitions, regions,
                                           plot_type, save, dir)
 
     @DBConnection
     @TryExcept
     @Timer
-    def graph_rm_results_of_genome_from_database(self, GCF: str, partitions: int, regions: int, plot_type: str, save: bool,
+    def graph_rm_results_of_genome_from_database(self, GCF: str, partitions: int, regions: int, plot_type: str,
+                                                 save: bool,
                                                  dir: str):
         chromosomes_ran_list = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
 
@@ -351,26 +384,26 @@ class Grapher:
                     chromosome_name=chromosome_name, save=bool(save)
                 )
 
-
-    def _graph_gtf_single_chromosome_from_database(self, refseq_accession_number: str, name: str, partitions: int, regions: int,
+    def _graph_gtf_single_chromosome_from_database(self, refseq_accession_number: str, name: str, partitions: int,
+                                                   regions: int,
                                                    plot_type: str, save: bool):
         config = self.load_config()
         graphs_config = config.get('genes', {})
 
         logger.info(f"Graphing for the sequence {refseq_accession_number}")
         chromosome_name, size = self.whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
-                                    refseq_accession_number)
+            refseq_accession_number)
         df = self.gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
 
         if graphs_config.get('distribution_of_genes_merged', False):
             Graphs.graph_distribution_of_genes_merged(df, name, size, partitions, regions, plot_type, chromosome_name,
-                                                  bool(save))
-
+                                                      bool(save))
 
     @DBConnection
     @TryExcept
     @Timer
-    def graph_gtf_from_database(self, GCF: str, refseq_accession_number: str, partitions: int, regions: int, plot_type: str,
+    def graph_gtf_from_database(self, GCF: str, refseq_accession_number: str, partitions: int, regions: int,
+                                plot_type: str,
                                 save: bool, dir: str):
         partitions = int(partitions) if isinstance(partitions, str) else self.DEFAULT_PARTITIONS
         regions = int(regions) if isinstance(regions, str) else self.DEFAULT_REGIONS
@@ -378,21 +411,19 @@ class Grapher:
 
         if GCF:
             if refseq_accession_number:
-               self._graph_gtf_single_chromosome_from_database(refseq_accession_number, dir, partitions, regions, plot_type,
-                                                          save)
+                self._graph_gtf_single_chromosome_from_database(refseq_accession_number, dir, partitions, regions,
+                                                                plot_type,
+                                                                save)
             else:
                 chromosomes_ran_list = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
                 logger.info(f"Graphing for the genome: {GCF}")
                 for refseq_accession_number in chromosomes_ran_list:
                     self._graph_gtf_single_chromosome_from_database(refseq_accession_number, dir, partitions, regions,
-                                                               plot_type, save)
+                                                                    plot_type, save)
         elif refseq_accession_number:
-            self._graph_gtf_single_chromosome_from_database(refseq_accession_number, dir, partitions, regions, plot_type,
-                                                       save)
+            self._graph_gtf_single_chromosome_from_database(refseq_accession_number, dir, partitions, regions,
+                                                            plot_type,
+                                                            save)
         else:
             logger.error("Specify whether a GCF (organism/genome) or a refseq accession number (sequence/chromosome)")
             return
-
-
-
-

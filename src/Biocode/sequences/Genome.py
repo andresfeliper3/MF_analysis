@@ -16,7 +16,7 @@ class Genome:
         self.loader = loader
         if (regions_number is None or regions_number < 0) and (
                 window_length is None or window_length < 0):
-            raise Exception('Enter a valid regions number or window length')
+            raise Exception('Enter a valid regions_1 number or window length')
         elif regions_number == 0 and window_length == 0:
             if chromosomes:
                 self.chromosomes = chromosomes
@@ -26,7 +26,7 @@ class Genome:
                     self.chromosomes.append(Sequence(str(SeqIO.read(data['path'], "fasta").seq), name=data['name'],
                                         organism_name=data['organism_name'],
                                         refseq_accession_number=self.loader.extract_refseq_accession_number(data['path'])))
-        else:  # with regions number or window length
+        else:  # with regions_1 number or window length
             if chromosomes:
                 self.chromosomes = [RegionSequence(sequence=chromosome.get_sequence(), regions_number=regions_number,
                                                    refseq_accession_number=chromosome.get_refseq_accession_number(),

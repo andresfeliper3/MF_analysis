@@ -42,7 +42,7 @@ class RegionGenomeManager(GenomeManagerInterface):
 
     def graph_degrees_of_multifractality(self, y_range=None, top_labels=False):
         # Check if the lengths of x_array and y_array match
-
+        self.regions_number = 70
         legend_labels = [f'R{i + 1}' for i in range(self.regions_number)]
         if len(self.regions_names) != len(self.degrees_of_multifractality):
             raise ValueError(

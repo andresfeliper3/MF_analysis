@@ -36,7 +36,7 @@ class GenomeManagerInterface:
             self.managers = []
             if (regions_number is None or regions_number < 0) and (
                     window_length is None or window_length < 0):
-                raise Exception('Enter a valid regions number or window length for the GenomeManagerInterface')
+                raise Exception('Enter a valid regions_1 number or window length for the GenomeManagerInterface')
             elif regions_number == 0 and window_length == 0:
                 for chromosome in self.genome.get_chromosomes():
                     self.managers.append(SequenceManager(sequence=chromosome, sequence_name=chromosome.get_name(),
@@ -46,12 +46,11 @@ class GenomeManagerInterface:
                     self.managers.append(RegionSequenceManager(sequence=chromosome, sequence_name=chromosome.get_name(),
                                                                regions_number=regions_number, window_length=window_length,
                                                                organism_name=organism_name))
-                # regions names
+                # regions_1 names
                 self.regions_names = []
                 self._attach_regions_names()
 
         #self.regions_number = regions_number or self.genome.get_chromosomes()[0].get_regions_number()
-        #logger.warning(f"GenomeINterface: {self.regions_number}")
         self.window_length = window_length
 
         # name of organism
@@ -167,7 +166,7 @@ class GenomeManagerInterface:
 
         # Set the index based on the type of row_labels
         if any('_region_' in label for label in row_labels):
-            # Row labels correspond to chromosome regions
+            # Row labels correspond to chromosome regions_1
             self.df_results.index.name = 'Region'
         else:
             # Row labels correspond to whole chromosomes

@@ -123,7 +123,8 @@ class Graphs:
         plt.show()
 
     @staticmethod
-    def graph_bars(x_array, y_array, title, name, y_label=None, bar_labels=None, bar_colors=None, legend=None, rotation=45,
+    def graph_bars(x_array, y_array, title, name, y_label=None, bar_labels=None, bar_colors=None, legend=None,
+                   rotation=90,
                    y_range: list[int] = None,
                    top_labels=False, save=True):
         fig, ax = plt.subplots()
@@ -140,14 +141,17 @@ class Graphs:
             ax.set_ylim(min_y - buffer, max_y + buffer)
 
         ax.set_title(title)
+
         # Calculate the x-positions and y-values for the labels
         if top_labels:
             for x, y in zip(x_array, y_array):
-                ax.text(x, y, f"{y:.2f}", ha="center", va="bottom")
+                ax.text(x, y, f"{y:.2f}", ha="center", va="bottom", fontsize=8)  # Adjust font size here
 
         ax.set_xticks(x_array)
-        ax.set_xticklabels(x_array, rotation=rotation)
-        ax.legend(title=legend)
+        ax.set_xticklabels(x_array, rotation=rotation, fontsize=5)  # Adjust font size here
+        ax.legend(title=legend, fontsize=8)  # Adjust legend font size here
+        ax.yaxis.set_tick_params(labelsize=8)  # Adjust y-axis tick label size here
+
         if save:
             Graphs._savefig(title, name)
         plt.show()
@@ -202,7 +206,7 @@ class Graphs:
         ax.set_xticks(x_tick_positions)
         ax.set_xticklabels(x_labels, rotation=rotation)
 
-        # Place the legend to the side and divide into columns based on the number of regions
+        # Place the legend to the side and divide into columns based on the number of regions_1
         if legend_labels is None:
             legend_labels = [f'R{i + 1}' for i in range(regions_number)]
 

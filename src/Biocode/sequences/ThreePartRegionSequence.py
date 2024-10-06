@@ -9,4 +9,4 @@ class ThreePartRegionSequence(RegionSequence):
 
     def set_regions_number(self, regions_number):
         if regions_number != self.regions_number:
-            raise Exception("It is not possible to change the regions number of a ThreePartRegionSequence instance")
+            raise Exception("It is not possible to change the regions_1 number of a ThreePartRegionSequence instance")

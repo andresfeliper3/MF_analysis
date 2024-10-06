@@ -95,7 +95,7 @@ class Loader:
         try:
             return self.config[self.organism]['regions_number']
         except KeyError as e:
-            logger.error("Invalid regions number: %s", e)
+            logger.error("Invalid regions_1 number: %s", e)
             return -1
 
     def get_organism_folder(self) -> str | None:
