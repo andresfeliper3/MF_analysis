@@ -128,36 +128,20 @@ class Grapher:
                                                  region_sequence_manager=region_sequence_manager,
                                                  graphs_config=graphs_config)
 
-        # HERE: REGIONS_NUMBER IS NOT SET YET
-
     def __graph_regions_of_one_sequence(self, dic_list: list[dict], region_sequence_manager: RegionSequenceManager,
                                         graphs_config):
         mfa_results = self._prepare_mfa_results(dic_list)
         cover, cover_percentage, degrees_of_multifractality = self._extract_cover_info(dic_list)
         region_sequence_manager.set_mfa_results(mfa_results)
         region_sequence_manager.set_flattened_mfa_results(mfa_results)
-        # region_genome_manager.set_cover(cover)
-        # region_genome_manager.set_cover_percentage(cover_percentage)
+        region_sequence_manager.set_cover(cover)
+        region_sequence_manager.set_cover_percentage(cover_percentage)
         region_sequence_manager.set_degrees_of_multifractality(degrees_of_multifractality)
 
         region_sequence_manager.generate_df_results()
 
         self._graph_MFA_options(graphs_config, region_sequence_manager)
 
-    def __graph_regions_of_one_sequence_not_used(self, dic_list: list[dict], region_genome_manager: RegionGenomeManager,
-                                        graphs_config):
-        mfa_results = self._prepare_mfa_results(dic_list)
-        cover, cover_percentage, degrees_of_multifractality = self._extract_cover_info(dic_list)
-
-        region_genome_manager.set_mfa_results(mfa_results)
-        region_genome_manager.set_flattened_mfa_results(mfa_results)
-        # region_genome_manager.set_cover(cover)
-        # region_genome_manager.set_cover_percentage(cover_percentage)
-        region_genome_manager.set_degrees_of_multifractality(degrees_of_multifractality)
-
-        region_genome_manager.generate_df_results()
-
-        self._graph_MFA_options(graphs_config, region_genome_manager)
 
     def _prepare_mfa_results(self, dataframe) -> list[dict]:
         """Extract MFA results and return a list of dictionaries"""
@@ -186,8 +170,7 @@ class Grapher:
             manager.graph_degrees_of_multifractality()
 
         if graphs_config.get('multifractal_analysis_merged', False):
-            pass
-            #manager.graph_multifractal_analysis_merged()
+            manager.graph_multifractal_analysis_merged()
 
         if graphs_config.get('coverage', False):
             manager.graph_coverage()

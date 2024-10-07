@@ -74,20 +74,18 @@ class Graphs:
         if not (regions_number >= 0):
             raise Exception("Not a valid regions_number entered in the graph_many_grouped method of Graphs")
 
-        # Keep the plot dimensions fixed
-        fig, ax = plt.subplots(figsize=(10, 6))
+        # Keep the plot dimensions fixed but increase the width
+        fig, ax = plt.subplots(figsize=(20, 6))
 
         markers = ['o', 's', '^', 'v', '>', '<', 'p', 'D', 'h']
         markers_cycle = cycle(markers[:regions_number]) if markers_array is None else cycle(markers_array)
 
         # Use a colormap to generate gradient colors
-        cmap = plt.get_cmap(colormap)  # Choose a colormap like 'viridis', 'plasma', 'coolwarm', etc.
-        norm = plt.Normalize(vmin=0, vmax=len(results_array))  # Normalize based on the number of results
-
-       # number_after_of = labels_array[0].split('_of_')[-1]
+        cmap = plt.get_cmap(colormap)
+        norm = plt.Normalize(vmin=0, vmax=len(results_array))
 
         for index, result in enumerate(results_array):
-            color = cmap(norm(index))  # Get the gradient color based on the index
+            color = cmap(norm(index))
 
             if color_by == 'region':
                 if index % regions_number == 0:
@@ -105,16 +103,18 @@ class Graphs:
         ax.set_title(title)
         ax.grid()
 
-        # Set a reasonable number of columns based on the number of items in the legend
         num_items = len(results_array)
-        max_legend_items_per_col = 12  # Max number of items per column
+        max_legend_items_per_col = 12
         num_columns = max(1, num_items // max_legend_items_per_col)
 
-        # Place the legend outside the plot, to the right of the figure
+        # Place the legend outside the plot
         legend = ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=num_columns)
 
-        # Keep the chart's dimensions unchanged, but expand the space for the legend
-        plt.subplots_adjust(right=0.7)  # Adjust the right margin to allocate space for the legend
+        # Adjust the right margin to allocate space for the legend
+        plt.subplots_adjust(right=0.75)  # Adjust as needed
+
+        # Instead of using plt.tight_layout(), just ensure enough space
+        # plt.tight_layout()  # Comment or remove this line
 
         if save:
             # Save the figure ensuring the legend is included fully in the output
