@@ -145,7 +145,15 @@ class RegionSequenceManager(SequenceManagerInterface):
                           title=f'Dq vs q by regions for {self.sequence_name}', name=f"{self.organism_name}/regions",
                           labels_array=self.sequence.get_regions_names())
 
-    def graph_correlation_exponent(self):
+    def graph_correlation_exponent(self, color_by='region', markersize=3):
+        Graphs.graph_many_grouped(results_array=self.flattened_mfa_results, X='q_values', Y='tau_q_values', x_label='q',
+                                  y_label='t(q)',
+                                  title=f"Correlation exponent of chromosome {self.sequence_name} by regions of {self.organism_name}",
+                                  name=f"{self.organism_name}/regions",
+                                  regions_number=self.sequence.get_regions_number(), labels_array=self.sequence.get_regions_names(),
+                                  markersize=markersize, color_by=color_by)
+
+    def graph_correlation_exponent_old(self):
         Graphs.graph_many(results_array=self.mfa_results, X='q_values', Y='tau_q_values', x_label='q', y_label='t(q)',
                           title=f't(q) vs q by regions for {self.sequence_name}', name=f"{self.organism_name}/regions",
                           labels_array=self.sequence.get_regions_names(), markersize=2)
@@ -163,19 +171,13 @@ class RegionSequenceManager(SequenceManagerInterface):
         if degrees_of_multifractality:
             self.graph_degrees_of_multifractality(y_range=y_range_degrees_of_multifractality, top_labels=top_labels)
 
-    def graph_multifractal_analysis_merged(self, y_range_degrees_of_multifractality=None,
-                                           degrees_of_multifractality=True,
-                                           multifractal_spectrum=True, correlation_exponent=True,
+    def graph_multifractal_analysis_merged(self,  multifractal_spectrum=True, correlation_exponent=True,
                                            regions_labels=None,
-                                           color_by='region', top_labels=False):
-        if degrees_of_multifractality:
-            self.graph_degrees_of_multifractality(y_range=y_range_degrees_of_multifractality,
-                                                  top_labels=top_labels)
+                                           color_by='region'):
         if multifractal_spectrum:
             self.graph_multifractal_spectrum(color_by=color_by)
         if correlation_exponent:
-            pass
-            #self.graph_correlation_exponent(color_by=color_by, markersize=3)
+            self.graph_correlation_exponent(color_by=color_by, markersize=3)
 
     def graph_coverage(self):
         for manager in self.managers:
