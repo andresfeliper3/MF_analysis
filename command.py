@@ -13,22 +13,22 @@ def main():
 
     analyze_genome_parser = subparsers.add_parser('analyze_genome', help='Analyze command for a whole genome')
     analyze_genome_parser.add_argument('-name', help='Name or GCF for analysis')
-    analyze_genome_parser.add_argument('-mode', help='Analysis mode: whole / regions_1')
-    analyze_genome_parser.add_argument('-regions_number', help='Enter the amount of regions_1')
+    analyze_genome_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    analyze_genome_parser.add_argument('-regions_number', help='Enter the amount of regions')
     analyze_genome_parser.add_argument('-window_length', help='Enter the length of the windows')
     analyze_genome_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 
     analyze_sequence_parser = subparsers.add_parser('analyze_sequence', help='Analyze command for a sequence')
     analyze_sequence_parser.add_argument('-path', help='Path of the .fasta sequence file relative to command.py file')
-    analyze_sequence_parser.add_argument('-mode', help='Analysis mode: whole / regions_1')
-    analyze_sequence_parser.add_argument('-regions_number', help='Enter the amount of regions_1')
+    analyze_sequence_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    analyze_sequence_parser.add_argument('-regions_number', help='Enter the amount of regions')
     analyze_sequence_parser.add_argument('-window_length', help='Enter the length of the windows')
     analyze_sequence_parser.add_argument('-name', help='Name or GCF for analysis')
     analyze_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 
     kmers_finder_genome_parser = subparsers.add_parser('find_kmers_genome', help='Find kmers (repeats of k nucleotides)')
     kmers_finder_genome_parser.add_argument('-method', help='Define the method to find the kmers (recursively or repeatmasker)')
-    #kmers_finder_genome_parseradd_argument('-mode', help='Analysis mode: whole / regions_1')
+    #kmers_finder_genome_parseradd_argument('-mode', help='Analysis mode: whole / regions')
     kmers_finder_genome_parser.add_argument('-name', help='Name or GCF for analysis')
     kmers_finder_genome_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 
@@ -36,22 +36,22 @@ def main():
     kmers_finder_sequence_parser = subparsers.add_parser('find_kmers_sequence', help='Find kmers (repeats of k nucleotides)')
     kmers_finder_sequence_parser.add_argument('-path', help='Path of the .fasta sequence file relative to command.py file')
     kmers_finder_sequence_parser.add_argument('-method', help='Define the method to find the kmers (recursively or repeatmasker)')
-    # kmers_finder_sequence_parser.add_argument('-mode', help='Analysis mode: whole / regions_1')
+    # kmers_finder_sequence_parser.add_argument('-mode', help='Analysis mode: whole / regions')
     kmers_finder_sequence_parser.add_argument('-name', help='Name or GCF for analysis')
     kmers_finder_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 
 
     graph_parser = subparsers.add_parser('graph', help='Graph command')
     graph_parser.add_argument('-name', help='Name or GCF for graphing')
-    graph_parser.add_argument('-mode', help='Analysis mode: whole / regions_1')
-    graph_parser.add_argument('-regions_number', help='Amount of regions_1 in which the sequence will be divided.')
-    graph_parser.add_argument('-window_length', help='Size (amount of bps) in which the windows/regions_1 will be divided.')
+    graph_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    graph_parser.add_argument('-regions_number', help='Amount of regions in which the sequence will be divided.')
+    graph_parser.add_argument('-window_length', help='Size (amount of bps) in which the windows/regions will be divided.')
 
     graph_rm_file_parser = subparsers.add_parser('graph_rm_file_sequence', help='Graph RepeatMasker results')
     graph_rm_file_parser.add_argument('-path', help="Enter the path of a RepeatMasker results file")
     graph_rm_file_parser.add_argument('-partitions', help="Enter the number of partitions to use to divide the sequence and "
                                                      "merge the repeats")
-    graph_rm_file_parser.add_argument('-regions_1', help="Enter the amount of regions_1 to separate the graph using vertical lines")
+    graph_rm_file_parser.add_argument('-regions', help="Enter the amount of regions to separate the graph using vertical lines")
     graph_rm_file_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_rm_file_parser.add_argument('--save', choices=['true', 'false'], default='true', help='Save graphs locally in /out directory')
     graph_rm_file_parser.add_argument('-dir', help="Enter the scientific name of the organism to use it as a folder name")
@@ -61,8 +61,8 @@ def main():
     graph_rm_database_parser.add_argument('-partitions',
                                       help="Enter the number of partitions to use to divide the sequence and "
                                            "merge the repeats")
-    graph_rm_database_parser.add_argument('-regions_1',
-                                      help="Enter the amount of regions_1 to separate the graph using vertical lines")
+    graph_rm_database_parser.add_argument('-regions',
+                                      help="Enter the amount of regions to separate the graph using vertical lines")
     graph_rm_database_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_rm_database_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                       help='Save graphs locally in /out directory')
@@ -75,8 +75,8 @@ def main():
     graph_rm_file_genome_parser.add_argument('-partitions',
                                       help="Enter the number of partitions to use to divide the sequences and "
                                            "merge the repeats")
-    graph_rm_file_genome_parser.add_argument('-regions_1',
-                                      help="Enter the amount of regions_1 to separate the graph using vertical lines")
+    graph_rm_file_genome_parser.add_argument('-regions',
+                                      help="Enter the amount of regions to separate the graph using vertical lines")
     graph_rm_file_genome_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_rm_file_genome_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                       help='Save graphs locally in /out directory')
@@ -89,8 +89,8 @@ def main():
     graph_rm_database_genome_parser.add_argument('-partitions',
                                              help="Enter the number of partitions to use to divide the sequences and "
                                                   "merge the repeats")
-    graph_rm_database_genome_parser.add_argument('-regions_1',
-                                             help="Enter the amount of regions_1 to separate the graph using vertical lines")
+    graph_rm_database_genome_parser.add_argument('-regions',
+                                             help="Enter the amount of regions to separate the graph using vertical lines")
     graph_rm_database_genome_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_rm_database_genome_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                              help='Save graphs locally in /out directory')
@@ -103,8 +103,8 @@ def main():
     graph_genome_repeats_from_file.add_argument('-partitions',
                                       help="Enter the number of partitions to use to divide the sequence and "
                                            "merge the repeats")
-    graph_genome_repeats_from_file.add_argument('-regions_1',
-                                      help="Enter the amount of regions_1 to separate the graph using vertical lines")
+    graph_genome_repeats_from_file.add_argument('-regions',
+                                      help="Enter the amount of regions to separate the graph using vertical lines")
     graph_genome_repeats_from_file.add_argument('-plot_type', help="Plot type: line or bar")
     graph_genome_repeats_from_file.add_argument('--save', choices=['true', 'false'], default='true',
                                       help='Save graphs locally in /out directory')
@@ -134,8 +134,8 @@ def main():
     graph_gtf_file_parser.add_argument('-partitions',
                                       help="Enter the number of partitions to use to divide the sequence and "
                                            "merge the repeats")
-    graph_gtf_file_parser.add_argument('-regions_1',
-                                      help="Enter the amount of regions_1 to separate the graph using vertical lines")
+    graph_gtf_file_parser.add_argument('-regions',
+                                      help="Enter the amount of regions to separate the graph using vertical lines")
     graph_gtf_file_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_gtf_file_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                       help='Save graphs locally in /out directory')
@@ -148,8 +148,8 @@ def main():
     graph_gtf_file_parser.add_argument('-partitions',
                                        help="Enter the number of partitions to use to divide the sequence and "
                                             "merge the repeats")
-    graph_gtf_file_parser.add_argument('-regions_1',
-                                       help="Enter the amount of regions_1 to separate the graph using vertical lines")
+    graph_gtf_file_parser.add_argument('-regions',
+                                       help="Enter the amount of regions to separate the graph using vertical lines")
     graph_gtf_file_parser.add_argument('-plot_type', help="Plot type: line or bar")
     graph_gtf_file_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                        help='Save graphs locally in /out directory')
