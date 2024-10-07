@@ -79,13 +79,25 @@ For a single sequence:
 Analyze using MFA and find kmers recursively.
 This command can be used to execute the whole genome.
 
-    py .\command.py find_kmers_genome -method r -name "caenorhabditis elegans"
+    py .\command.py find_kmers_genome -method r -k_range "(4, 8)" -name "caenorhabditis elegans"
 
 This command can be used to execute a single chromosome.
 
-    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method r -name "caenorhabditis elegans" 
+    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method r  -k_range (4, 8) -name "caenorhabditis elegans" 
 
-Saving kmers to database is NOT implemented yet.
+
+### Anayze and find kmers linearly
+Find kmers going through the sequence linearly.
+- -method: l
+
+This command can be used to execute the whole genome.
+
+    py .\command.py find_kmers_genome -method l -k_range "(4, 8)" -name "caenorhabditis elegans"
+
+This command can be used to execute a single chromosome
+    
+    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method l -k_range "(4, 8)" -name "caenorhabditis elegans" 
+
 
 ## Executing RepeatMasker
 In order to use RepeatMasker from a Docker container. 

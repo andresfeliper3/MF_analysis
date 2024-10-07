@@ -8,6 +8,8 @@ from src.Biocode.sequences.Sequence import Sequence
 from utils.decorators import Timer, DBConnection, TryExcept, Inject
 from utils.logger import logger
 
+from collections import Counter
+import ast
 
 @Inject(organisms_service = OrganismsService, loader = Loader)
 class Analyzer:
@@ -126,57 +128,89 @@ class Analyzer:
     @Timer
     def find_kmers_genome_command(self, args):
         save_to_db = False if args.save_to_db == 'false' else True
-
+        self.organism = args.name
+        self.loader.set_organism(self.organism)
+        self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
+                            amount_chromosomes=self.loader.get_amount_chromosomes())
         if args.method:
             if args.method == 'r':
-                self.organism= args.name
-                self.loader.set_organism(self.organism)
-                self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
-                              amount_chromosomes=self.loader.get_amount_chromosomes())
+
                 self._find_kmers_recursively_in_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
-                                                 data=self.loader.get_data(), save_to_db=save_to_db)
+                                                 data=self.loader.get_data(), k_range=ast.literal_eval(args.k_range),
+                                                       save_to_db=save_to_db)
+            elif args.method == "l":
+                self._find_kmers_linearly_in_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
+                                                    data=self.loader.get_data(), k_range=ast.literal_eval(args.k_range),
+                                                    save_to_db=save_to_db)
             elif args.method == 'rm':
                 logger.warning("Feature not implemented yet")
 
 
-    def _find_kmers_recursively_in_genome(self, organism_name, gcf, data, save_to_db):
+    def _find_kmers_recursively_in_genome(self, organism_name, gcf, data, k_range, save_to_db):
         genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
         genome_manager.find_only_kmers_recursively_and_calculate_multifractal_analysis_values(
-            GCF=gcf, save_to_db=save_to_db, method_to_find_it="Recursively")
+            GCF=gcf, save_to_db=save_to_db, method_to_find_it="Recursively", k_range=k_range)
+
+    def _find_kmers_linearly_in_genome(self, organism_name, gcf, data, k_range, save_to_db):
+        genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
+        for manager in genome_manager.get_managers():
+            self._find_kmers_linearly_in_sequence(gcf=gcf, sequence=manager.get_sequence(), k_range=k_range,
+                                                  save_to_db=save_to_db)
 
     @DBConnection
     @TryExcept
     @Timer
     def find_kmers_sequence_command(self, args):
         if args.name:
-            self.organism= args.name
+            self.organism = args.name
             self.loader.set_organism(self.organism)
         else:
             raise Exception("Please provide either a -name (lowercase name or GCF).")
 
         if args.path:
-            if args.method == 'r':
-                sequence = Sequence(sequence=self.loader.read_fasta_sequence(file_path=args.path),
-                                    name=self.loader.extract_file_name(file_path=args.path),
-                                    organism_name=self.loader.get_organism_name(),
-                                    refseq_accession_number=self.loader.extract_refseq_accession_number(args.path))
-                save_to_db = False if args.save_to_db == 'false' else True
+            sequence = Sequence(sequence=self.loader.read_fasta_sequence(file_path=args.path),
+                                name=self.loader.extract_file_name(file_path=args.path),
+                                organism_name=self.loader.get_organism_name(),
+                                refseq_accession_number=self.loader.extract_refseq_accession_number(args.path))
+            save_to_db = False if args.save_to_db == 'false' else True
 
-                self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
-                              amount_chromosomes=self.loader.get_amount_chromosomes())
-                self._find_kmers_recursively_in_sequence(gcf=self.loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
+            self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
+                                amount_chromosomes=self.loader.get_amount_chromosomes())
+
+            if args.method == 'r':
+                self._find_kmers_recursively_in_sequence(gcf=self.loader.get_gcf(), sequence=sequence,
+                                                         k_range=ast.literal_eval(args.k_range), save_to_db=save_to_db)
+            elif args.method == 'l':
+                self._find_kmers_linearly_in_sequence(gcf=self.loader.get_gcf(), sequence=sequence,
+                                                      k_range=ast.literal_eval(args.k_range), save_to_db=save_to_db)
             elif args.method == 'rm':
                 logger.warning("Feature not implemented yet")
         else:
             raise Exception("Please provide a .fasta file path relative to command.py file")
 
-    def _find_kmers_recursively_in_sequence(self, gcf, sequence, save_to_db):
+    def _find_kmers_recursively_in_sequence(self, gcf, sequence, k_range, save_to_db):
         sequence_manager = SequenceManager(sequence=sequence)
         sequence_manager.calculate_multifractal_analysis_values(gcf)
-        kmers_list = sequence_manager.find_only_kmers_recursively()
+        kmers_list = sequence_manager.find_only_kmers_recursively(k_range)
         if save_to_db:
             sequence_manager.save_repeats_found_recursively_to_db(
                 kmers_list=kmers_list, GCF=gcf, method_to_find_it="Recursively")
+
+    def _find_kmers_linearly_in_sequence(self, gcf: str, sequence: Sequence, k_range: tuple, save_to_db: bool):
+        sequence_manager = SequenceManager(sequence=sequence)
+        result = {}
+        for k in range(k_range[0], k_range[1] + 1):
+            result[f'{k}-mers'] = self.__count_kmers(sequence_manager.get_sequence().get_sequence(), k)
+
+        if save_to_db:
+            pass
+            # MISSING HERE
+
+    def __count_kmers(self, sequence, k):
+        kmers = [sequence[i:i + k] for i in range(len(sequence) - k + 1)]
+        return Counter(kmers)
+
+
 
 
 

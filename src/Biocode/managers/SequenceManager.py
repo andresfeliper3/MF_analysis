@@ -226,8 +226,8 @@ class SequenceManager(SequenceManagerInterface):
         logger.info(f"************* Saved to DB {self.sequence_name} *************")
 
 
-    def find_only_kmers_recursively(self) -> List[MiGridCoordinatesValuesAndNucleotides]:
-        kmers_list = self.find_nucleotides_strings_recursively(k1=10, k2=4, k_step=-1, amount_sequences=10)
+    def find_only_kmers_recursively(self, k_range: tuple) -> List[MiGridCoordinatesValuesAndNucleotides]:
+        kmers_list = self.find_nucleotides_strings_recursively(k1=k_range[1], k2=k_range[0], k_step=-1, amount_sequences=10)
         logger.info("kmers - " + str(kmers_list))
         return kmers_list
 

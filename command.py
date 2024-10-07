@@ -29,14 +29,16 @@ def main():
     kmers_finder_genome_parser = subparsers.add_parser('find_kmers_genome', help='Find kmers (repeats of k nucleotides)')
     kmers_finder_genome_parser.add_argument('-method', help='Define the method to find the kmers (recursively or repeatmasker)')
     #kmers_finder_genome_parseradd_argument('-mode', help='Analysis mode: whole / regions')
+    kmers_finder_genome_parser.add_argument('-k_range', help="Add a k_range to find kmers of k values between the interval. For example: (4, 8).")
     kmers_finder_genome_parser.add_argument('-name', help='Name or GCF for analysis')
     kmers_finder_genome_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 
 
     kmers_finder_sequence_parser = subparsers.add_parser('find_kmers_sequence', help='Find kmers (repeats of k nucleotides)')
     kmers_finder_sequence_parser.add_argument('-path', help='Path of the .fasta sequence file relative to command.py file')
-    kmers_finder_sequence_parser.add_argument('-method', help='Define the method to find the kmers (recursively or repeatmasker)')
+    kmers_finder_sequence_parser.add_argument('-method', help='Define the method to find the kmers (recursively or linearly) (-r or -l)')
     # kmers_finder_sequence_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    kmers_finder_sequence_parser.add_argument('-k_range', help="Add a k_range to find kmers of k values between the interval. For example: (4, 8).")
     kmers_finder_sequence_parser.add_argument('-name', help='Name or GCF for analysis')
     kmers_finder_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 

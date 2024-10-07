@@ -115,15 +115,14 @@ class GenomeManagerInterface:
 
 
     def find_only_kmers_recursively_and_calculate_multifractal_analysis_values(self, GCF: str, save_to_db: bool,
-                                                                               method_to_find_it: str):
+                                                                               method_to_find_it: str, k_range: tuple):
         for manager in self.managers:
             manager.calculate_multifractal_analysis_values(GCF)
-            kmers_list = self._find_nucleotides_strings_recursively(manager, k1=10, k2=4, k_step=-1,
+            kmers_list = self._find_nucleotides_strings_recursively(manager, k1=k_range[1], k2=k_range[0], k_step=-1,
                                                                     amount_sequences=10)
             if save_to_db:
                 manager.save_repeats_found_recursively_to_db(kmers_list=kmers_list, GCF=GCF,
                                                              method_to_find_it=method_to_find_it)
-            logger.info("kmers - " + str(kmers_list))
             del manager
 
 
