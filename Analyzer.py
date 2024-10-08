@@ -7,7 +7,7 @@ from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.sequences.Sequence import Sequence
 from utils.decorators import Timer, DBConnection, TryExcept, Inject
 from utils.logger import logger
-
+from src.Biocode.graphs.Graphs import Graphs
 from collections import Counter
 import ast
 
@@ -44,16 +44,16 @@ class Analyzer:
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__whole_MFA_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(), data=self.loader.get_data(),
                                         save_to_db=save_to_db)
-            elif args.mode == 'regions_1':
+            elif args.mode == 'regions':
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__regions_MFA_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(), data=self.loader.get_data(),
                                           regions_number=args.regions_number, window_length=args.window_length,
                                           save_to_db=save_to_db)
             else:
-                raise Exception("Enter a valid mode (whole or regions_1)")
+                raise Exception("Enter a valid mode (whole or regions)")
         else:
-            raise Exception("Enter a valid mode (whole or regions_1)")
+            raise Exception("Enter a valid mode (whole or regions)")
 
     def __whole_MFA_genome(self, organism_name, gcf, data, save_to_db):
         genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
@@ -94,16 +94,16 @@ class Analyzer:
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__whole_MFA_sequence(gcf=self.loader.get_gcf(), sequence=sequence, save_to_db=save_to_db)
-            elif args.mode == 'regions_1':
+            elif args.mode == 'regions':
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__regions_MFA_sequence(gcf=self.loader.get_gcf(), sequence=sequence,
                                      regions_number=args.regions_number, window_length=args.window_length,
                                             save_to_db=save_to_db)
             else:
-                raise Exception("Enter a valid mode (whole or regions_1)")
+                raise Exception("Enter a valid mode (whole or regions)")
         else:
-            raise Exception("Enter a valid mode (whole or regions_1)")
+            raise Exception("Enter a valid mode (whole or regions)")
 
     def __whole_MFA_sequence(self, gcf, sequence, save_to_db):
         sequence_manager = SequenceManager(sequence=sequence)
@@ -182,7 +182,8 @@ class Analyzer:
                                                          k_range=ast.literal_eval(args.k_range), save_to_db=save_to_db)
             elif args.method == 'l':
                 self._find_kmers_linearly_in_sequence(gcf=self.loader.get_gcf(), sequence=sequence,
-                                                      k_range=ast.literal_eval(args.k_range), save_to_db=save_to_db)
+                                                      k_range=ast.literal_eval(args.k_range), save_to_db=save_to_db,
+                                                      dir=args.dir)
             elif args.method == 'rm':
                 logger.warning("Feature not implemented yet")
         else:
@@ -196,20 +197,69 @@ class Analyzer:
             sequence_manager.save_repeats_found_recursively_to_db(
                 kmers_list=kmers_list, GCF=gcf, method_to_find_it="Recursively")
 
-    def _find_kmers_linearly_in_sequence(self, gcf: str, sequence: Sequence, k_range: tuple, save_to_db: bool):
+
+    def _find_kmers_linearly_in_sequence(self, gcf: str, sequence: Sequence, k_range: tuple, save_to_db: bool, dir: str):
         sequence_manager = SequenceManager(sequence=sequence)
+        sequence = sequence_manager.get_sequence().get_sequence()
         result = {}
         for k in range(k_range[0], k_range[1] + 1):
-            result[f'{k}-mers'] = self.__count_kmers(sequence_manager.get_sequence().get_sequence(), k)
+            result[f'{k}-mers'] = self.__count_kmers(sequence, k)
+
+        most_frequent_nplets = self.__get_most_frequent_nplets(nplet_counts=result, top_n=10)
+        window_profiles = self.__map_kmers_in_windows(sequence, most_frequent_nplets, window_size=300000)
+
+        #self._plot_all_kmers(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(), save_to_db, dir)
+
+        Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
+                                            dir, True)
 
         if save_to_db:
+            #sequence_manager.save_repeats_found_linearly_to_db(
+
+            #)
             pass
             # MISSING HERE
+
+    def __get_most_frequent_nplets(self, nplet_counts, top_n=10):
+        most_frequent = {}
+        for k, counts in nplet_counts.items():
+            most_frequent[k] = counts.most_common(top_n)
+        return most_frequent
+
+    def __map_kmers_in_windows(self, genome_sequence: str, k_mers, window_size):
+        window_profiles = []
+
+        for start in range(0, len(genome_sequence), window_size):
+            window_seq = genome_sequence[start:start + window_size]
+            window_count = {}
+            for k, kmers in k_mers.items():
+                window_count[k] = {kmer: self.__count_kmers_in_sequence(window_seq, kmer) for kmer, _ in kmers}
+            window_profiles.append(window_count)
+        return window_profiles
+
+    def __count_kmers_in_sequence(self, sequence, kmer):
+        count = 0
+        k = len(kmer)
+
+        # Slide through the sequence and count overlapping occurrences of `kmer`
+        for i in range(len(sequence) - k + 1):
+            if sequence[i:i + k] == kmer:
+                count += 1
+        return count
 
     def __count_kmers(self, sequence, k):
         kmers = [sequence[i:i + k] for i in range(len(sequence) - k + 1)]
         return Counter(kmers)
 
+
+
+    def _plot_all_kmers(self, window_profiles, most_frequent_nplets, sequence_name, save_to_db, dir):
+        """
+        Plots the frequency profile for all most frequent k-mers in the genome.
+        """
+        for k, kmers in most_frequent_nplets.items():
+            for kmer, _ in kmers:
+                Graphs.plot_kmer_frequency(window_profiles, kmer, sequence_name, dir, save_to_db)
 
 
 

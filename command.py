@@ -40,6 +40,8 @@ def main():
     # kmers_finder_sequence_parser.add_argument('-mode', help='Analysis mode: whole / regions')
     kmers_finder_sequence_parser.add_argument('-k_range', help="Add a k_range to find kmers of k values between the interval. For example: (4, 8).")
     kmers_finder_sequence_parser.add_argument('-name', help='Name or GCF for analysis')
+    kmers_finder_sequence_parser.add_argument('-dir', help='Directory to save results')
+
     kmers_finder_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
 
 

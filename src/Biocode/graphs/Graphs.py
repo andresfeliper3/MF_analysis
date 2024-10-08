@@ -811,3 +811,72 @@ class Graphs:
             route = f"{name}/genes/gtf"
             Graphs._savefig(title, route)
         plt.show()
+
+    @staticmethod
+    def plot_kmer_frequency(window_profiles, kmer, sequence_name, dir, save):
+        """
+        Plots the frequency of a given k-mer across genome windows.
+        """
+        # Extract k-mer counts across windows
+        window_counts = []
+        for profile in window_profiles:
+            for k, kmer_counts in profile.items():
+                if kmer in kmer_counts:
+                    window_counts.append(kmer_counts[kmer])
+
+        # Create x-axis values (window numbers)
+        windows = list(range(1, len(window_counts) + 1))
+
+        # Plot the frequency of k-mer across windows
+        plt.figure(figsize=(10, 6))
+        plt.plot(windows, window_counts, marker='o')
+        title = f"Frequency of {kmer} across {sequence_name} genome windows in {dir}"
+        plt.title(title)
+        plt.xlabel("Window")
+        plt.ylabel(f"Count of {kmer}")
+        plt.grid(True)
+
+        route = f"{dir}/linear_repeats"
+        if save:
+            Graphs._savefig(title, route)
+        plt.show()
+
+    @staticmethod
+    def plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_name, dir, save):
+        """
+        Plots the frequency of all most frequent k-mers across genome windows in a single graph.
+        """
+        plt.figure(figsize=(12, 8))
+
+        # Generate a color map
+        colors = plt.cm.get_cmap('tab10', len(most_frequent_nplets))
+
+        # Loop through each k-mer and plot its frequency
+        for i, (k, kmers) in enumerate(most_frequent_nplets.items()):
+            for kmer, _ in kmers:
+                window_counts = []
+                for profile in window_profiles:
+                    count = profile.get(k, {}).get(kmer, 0)
+                    window_counts.append(count)
+
+                # Create x-axis values (window numbers)
+                windows = list(range(1, len(window_counts) + 1))
+
+                # Plot the k-mer frequency
+                plt.plot(windows, window_counts, label=kmer, color=colors(i), marker='o')
+
+        # Add title and labels
+        title = f"Frequency of kmers across {sequence_name} genome windows in {dir}"
+        plt.title(title)
+        plt.xlabel("Window")
+        plt.ylabel("Count of k-mers")
+        plt.grid(True)
+
+        # Set the number of columns in the legend based on the number of unique k-mers
+        num_columns = min(len(most_frequent_nplets), 4)  # Adjust the number of columns as needed
+        plt.legend(title="K-mers", bbox_to_anchor=(1.05, 1), loc='upper left', fontsize='small', ncol=num_columns)
+
+        route = f"{dir}/linear_repeats"
+        if save:
+            Graphs._savefig(title, route)
+        plt.show()
