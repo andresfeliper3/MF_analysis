@@ -141,7 +141,7 @@ class Analyzer:
             elif args.method == "l":
                 self._find_kmers_linearly_in_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                                                     data=self.loader.get_data(), k_range=ast.literal_eval(args.k_range),
-                                                    save_to_db=save_to_db)
+                                                    save_to_db=save_to_db, dir=args.dir)
             elif args.method == 'rm':
                 logger.warning("Feature not implemented yet")
 
@@ -151,11 +151,11 @@ class Analyzer:
         genome_manager.find_only_kmers_recursively_and_calculate_multifractal_analysis_values(
             GCF=gcf, save_to_db=save_to_db, method_to_find_it="Recursively", k_range=k_range)
 
-    def _find_kmers_linearly_in_genome(self, organism_name, gcf, data, k_range, save_to_db):
+    def _find_kmers_linearly_in_genome(self, organism_name, gcf, data, k_range, save_to_db, dir):
         genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
         for manager in genome_manager.get_managers():
             self._find_kmers_linearly_in_sequence(gcf=gcf, sequence=manager.get_sequence(), k_range=k_range,
-                                                  save_to_db=save_to_db)
+                                                  save_to_db=save_to_db, dir=dir)
 
     @DBConnection
     @TryExcept
