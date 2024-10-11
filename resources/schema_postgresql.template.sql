@@ -118,3 +118,25 @@ CREATE TABLE gtf_genes (
     gene VARCHAR,
     gene_biotype VARCHAR
 );
+
+CREATE TABLE linear_repeats_whole_chromosomes (
+	id INTEGER PRIMARY KEY,
+    repeats_id INTEGER REFERENCES repeats(id),
+    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id),
+    size INTEGER
+);
+
+CREATE TABLE genes_containing_repeats(
+	id INTEGER PRIMARY KEY,
+	gtf_genes_id INTEGER REFERENCES gtf_genes(id),
+	repeats_id INTEGER REFERENCES repeats(id),
+	count INTEGER
+
+);
+
+CREATE TABLE genes_containing_repeats (
+    id SERIAL PRIMARY KEY,
+    gtf_genes_id INTEGER REFERENCES gtf_genes(id),
+    repeats_id INTEGER REFERENCES repeats(id),
+    count INTEGER
+);

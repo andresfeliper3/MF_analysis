@@ -13,26 +13,29 @@ from src.Biocode.services.GtfGenesService import GtfGenesService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RepeatsService import RepeatsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
+from src.Biocode.services.LinearRepeatsWholeChromosomesService import LinearRepeatsWholeChromosomesService
 from utils.FileReader import FileReader
 from utils.decorators import Timer, DBConnection, TryExcept, Inject
 from utils.folder import apply_function_to_files_in_folder
 from utils.logger import logger
 
 
-@Inject(repeats_service = RepeatsService,
-        rm_repeats_service = RMRepeatsWholeChromosomesService,
-        gtf_genes_service = GtfGenesService,
-        whole_chromosomes_service = WholeChromosomesService,
+@Inject(repeats_service=RepeatsService,
+        rm_repeats_service=RMRepeatsWholeChromosomesService,
+        gtf_genes_service=GtfGenesService,
+        whole_chromosomes_service=WholeChromosomesService,
+        linear_repeats_whole_chromosomes_service=LinearRepeatsWholeChromosomesService,
         file_reader=FileReader,
         loader=Loader)
 class RepeatsLoader:
 
     def __init__(self, repeats_service=None, rm_repeats_service=None, whole_chromosomes_service=None, file_reader=None,
-                 gtf_genes_service=None, loader=None):
+                 gtf_genes_service=None, linear_repeats_whole_chromosomes_service=None, loader=None):
         self.repeats_service = repeats_service
         self.rm_repeats_service = rm_repeats_service
         self.gtf_genes_service = gtf_genes_service
         self.whole_chromosomes_service = whole_chromosomes_service
+        self.linear_repeats_whole_chromosomes_service = linear_repeats_whole_chromosomes_service
         self.file_reader = file_reader
         self.loader = loader
 
@@ -231,6 +234,7 @@ class RepeatsLoader:
                 kmer_key_dict[kmer_key] = repeat_count_dict
             window_profiles_only_genes.append(kmer_key_dict)
 
+        self.load_linear_genes_repeats(window_profiles_only_genes, refseq_accession_number)
         # Graphs.plot_combined_kmer_frequency(window_profiles_only_genes, most_frequent_nplets, sequence_manager.get_sequence_name(),
         #                                        dir, True, subfolder="linear_repeats_genes")
 
@@ -367,6 +371,15 @@ class RepeatsLoader:
             for kmer, _ in kmers:
                 Graphs.plot_kmer_frequency(window_profiles, kmer, sequence_name, dir, True)
 
-    def load_linear_genes_repeats(self, window_profiles_only_genes: list[dict]):
-        pass
+    def load_linear_genes_repeats(self, window_profiles_only_genes: list[dict], refseq_accession_number: str):
+        for window in window_profiles_only_genes:
+            for kmer_length, kmer_dict in window.items():
+                for kmer, count in kmer_dict.items():
+                    record = (kmer, '', 'Linear in genes')
+                    repeat_id = self.repeats_service.insert(record=record)
+                    whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
+                        refseq_accession_number)
+                    self.linear_repeats_whole_chromosomes_service.insert(record=(
+                        repeat_id, whole_chromosome_id, len(kmer)
+                    ))
 

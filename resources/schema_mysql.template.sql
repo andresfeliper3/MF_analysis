@@ -131,3 +131,13 @@ CREATE TABLE gtf_genes (
     gene_biotype VARCHAR(255),
     FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
 );
+
+
+CREATE TABLE linear_repeats_whole_chromosomes (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    repeats_id INT,
+    whole_chromosomes_id INT,
+    size INT,
+    FOREIGN KEY (repeats_id) REFERENCES repeats(id),
+    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
+);
