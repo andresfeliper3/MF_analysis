@@ -922,5 +922,3 @@ class Graphs:
             if save:
                 Graphs._savefig(title, route)
 
-            plt.tight_layout()
-            plt.show()

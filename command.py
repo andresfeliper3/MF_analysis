@@ -211,11 +211,11 @@ def main():
     elif args.command == 'analyze_sequence':
         analyzer.analyze_sequence_command(args)
     elif args.command == 'find_kmers_genome':
-        analyzer.find_kmers_genome_command(args)
+        repeats_loader.find_kmers_genome_command(args)
     elif args.command == 'find_kmers_sequence':
-        analyzer.find_kmers_sequence_command(args)
+        repeats_loader.find_kmers_sequence_command(args)
     elif args.command == 'find_kmers_linearly_genes_sequence':
-        analyzer.find_kmers_linearly_genes_sequence_command(args)
+        repeats_loader.find_kmers_linearly_genes_sequence_command(args)
     elif args.command == 'graph':
         grapher.graph_command(args)
     elif args.command == 'graph_rm_file_sequence':
