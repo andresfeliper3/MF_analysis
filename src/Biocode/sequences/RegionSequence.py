@@ -8,7 +8,7 @@ class RegionSequence(Sequence):
     def __init__(self, sequence: str = None, sequence_data: dict = None, regions_number: int = 0, window_length: int = 0,
                  name: str = None, refseq_accession_number: str = None, organism_name: str = None):
         super().__init__(sequence=sequence, sequence_data=sequence_data, name=name,
-                         refseq_accession_number=refseq_accession_number, organism_name= organism_name)
+                         refseq_accession_number=refseq_accession_number, organism_name=organism_name)
         self.region_common_size = None
         self.regions_number = regions_number #or len(sequence) // window_length
         self.window_length = window_length

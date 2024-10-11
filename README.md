@@ -86,18 +86,21 @@ This command can be used to execute a single chromosome.
     py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method r  -k_range (4, 8) -name "caenorhabditis elegans" 
 
 
-### Anayze and find kmers linearly
+### Analyze and find kmers linearly
 Find kmers going through the sequence linearly.
 - -method: l
 
 This command can be used to execute the whole genome.
 
-    py .\command.py find_kmers_genome -method l -k_range "(4, 8)" -name "caenorhabditis elegans"
+    py .\command.py find_kmers_genome -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000
 
 This command can be used to execute a single chromosome
     
-    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method l -k_range "(4, 8)" -name "caenorhabditis elegans" 
+    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000
 
+### Analyze and find kmers linearly only for kmers found in genes
+
+    py .\command.py find_kmers_linearly_genes_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans"
 
 ## Executing RepeatMasker
 In order to use RepeatMasker from a Docker container. 

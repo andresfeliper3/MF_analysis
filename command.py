@@ -33,6 +33,7 @@ def main():
     kmers_finder_genome_parser.add_argument('-name', help='Name or GCF for analysis')
     kmers_finder_genome_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
     kmers_finder_genome_parser.add_argument('-dir', help='Directory to save results')
+    kmers_finder_genome_parser.add_argument('-window_length', help='Window/partition length to divide the chromosome')
 
 
     kmers_finder_sequence_parser = subparsers.add_parser('find_kmers_sequence', help='Find kmers (repeats of k nucleotides)')
@@ -43,6 +44,19 @@ def main():
     kmers_finder_sequence_parser.add_argument('-name', help='Name or GCF for analysis')
     kmers_finder_sequence_parser.add_argument('-dir', help='Directory to save results')
     kmers_finder_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
+    kmers_finder_sequence_parser.add_argument('-window_length', help='Window/partition length to divide the chromosome')
+
+
+    kmers_finder_linearly_genes_sequence_parser = subparsers.add_parser('find_kmers_linearly_genes_sequence', help='Find kmers using linear method(repeats of k nucleotides) only in the genes')
+    kmers_finder_linearly_genes_sequence_parser.add_argument('-path',
+                                              help='Path of the .fasta sequence file relative to command.py file')
+    kmers_finder_linearly_genes_sequence_parser.add_argument('-k_range',
+                                              help="Add a k_range to find kmers of k values between the interval. For example: (4, 8).")
+    kmers_finder_linearly_genes_sequence_parser.add_argument('-name', help='Name or GCF for analysis')
+    kmers_finder_linearly_genes_sequence_parser.add_argument('-dir', help='Directory to save results')
+    kmers_finder_linearly_genes_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true',
+                                              help='Save results to the database')
+    kmers_finder_linearly_genes_sequence_parser.add_argument('-window_length', help='Window/partition length to divide the chromosome')
 
 
     graph_parser = subparsers.add_parser('graph', help='Graph command')
@@ -200,6 +214,8 @@ def main():
         analyzer.find_kmers_genome_command(args)
     elif args.command == 'find_kmers_sequence':
         analyzer.find_kmers_sequence_command(args)
+    elif args.command == 'find_kmers_linearly_genes_sequence':
+        analyzer.find_kmers_linearly_genes_sequence_command(args)
     elif args.command == 'graph':
         grapher.graph_command(args)
     elif args.command == 'graph_rm_file_sequence':
