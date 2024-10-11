@@ -240,15 +240,15 @@ class RepeatsLoader:
                 kmer_key_dict[kmer_key] = repeat_count_dict
             window_profiles_only_genes.append(kmer_key_dict)
 
-        self.load_linear_genes_repeats(window_profiles_only_genes, refseq_accession_number)
+        self.load_linear_repeats(window_profiles_only_genes, refseq_accession_number)
         self.load_genes_containing_repeats(refseq_accession_number, sequence_nts)
 
         # Graphs.plot_combined_kmer_frequency(window_profiles_only_genes, most_frequent_nplets, sequence_manager.get_sequence_name(),
         #                                        dir, True, subfolder="linear_repeats_genes")
 
-        #Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles_only_genes, most_frequent_nplets,
-        #                                                sequence_manager.get_sequence_name(), dir, True,
-        #                                                subfolder="linear_repeats_genes")
+        Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles_only_genes, most_frequent_nplets,
+                                                        sequence_manager.get_sequence_name(), dir, True,
+                                                        subfolder="linear_repeats_genes")
 
     def __count_repeat_in_genes_given_a_sequence_chunk(self, genes_df, repeat: str, sequence: str,
                                                        initial_position_value, final_position_value):
@@ -321,12 +321,10 @@ class RepeatsLoader:
         window_profiles, most_frequent_nplets = self.__get_kmers_mapped_in_windows(sequence_manager, k_range, window_length)
         Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
                                             dir, True, subfolder="linear_repeats_all")
-
+        Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
+                                                        dir, True, subfolder="linear_repeats_all/per_k")
         if save_to_db:
-            #sequence_manager.save_repeats_found_linearly_to_db(
-            #)
-            pass
-            # MISSING HERE
+            self.load_linear_repeats(window_profiles, refseq_accession_number=sequence.get_refseq_accession_number())
 
 
     def __get_kmers_mapped_in_windows(self, sequence_manager: RegionSequenceManager, k_range: tuple, window_length: int):
@@ -379,11 +377,11 @@ class RepeatsLoader:
             for kmer, _ in kmers:
                 Graphs.plot_kmer_frequency(window_profiles, kmer, sequence_name, dir, True)
 
-    def load_linear_genes_repeats(self, window_profiles_only_genes: list[dict], refseq_accession_number: str):
-        for window in window_profiles_only_genes:
+    def load_linear_repeats(self, window_profiles: list[dict], refseq_accession_number: str):
+        for window in window_profiles:
             for kmer_length, kmer_dict in window.items():
                 for kmer, count in kmer_dict.items():
-                    record = (kmer, '', 'Linear in genes')
+                    record = (kmer, '', 'Linear')
                     repeat_id = self.repeats_service.insert(record=record)
                     whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
                         refseq_accession_number)
@@ -393,7 +391,7 @@ class RepeatsLoader:
 
     def load_genes_containing_repeats(self, refseq_accession_number: str, sequence_nts: str):
         genes_df = self.gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
-        genes_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_genes_repeats_by_refseq_accession_number(
+        repeats_df = self.linear_repeats_whole_chromosomes_service.extract_genes_repeats_by_refseq_accession_number(
             refseq_accession_number)
 
         # Iterate over each gene in genes_df
@@ -402,11 +400,10 @@ class RepeatsLoader:
             start_position = gene['start_position']
             end_position = gene['end_position']
 
-            # Extract the gene's nucleotide sequence based on its position
-            gene_sequence = sequence_nts[start_position:end_position + 1]  # +1 to include the end position
+            gene_sequence = self._extract_gene_sequence_based_on_positions(sequence_nts, start_position, end_position)
 
-            # Iterate over each repeat in genes_repeats_df
-            for _, repeat in genes_repeats_df.iterrows():
+            # Iterate over each repeat in repeats_df
+            for _, repeat in repeats_df.iterrows():
                 repeat_id = repeat['repeats_id']
                 repeat_sequence = repeat['name']
 
@@ -418,4 +415,5 @@ class RepeatsLoader:
                     record = (gene_id, repeat_id, count)
                     self.genes_containing_repeats_service.insert(record=record)
 
-
+    def _extract_gene_sequence_based_on_positions(self, sequence_nts: str, start_position: int, end_position: int):
+        return sequence_nts[start_position:end_position + 1]

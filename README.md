@@ -96,9 +96,10 @@ This command can be used to execute the whole genome.
 
 This command can be used to execute a single chromosome
     
-    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000
+    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans"
 
 ### Analyze and find kmers linearly only for kmers found in genes
+Find the kmers linearly. Find the most common kmers and get their frequency only in genes.
 
     py .\command.py find_kmers_linearly_genes_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans"
 
