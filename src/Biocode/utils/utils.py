@@ -14,3 +14,5 @@ def remove_region_part(input_string: str) -> str:
         return match.group(1)
     else:
         raise ValueError("Input string does not match the required pattern.")
+
+

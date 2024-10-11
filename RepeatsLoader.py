@@ -391,7 +391,7 @@ class RepeatsLoader:
 
     def load_genes_containing_repeats(self, refseq_accession_number: str, sequence_nts: str):
         genes_df = self.gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
-        repeats_df = self.linear_repeats_whole_chromosomes_service.extract_genes_repeats_by_refseq_accession_number(
+        repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(
             refseq_accession_number)
 
         # Iterate over each gene in genes_df

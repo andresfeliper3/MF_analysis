@@ -7,6 +7,7 @@ from src.Biocode.managers.RegionGenomeManager import RegionGenomeManager
 from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 from src.Biocode.services.GtfGenesService import GtfGenesService
 from src.Biocode.services.OrganismsService import OrganismsService
+from src.Biocode.services.LinearRepeatsWholeChromosomesService import LinearRepeatsWholeChromosomesService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
 from src.Biocode.services.RegionResultsService import RegionResultsService
@@ -26,6 +27,7 @@ from utils.logger import logger
         region_chromosomes_service=RegionChromosomesService,
         recursive_repeats_service=RecursiveRepeatsWholeChromosomesService,
         rm_repeats_service=RMRepeatsWholeChromosomesService,
+        linear_repeats_whole_chromosomes_service=LinearRepeatsWholeChromosomesService,
         organisms_service=OrganismsService,
         gtf_genes_service=GtfGenesService,
         loader=Loader)
@@ -40,6 +42,7 @@ class Grapher:
                  whole_chromosomes_service: WholeChromosomesService,
                  region_chromosomes_service: RegionChromosomesService,
                  recursive_repeats_service: RecursiveRepeatsWholeChromosomesService,
+                 linear_repeats_whole_chromosomes_service: LinearRepeatsWholeChromosomesService,
                  organisms_service: OrganismsService, gtf_genes_service: GtfGenesService, loader: Loader):
         self.whole_results_service = whole_results_service
         self.region_results_service = region_results_service
@@ -47,6 +50,7 @@ class Grapher:
         self.whole_chromosomes_service = whole_chromosomes_service
         self.region_chromosomes_service = region_chromosomes_service
         self.recursive_repeats_service = recursive_repeats_service
+        self.linear_repeats_whole_chromosomes_service = linear_repeats_whole_chromosomes_service
         self.organisms_service = organisms_service
         self.gtf_genes_service = gtf_genes_service
         self.loader = loader
@@ -410,3 +414,20 @@ class Grapher:
         else:
             logger.error("Specify whether a GCF (organism/genome) or a refseq accession number (sequence/chromosome)")
             return
+
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_linear_repeats_sequence_command(self, path: str, save: bool, name: str, window_length: int, dir: str):
+        refseq_accession_number = self.loader.extract_refseq_accession_number(path)
+        repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number)
+        logger.warn(repeats_df)
+
+        #BUILD ADAPTER HERE AFTER ID-51.1
+        #Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
+        #                                    dir, True, subfolder="linear_repeats_all")
+        #Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets,
+        #                                                sequence_manager.get_sequence_name(),
+        #                                                dir, True, subfolder="linear_repeats_all/per_k")
+
+

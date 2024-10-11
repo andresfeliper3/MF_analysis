@@ -259,6 +259,18 @@ The genome is identified by the GCF (-gcf).
     py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -dir caenorhabditis_elegans 
     py .\command.py graph_recursive_genome -gcf GCF_000002985.6 --save true -dir caenorhabditis_elegans -n_max 10
 
+### Graph repeats found linearly from the database
+Graph the repeats found with the linear algorithm using a sequence path and results saved in the database.
+
+- --save: true (to save graphs)
+- -name: name of the organism to read it from yaml file.
+- -path: relative path to the sequence.
+- -window_length: window size for region analysis.
+- -dir: directory to save the graphs (organism_name).
+
+
+    py .\command.py graph_linear_repeats_sequence --save true -name "Caenorhabditis elegans" -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -window_length 300000 -dir caenorhabditis_elegans
+
 ### Graph genes data
 #### Graph from .gtf file
 It is mandatory to specify the
