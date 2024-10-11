@@ -141,3 +141,12 @@ CREATE TABLE linear_repeats_whole_chromosomes (
     FOREIGN KEY (repeats_id) REFERENCES repeats(id),
     FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
 );
+
+CREATE TABLE genes_containing_repeats (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gtf_genes_id INT,
+    repeats_id INT,
+    count INT,
+    FOREIGN KEY (gtf_genes_id) REFERENCES gtf_genes(id),
+    FOREIGN KEY (repeats_id) REFERENCES repeats(id)
+);

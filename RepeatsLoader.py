@@ -13,6 +13,7 @@ from src.Biocode.services.GtfGenesService import GtfGenesService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RepeatsService import RepeatsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
+from src.Biocode.services.GenesContainingRepeatsService import GenesContainingRepeatsService
 from src.Biocode.services.LinearRepeatsWholeChromosomesService import LinearRepeatsWholeChromosomesService
 from utils.FileReader import FileReader
 from utils.decorators import Timer, DBConnection, TryExcept, Inject
@@ -25,17 +26,20 @@ from utils.logger import logger
         gtf_genes_service=GtfGenesService,
         whole_chromosomes_service=WholeChromosomesService,
         linear_repeats_whole_chromosomes_service=LinearRepeatsWholeChromosomesService,
+        genes_containing_repeats_service=GenesContainingRepeatsService,
         file_reader=FileReader,
         loader=Loader)
 class RepeatsLoader:
 
     def __init__(self, repeats_service=None, rm_repeats_service=None, whole_chromosomes_service=None, file_reader=None,
-                 gtf_genes_service=None, linear_repeats_whole_chromosomes_service=None, loader=None):
+                 gtf_genes_service=None, linear_repeats_whole_chromosomes_service=None,
+                 genes_containing_repeats_service=None, loader=None):
         self.repeats_service = repeats_service
         self.rm_repeats_service = rm_repeats_service
         self.gtf_genes_service = gtf_genes_service
         self.whole_chromosomes_service = whole_chromosomes_service
         self.linear_repeats_whole_chromosomes_service = linear_repeats_whole_chromosomes_service
+        self.genes_containing_repeats_service = genes_containing_repeats_service
         self.file_reader = file_reader
         self.loader = loader
 
@@ -211,8 +215,10 @@ class RepeatsLoader:
     def _find_kmers_linearly_genes_sequence(self, gcf: str, sequence: Sequence, k_range, window_length,
                                             save_to_db: bool,
                                             dir: str, refseq_accession_number: str):
+
         sequence_manager = RegionSequenceManager(sequence=sequence)
         sequence_nts = sequence_manager.get_sequence().get_sequence()
+
         genes_sequence_df = self.gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
 
         # CHECK: TRY TO PERFORM THIS WITHOUT CALCULATING window_profiles
@@ -235,12 +241,14 @@ class RepeatsLoader:
             window_profiles_only_genes.append(kmer_key_dict)
 
         self.load_linear_genes_repeats(window_profiles_only_genes, refseq_accession_number)
+        self.load_genes_containing_repeats(refseq_accession_number, sequence_nts)
+
         # Graphs.plot_combined_kmer_frequency(window_profiles_only_genes, most_frequent_nplets, sequence_manager.get_sequence_name(),
         #                                        dir, True, subfolder="linear_repeats_genes")
 
-        Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles_only_genes, most_frequent_nplets,
-                                                        sequence_manager.get_sequence_name(), dir, True,
-                                                        subfolder="linear_repeats_genes")
+        #Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles_only_genes, most_frequent_nplets,
+        #                                                sequence_manager.get_sequence_name(), dir, True,
+        #                                                subfolder="linear_repeats_genes")
 
     def __count_repeat_in_genes_given_a_sequence_chunk(self, genes_df, repeat: str, sequence: str,
                                                        initial_position_value, final_position_value):
@@ -382,4 +390,32 @@ class RepeatsLoader:
                     self.linear_repeats_whole_chromosomes_service.insert(record=(
                         repeat_id, whole_chromosome_id, len(kmer)
                     ))
+
+    def load_genes_containing_repeats(self, refseq_accession_number: str, sequence_nts: str):
+        genes_df = self.gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
+        genes_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_genes_repeats_by_refseq_accession_number(
+            refseq_accession_number)
+
+        # Iterate over each gene in genes_df
+        for index, gene in genes_df.iterrows():
+            gene_id = gene['id']
+            start_position = gene['start_position']
+            end_position = gene['end_position']
+
+            # Extract the gene's nucleotide sequence based on its position
+            gene_sequence = sequence_nts[start_position:end_position + 1]  # +1 to include the end position
+
+            # Iterate over each repeat in genes_repeats_df
+            for _, repeat in genes_repeats_df.iterrows():
+                repeat_id = repeat['repeats_id']
+                repeat_sequence = repeat['name']
+
+                # Use the existing method to count overlapping occurrences
+                count = self.___count_overlapping_occurrences(gene_sequence, repeat_sequence)
+
+                # If count > 0, save the record
+                if count > 0:
+                    record = (gene_id, repeat_id, count)
+                    self.genes_containing_repeats_service.insert(record=record)
+
 
