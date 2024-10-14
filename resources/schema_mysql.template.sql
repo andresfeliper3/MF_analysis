@@ -134,10 +134,11 @@ CREATE TABLE gtf_genes (
 
 
 CREATE TABLE linear_repeats_whole_chromosomes (
-	id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY,
     repeats_id INT,
     whole_chromosomes_id INT,
-    size INT,
+    size BIGINT,
+    count INT,
     FOREIGN KEY (repeats_id) REFERENCES repeats(id),
     FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
 );

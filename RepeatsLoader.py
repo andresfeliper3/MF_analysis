@@ -240,7 +240,7 @@ class RepeatsLoader:
                 kmer_key_dict[kmer_key] = repeat_count_dict
             window_profiles_only_genes.append(kmer_key_dict)
 
-        self.load_linear_repeats(window_profiles_only_genes, refseq_accession_number)
+        self.load_linear_repeats(window_profiles_only_genes, refseq_accession_number, most_frequent_nplets)
         self.load_genes_containing_repeats(refseq_accession_number, sequence_nts)
 
         # Graphs.plot_combined_kmer_frequency(window_profiles_only_genes, most_frequent_nplets, sequence_manager.get_sequence_name(),
@@ -324,7 +324,12 @@ class RepeatsLoader:
         Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
                                                         dir, True, subfolder="linear_repeats_all/per_k")
         if save_to_db:
-            self.load_linear_repeats(window_profiles, refseq_accession_number=sequence.get_refseq_accession_number())
+            logger.warn("window_profiles")
+            logger.warn(window_profiles)
+            logger.warn("******************")
+            logger.warn(most_frequent_nplets)
+            self.load_linear_repeats(window_profiles, refseq_accession_number=sequence.get_refseq_accession_number(),
+                                     most_frequent_nplets=most_frequent_nplets)
 
 
     def __get_kmers_mapped_in_windows(self, sequence_manager: RegionSequenceManager, k_range: tuple, window_length: int):
@@ -377,7 +382,8 @@ class RepeatsLoader:
             for kmer, _ in kmers:
                 Graphs.plot_kmer_frequency(window_profiles, kmer, sequence_name, dir, True)
 
-    def load_linear_repeats(self, window_profiles: list[dict], refseq_accession_number: str):
+    def load_linear_repeats(self, window_profiles: list[dict], refseq_accession_number: str,
+                            most_frequent_nplets: dict):
         for window in window_profiles:
             for kmer_length, kmer_dict in window.items():
                 for kmer, count in kmer_dict.items():
@@ -385,8 +391,17 @@ class RepeatsLoader:
                     repeat_id = self.repeats_service.insert(record=record)
                     whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
                         refseq_accession_number)
+
+                    # Check if kmer_length exists in most_frequent_nplets
+                    if kmer_length in most_frequent_nplets:
+                        nplet_list = most_frequent_nplets[kmer_length]
+                        nplet_dict = dict(nplet_list)
+                        repeat_count = nplet_dict.get(kmer, 0) # zero if not found
+                    else:
+                        repeat_count = 0
+
                     self.linear_repeats_whole_chromosomes_service.insert(record=(
-                        repeat_id, whole_chromosome_id, len(kmer)
+                        repeat_id, whole_chromosome_id, len(kmer), repeat_count
                     ))
 
     def load_genes_containing_repeats(self, refseq_accession_number: str, sequence_nts: str):
