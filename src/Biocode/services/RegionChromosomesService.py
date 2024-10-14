@@ -1,11 +1,13 @@
 from src.Biocode.services.AbstractService import AbstractService
 from src.Biocode.services.services_context.service_decorator import Service
 
+
 @Service
 class RegionChromosomesService(AbstractService):
     def __init__(self):
         self.table_name = "region_chromosomes"
-        self.columns = ["name", "refseq_accession_number", "organism_id", "cover_percentage", "cover", "regions_total", "region_number",
+        self.columns = ["name", "refseq_accession_number", "organism_id", "cover_percentage", "cover", "regions_total",
+                        "region_number",
                         "size", "whole_chromosome_id"]
         self.pk_column = "id"
 
@@ -15,3 +17,4 @@ class RegionChromosomesService(AbstractService):
         if result is not None and not result.empty:
             return int(result.loc[0, 'id'])
         return None
+

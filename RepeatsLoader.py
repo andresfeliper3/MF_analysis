@@ -9,12 +9,14 @@ from src.Biocode.managers.GenomeManager import GenomeManager
 from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 from src.Biocode.managers.SequenceManager import SequenceManager
 from src.Biocode.sequences.Sequence import Sequence
+from src.Biocode.services.GenesContainingRepeatsService import GenesContainingRepeatsService
 from src.Biocode.services.GtfGenesService import GtfGenesService
+from src.Biocode.services.LinearRepeatsRegionChromosomes import LinearRepeatsRegionChromosomesService
+from src.Biocode.services.LinearRepeatsWholeChromosomesService import LinearRepeatsWholeChromosomesService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
+from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
 from src.Biocode.services.RepeatsService import RepeatsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
-from src.Biocode.services.GenesContainingRepeatsService import GenesContainingRepeatsService
-from src.Biocode.services.LinearRepeatsWholeChromosomesService import LinearRepeatsWholeChromosomesService
 from utils.FileReader import FileReader
 from utils.decorators import Timer, DBConnection, TryExcept, Inject
 from utils.folder import apply_function_to_files_in_folder
@@ -25,20 +27,26 @@ from utils.logger import logger
         rm_repeats_service=RMRepeatsWholeChromosomesService,
         gtf_genes_service=GtfGenesService,
         whole_chromosomes_service=WholeChromosomesService,
+        region_chromosomes_service=RegionChromosomesService,
         linear_repeats_whole_chromosomes_service=LinearRepeatsWholeChromosomesService,
+        linear_repeats_region_chromosomes_service=LinearRepeatsRegionChromosomesService,
         genes_containing_repeats_service=GenesContainingRepeatsService,
         file_reader=FileReader,
         loader=Loader)
 class RepeatsLoader:
 
-    def __init__(self, repeats_service=None, rm_repeats_service=None, whole_chromosomes_service=None, file_reader=None,
+    def __init__(self, repeats_service=None, rm_repeats_service=None, whole_chromosomes_service=None,
+                 region_chromosomes_service=None, file_reader=None,
                  gtf_genes_service=None, linear_repeats_whole_chromosomes_service=None,
+                 linear_repeats_region_chromosomes_service=None,
                  genes_containing_repeats_service=None, loader=None):
         self.repeats_service = repeats_service
         self.rm_repeats_service = rm_repeats_service
         self.gtf_genes_service = gtf_genes_service
         self.whole_chromosomes_service = whole_chromosomes_service
+        self.region_chromosomes_service = region_chromosomes_service
         self.linear_repeats_whole_chromosomes_service = linear_repeats_whole_chromosomes_service
+        self.linear_repeats_region_chromosomes_service = linear_repeats_region_chromosomes_service
         self.genes_containing_repeats_service = genes_containing_repeats_service
         self.file_reader = file_reader
         self.loader = loader
@@ -314,8 +322,7 @@ class RepeatsLoader:
 
     def _find_kmers_linearly_in_sequence(self, gcf: str, sequence: Sequence, k_range: tuple, save_to_db: bool, dir: str,
                                          window_length: int):
-        sequence_manager = RegionSequenceManager(sequence=sequence)
-
+        sequence_manager = RegionSequenceManager(sequence=sequence, window_length=window_length)
         #self._plot_all_kmers(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(), save_to_db, dir)
 
         window_profiles, most_frequent_nplets = self.__get_kmers_mapped_in_windows(sequence_manager, k_range, window_length)
@@ -323,14 +330,25 @@ class RepeatsLoader:
                                             dir, True, subfolder="linear_repeats_all")
         Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
                                                         dir, True, subfolder="linear_repeats_all/per_k")
-        if save_to_db:
-            logger.warn("window_profiles")
-            logger.warn(window_profiles)
-            logger.warn("******************")
-            logger.warn(most_frequent_nplets)
-            self.load_linear_repeats(window_profiles, refseq_accession_number=sequence.get_refseq_accession_number(),
-                                     most_frequent_nplets=most_frequent_nplets)
 
+        logger.warn(f"count in 'AAAA' in profiles {self.count_tttt_in_windows(window_profiles)}")
+        if False:
+            self.load_linear_repeats(window_profiles, refseq_accession_number=sequence.get_refseq_accession_number(),
+                                     most_frequent_nplets=most_frequent_nplets,
+                                     regions_refseq_accession_number_list=sequence_manager.get_regions_refseq_accessions_numbers())
+
+    def count_tttt_in_windows(self, window_profiles: list[dict]) -> int:
+        total_count = 0  # Initialize a counter for the appearances of 'TTTT'
+
+        # Iterate through each window in the list of window profiles
+        for window in window_profiles:
+            # Check if '4-mers' exists in the current window
+            if '4-mers' in window:
+                kmer_dict = window['4-mers']  # Get the dictionary of 4-mers
+                # Add the count of 'TTTT' if it exists in the dictionary
+                total_count += kmer_dict.get('TTTT', 0)  # Default to 0 if 'TTTT' not found
+
+        return total_count  # Return the total count of 'TTTT'
 
     def __get_kmers_mapped_in_windows(self, sequence_manager: RegionSequenceManager, k_range: tuple, window_length: int):
         sequence = sequence_manager.get_sequence().get_sequence()
@@ -383,26 +401,33 @@ class RepeatsLoader:
                 Graphs.plot_kmer_frequency(window_profiles, kmer, sequence_name, dir, True)
 
     def load_linear_repeats(self, window_profiles: list[dict], refseq_accession_number: str,
-                            most_frequent_nplets: dict):
-        for window in window_profiles:
+                            most_frequent_nplets: dict, regions_refseq_accession_number_list: list[str]):
+        for window_index, window in enumerate(window_profiles):
             for kmer_length, kmer_dict in window.items():
                 for kmer, count in kmer_dict.items():
                     record = (kmer, '', 'Linear')
                     repeat_id = self.repeats_service.insert(record=record)
                     whole_chromosome_id = self.whole_chromosomes_service.extract_id_by_refseq_accession_number(
                         refseq_accession_number)
+                    region_chromosome_id = self.region_chromosomes_service.extract_id_by_refseq_accession_number(
+                        regions_refseq_accession_number_list[window_index]
+                    )
 
                     # Check if kmer_length exists in most_frequent_nplets
                     if kmer_length in most_frequent_nplets:
                         nplet_list = most_frequent_nplets[kmer_length]
                         nplet_dict = dict(nplet_list)
-                        repeat_count = nplet_dict.get(kmer, 0) # zero if not found
+                        repeat_count_in_whole_chr = nplet_dict.get(kmer, 0) # zero if not found
                     else:
-                        repeat_count = 0
+                        repeat_count_in_whole_chr = 0
 
                     self.linear_repeats_whole_chromosomes_service.insert(record=(
-                        repeat_id, whole_chromosome_id, len(kmer), repeat_count
+                        repeat_id, whole_chromosome_id, len(kmer), repeat_count_in_whole_chr
                     ))
+                    self.linear_repeats_region_chromosomes_service.insert(record=(
+                        repeat_id, region_chromosome_id, len(kmer), count
+                    ))
+
 
     def load_genes_containing_repeats(self, refseq_accession_number: str, sequence_nts: str):
         genes_df = self.gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)

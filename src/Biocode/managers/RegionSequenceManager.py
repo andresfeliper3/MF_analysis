@@ -68,7 +68,6 @@ class RegionSequenceManager(SequenceManagerInterface):
 
         self.regions_total = self.sequence.get_regions_total()
         self.window_length = self.sequence.get_window_length()
-
         # list of regions (Sequences)
         self.regions = self.sequence.get_regions()
         # managers
@@ -286,6 +285,12 @@ class RegionSequenceManager(SequenceManagerInterface):
 
     def get_managers(self) -> list[SequenceManager]:
         return self.managers
+
+    def get_whole_refseq_accession_number(self) -> str:
+        return self.sequence.get_refseq_accession_number()
+
+    def get_regions_refseq_accessions_numbers(self) -> list[str]:
+        return [region.get_refseq_accession_number() for region in self.regions]
 
     def save_results_to_db_during_execution(self, GCF):
         """

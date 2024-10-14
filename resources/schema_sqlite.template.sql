@@ -125,6 +125,14 @@ CREATE TABLE linear_repeats_whole_chromosomes (
     count INTEGER
 );
 
+CREATE TABLE linear_repeats_region_chromosomes (
+	id INTEGER PRIMARY KEY,
+    repeats_id INTEGER REFERENCES repeats(id),
+    region_chromosomes_id INTEGER REFERENCES region_chromosomes(id),
+    size INTEGER,
+    count INTEGER
+);
+
 CREATE TABLE genes_containing_repeats(
 	id INTEGER PRIMARY KEY,
 	gtf_genes_id INTEGER REFERENCES gtf_genes(id),
