@@ -15,10 +15,10 @@ class LinearRepeatsRegionChromosomesService(AbstractService):
 
     def _extract_repeats_by_method_and_by_refseq_accession_number(self, refseq_accession_number: str,
                                                                   method_to_find_it: str):
-        query = (f"SELECT r.id AS repeats_id , r.name, r.class_family, r.method_to_find_it, lrrc.size, "
-                 f"wc.refseq_accession_number "
-                 f"FROM repeats r JOIN linear_repeats_region_chromosomes lrrc ON r.id = lrrc.repeats_id) "
-                 f"JOIN region_chromosomes rc ON lrrc.region_chromosomes_id = rc.id JOIN whole_chromosomes wc "
-                 f"ON rc.whole_chromosome_id = wc.id "
-                 f"WHERE r.method_to_find_it = '{method_to_find_it}' AND wc.refseq_accession_number = '{refseq_accession_number}';")
+        query = f"SELECT r.id AS repeats_id, r.name, r.method_to_find_it, lrrc.size, " \
+                 f"wc.refseq_accession_number, rc.region_number, lrrc.count " \
+                 f"FROM repeats r JOIN linear_repeats_region_chromosomes lrrc ON r.id = lrrc.repeats_id " \
+                 f"JOIN region_chromosomes rc ON lrrc.region_chromosomes_id = rc.id JOIN whole_chromosomes wc " \
+                 f"ON rc.whole_chromosome_id = wc.id " \
+                 f"WHERE r.method_to_find_it = '{method_to_find_it}' AND wc.refseq_accession_number = '{refseq_accession_number}';"
         return self.extract_with_custom_query(query)

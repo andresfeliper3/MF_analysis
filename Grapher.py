@@ -8,6 +8,7 @@ from src.Biocode.managers.RegionSequenceManager import RegionSequenceManager
 from src.Biocode.services.GtfGenesService import GtfGenesService
 from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.LinearRepeatsWholeChromosomesService import LinearRepeatsWholeChromosomesService
+from src.Biocode.services.LinearRepeatsRegionChromosomesService import LinearRepeatsRegionChromosomesService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RecursiveRepeatsWholeChromosomesService import RecursiveRepeatsWholeChromosomesService
 from src.Biocode.services.RegionResultsService import RegionResultsService
@@ -20,6 +21,8 @@ from utils.decorators import Timer, DBConnection, TryExcept, Inject
 from utils.folder import apply_function_to_files_in_folder
 from utils.logger import logger
 
+from src.Biocode.utils.utils import adapt_dataframe_to_window_profiles, adapt_dataframe_to_most_frequent_nplets
+
 
 @Inject(whole_results_service=WholeResultsService,
         region_results_service=RegionResultsService,
@@ -28,6 +31,7 @@ from utils.logger import logger
         recursive_repeats_service=RecursiveRepeatsWholeChromosomesService,
         rm_repeats_service=RMRepeatsWholeChromosomesService,
         linear_repeats_whole_chromosomes_service=LinearRepeatsWholeChromosomesService,
+        linear_repeats_region_chromosomes_service=LinearRepeatsRegionChromosomesService,
         organisms_service=OrganismsService,
         gtf_genes_service=GtfGenesService,
         loader=Loader)
@@ -43,7 +47,9 @@ class Grapher:
                  region_chromosomes_service: RegionChromosomesService,
                  recursive_repeats_service: RecursiveRepeatsWholeChromosomesService,
                  linear_repeats_whole_chromosomes_service: LinearRepeatsWholeChromosomesService,
+                 linear_repeats_region_chromosomes_service: LinearRepeatsRegionChromosomesService,
                  organisms_service: OrganismsService, gtf_genes_service: GtfGenesService, loader: Loader):
+        self.recursive_repeats_whole_chromosomes_service = recursive_repeats_service
         self.whole_results_service = whole_results_service
         self.region_results_service = region_results_service
         self.rm_repeats_service = rm_repeats_service
@@ -51,6 +57,7 @@ class Grapher:
         self.region_chromosomes_service = region_chromosomes_service
         self.recursive_repeats_service = recursive_repeats_service
         self.linear_repeats_whole_chromosomes_service = linear_repeats_whole_chromosomes_service
+        self.linear_repeats_region_chromosomes_service = linear_repeats_region_chromosomes_service
         self.organisms_service = organisms_service
         self.gtf_genes_service = gtf_genes_service
         self.loader = loader
@@ -330,7 +337,7 @@ class Grapher:
     @Timer
     def graph_recursive_genome_from_database(self, GCF: str, save: bool, dir: str, n_max: int):
         n_max = n_max and int(n_max)
-        refseq_accession_numbers = self.organism_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
+        refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
 
         for refseq_accession_number in refseq_accession_numbers:
             self.graph_recursive_from_database(refseq_accession_number, save, dir, n_max)
@@ -418,16 +425,28 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_linear_repeats_sequence_command(self, path: str, save: bool, name: str, window_length: int, dir: str):
-        refseq_accession_number = self.loader.extract_refseq_accession_number(path)
-        repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number)
-        logger.warn(repeats_df)
+    def graph_linear_repeats_sequence_command(self, refseq_accession_number: str, save: bool, name: str,
+                                              window_length: int, dir: str, path: str = None):
+        if refseq_accession_number is None:
+            refseq_accession_number = self.loader.extract_refseq_accession_number(path)
 
-        #BUILD ADAPTER HERE AFTER ID-51.1
-        #Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
-        #                                    dir, True, subfolder="linear_repeats_all")
-        #Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets,
-        #                                                sequence_manager.get_sequence_name(),
-        #                                                dir, True, subfolder="linear_repeats_all/per_k")
+        sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(refseq_accession_number)
+        whole_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number)
+        region_repeats_df = self.linear_repeats_region_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number)
+        window_profiles = adapt_dataframe_to_window_profiles(region_repeats_df)
+        most_frequent_nplets = adapt_dataframe_to_most_frequent_nplets(whole_repeats_df)
 
+        Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_name,
+                                            dir, save, subfolder="linear_repeats_all_database")
+        Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets,
+                                                        sequence_name,
+                                                        dir, save, subfolder=f"linear_repeats_all_database/per_k/{sequence_name}")
 
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_linear_repeats_genome_command(self, GCF: str, save: bool, window_length: int, dir: str, name: str):
+        refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
+        for refseq_accession_number in refseq_accession_numbers:
+            self.graph_linear_repeats_sequence_command(refseq_accession_number=refseq_accession_number, save=save,
+                                                       window_length=window_length, dir=dir, name=name)

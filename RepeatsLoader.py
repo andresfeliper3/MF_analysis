@@ -11,7 +11,7 @@ from src.Biocode.managers.SequenceManager import SequenceManager
 from src.Biocode.sequences.Sequence import Sequence
 from src.Biocode.services.GenesContainingRepeatsService import GenesContainingRepeatsService
 from src.Biocode.services.GtfGenesService import GtfGenesService
-from src.Biocode.services.LinearRepeatsRegionChromosomes import LinearRepeatsRegionChromosomesService
+from src.Biocode.services.LinearRepeatsRegionChromosomesService import LinearRepeatsRegionChromosomesService
 from src.Biocode.services.LinearRepeatsWholeChromosomesService import LinearRepeatsWholeChromosomesService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
@@ -331,8 +331,8 @@ class RepeatsLoader:
         Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
                                                         dir, True, subfolder="linear_repeats_all/per_k")
         logger.warn(most_frequent_nplets)
-        logger.warn(f"count in 'TTTT' in profiles {self.count_tttt_in_windows(window_profiles)}")
-        if False:
+        #logger.warn(f"count in 'TTTT' in profiles {self.count_tttt_in_windows(window_profiles)}")
+        if save_to_db:
             self.load_linear_repeats(window_profiles, refseq_accession_number=sequence.get_refseq_accession_number(),
                                      most_frequent_nplets=most_frequent_nplets,
                                      regions_refseq_accession_number_list=sequence_manager.get_regions_refseq_accessions_numbers())

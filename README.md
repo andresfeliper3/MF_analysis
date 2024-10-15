@@ -92,7 +92,7 @@ Find kmers going through the sequence linearly.
 
 This command can be used to execute the whole genome.
 
-    py .\command.py find_kmers_genome -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000
+    py .\command.py find_kmers_genome -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans"
 
 This command can be used to execute a single chromosome
     
@@ -180,6 +180,7 @@ Other possible parameters are:
 The command without the optional parameters would be:
 
        py .\command.py graph_rm_file_genome -path resources/RM_resources/caenorhabditis_elegans -dir caenorhabditis_elegans 
+
 
 ### Graph the Plantrep.cn repeats using the file
 The graphs are saved in the /out directory in the sequence folder. 
@@ -270,6 +271,12 @@ Graph the repeats found with the linear algorithm using a sequence path and resu
 
 
     py .\command.py graph_linear_repeats_sequence --save true -name "Caenorhabditis elegans" -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -window_length 300000 -dir caenorhabditis_elegans
+
+
+To graph the entire genome use the following command:
+
+    py .\command.py graph_linear_repeats_genome --save true -name "Caenorhabditis elegans" -gcf GCF_000002985.6 -window_length 300000 -dir caenorhabditis_elegans
+
 
 ### Graph genes data
 #### Graph from .gtf file

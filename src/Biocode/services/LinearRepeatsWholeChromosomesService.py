@@ -15,8 +15,8 @@ class LinearRepeatsWholeChromosomesService(AbstractService):
 
     def _extract_repeats_by_method_and_by_refseq_accession_number(self, refseq_accession_number: str,
                                                                   method_to_find_it: str):
-        query = f"SELECT r.id AS repeats_id, r.name, r.class_family, r.method_to_find_it, lrwc.size, wc.refseq_accession_number  FROM repeats r JOIN " \
+        query = f"SELECT r.id AS repeats_id, r.name, r.method_to_find_it, lrwc.size, wc.refseq_accession_number, lrwc.count AS count FROM repeats r JOIN " \
                 f"linear_repeats_whole_chromosomes lrwc ON r.id = lrwc.repeats_id " \
                 f"JOIN whole_chromosomes wc ON lrwc.whole_chromosomes_id = wc.id " \
-                f"WHERE r.method_to_find_it = '{method_to_find_it}' AND refseq_accession_number = '{refseq_accession_number}';"
+                f"WHERE r.method_to_find_it = '{method_to_find_it}' AND wc.refseq_accession_number = '{refseq_accession_number}';"
         return self.extract_with_custom_query(query)
