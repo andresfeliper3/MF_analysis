@@ -16,7 +16,7 @@ class LinearRepeatsRegionChromosomesService(AbstractService):
     def _extract_repeats_by_method_and_by_refseq_accession_number(self, refseq_accession_number: str,
                                                                   method_to_find_it: str):
         query = f"SELECT r.id AS repeats_id, r.name, r.method_to_find_it, lrrc.size, " \
-                 f"wc.refseq_accession_number, rc.region_number, lrrc.count " \
+                 f"wc.refseq_accession_number, rc.region_number, lrrc.count, rc.size AS window_length " \
                  f"FROM repeats r JOIN linear_repeats_region_chromosomes lrrc ON r.id = lrrc.repeats_id " \
                  f"JOIN region_chromosomes rc ON lrrc.region_chromosomes_id = rc.id JOIN whole_chromosomes wc " \
                  f"ON rc.whole_chromosome_id = wc.id " \

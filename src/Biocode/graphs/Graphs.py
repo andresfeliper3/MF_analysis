@@ -842,7 +842,8 @@ class Graphs:
         plt.show()
 
     @staticmethod
-    def plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_name, dir, save, subfolder):
+    def plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_name, dir, save, window_length,
+                                     subfolder):
         """
         Plots the frequency of all most frequent k-mers across genome windows in a single graph.
         """
@@ -865,10 +866,9 @@ class Graphs:
                 # Plot the k-mer frequency
                 plt.plot(windows, window_counts, label=kmer, color=colors(i), marker='o')
 
-        # Add title and labels
         title = f"Frequency of kmers across {sequence_name} genome windows in {dir}"
         plt.title(title)
-        plt.xlabel("Window")
+        plt.xlabel(f"Window ({window_length} bp)")
         plt.ylabel("Count of k-mers")
         plt.grid(True)
 
@@ -883,7 +883,8 @@ class Graphs:
 
 
     @staticmethod
-    def plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_name, dir, save, subfolder):
+    def plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_name, dir, save,
+                                                 window_length, subfolder):
         """
         Plots the frequency of all most frequent k-mers for each k-mer length across genome windows in separate graphs.
         """
@@ -909,7 +910,7 @@ class Graphs:
             # Add title and labels
             title = f"Frequency of {k} across {sequence_name} genome windows in {dir}"
             plt.title(title)
-            plt.xlabel("Window")
+            plt.xlabel(f"Window ({window_length} bp)")
             plt.ylabel("Count of k-mers")
             plt.grid(True)
 

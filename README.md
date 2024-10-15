@@ -88,15 +88,21 @@ This command can be used to execute a single chromosome.
 
 ### Analyze and find kmers linearly
 Find kmers going through the sequence linearly.
+If graph_from_file is true, then the graphs are generated from reading the files instead of using the database.
+In this case, adding window_length a value is mandatory for a good performance.
+
 - -method: l
+- -k_range: "(4, 12)"
+- -window_length: 300000
+- -graph_from_file: true
 
 This command can be used to execute the whole genome.
 
-    py .\command.py find_kmers_genome -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans"
+    py .\command.py find_kmers_genome -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans" -graph_from_file true
 
 This command can be used to execute a single chromosome
     
-    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans"
+    py .\command.py find_kmers_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans" -graph_from_file true
 
 ### Analyze and find kmers linearly only for kmers found in genes
 Find the kmers linearly. Find the most common kmers and get their frequency only in genes.

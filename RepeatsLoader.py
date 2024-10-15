@@ -137,7 +137,8 @@ class RepeatsLoader:
                                                     gcf=self.loader.get_gcf(),
                                                     data=self.loader.get_data(), k_range=ast.literal_eval(args.k_range),
                                                     save_to_db=save_to_db, dir=args.dir,
-                                                    window_length=int(args.window_length))
+                                                    window_length=int(args.window_length),
+                                                    graph_from_file=bool(args.graph_from_file))
             elif args.method == 'rm':
                 logger.warning("Feature not implemented yet")
 
@@ -146,11 +147,13 @@ class RepeatsLoader:
         genome_manager.find_only_kmers_recursively_and_calculate_multifractal_analysis_values(
             GCF=gcf, save_to_db=save_to_db, method_to_find_it="Recursively", k_range=k_range)
 
-    def _find_kmers_linearly_in_genome(self, organism_name, gcf, data, k_range, save_to_db, dir, window_length):
+    def _find_kmers_linearly_in_genome(self, organism_name, gcf, data, k_range, save_to_db, dir, window_length,
+                                       graph_from_file):
         genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
         for manager in genome_manager.get_managers():
             self._find_kmers_linearly_in_sequence(gcf=gcf, sequence=manager.get_sequence(), k_range=k_range,
-                                                  save_to_db=save_to_db, dir=dir, window_length=window_length)
+                                                  save_to_db=save_to_db, dir=dir, window_length=window_length,
+                                                  graph_from_file=graph_from_file)
 
     @DBConnection
     @TryExcept
@@ -178,7 +181,8 @@ class RepeatsLoader:
             elif args.method == 'l':
                 self._find_kmers_linearly_in_sequence(gcf=self.loader.get_gcf(), sequence=sequence,
                                                       k_range=ast.literal_eval(args.k_range), save_to_db=save_to_db,
-                                                      dir=args.dir, window_length=int(args.window_length))
+                                                      dir=args.dir, window_length=int(args.window_length),
+                                                      graph_from_file=bool(args.graph_from_file))
             elif args.method == 'rm':
                 logger.warning("Feature not implemented yet")
         else:
@@ -252,11 +256,11 @@ class RepeatsLoader:
         self.load_genes_containing_repeats(refseq_accession_number, sequence_nts)
 
         # Graphs.plot_combined_kmer_frequency(window_profiles_only_genes, most_frequent_nplets, sequence_manager.get_sequence_name(),
-        #                                        dir, True, subfolder="linear_repeats_genes")
+        #                                        dir, True, window_length, subfolder="linear_repeats_genes")
 
         Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles_only_genes, most_frequent_nplets,
                                                         sequence_manager.get_sequence_name(), dir, True,
-                                                        subfolder="linear_repeats_genes")
+                                                        window_length, subfolder="linear_repeats_genes")
 
     def __count_repeat_in_genes_given_a_sequence_chunk(self, genes_df, repeat: str, sequence: str,
                                                        initial_position_value, final_position_value):
@@ -321,15 +325,19 @@ class RepeatsLoader:
 
 
     def _find_kmers_linearly_in_sequence(self, gcf: str, sequence: Sequence, k_range: tuple, save_to_db: bool, dir: str,
-                                         window_length: int):
+                                         window_length: int, graph_from_file: bool):
         sequence_manager = RegionSequenceManager(sequence=sequence, window_length=window_length)
-        #self._plot_all_kmers(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(), save_to_db, dir)
 
         window_profiles, most_frequent_nplets = self.__get_kmers_mapped_in_windows(sequence_manager, k_range, window_length)
-        Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
-                                            dir, True, subfolder="linear_repeats_all")
-        Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
-                                                        dir, True, subfolder="linear_repeats_all/per_k")
+
+        if graph_from_file:
+            # self._plot_all_kmers(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(), save_to_db, dir)
+
+            Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
+                                                dir, True, window_length, subfolder="linear_repeats_all")
+            Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(),
+                                                            dir, True, window_length, subfolder="linear_repeats_all/per_k")
+
         logger.warn(most_frequent_nplets)
         #logger.warn(f"count in 'TTTT' in profiles {self.count_tttt_in_windows(window_profiles)}")
         if save_to_db:
@@ -391,13 +399,13 @@ class RepeatsLoader:
         kmers = [sequence[i:i + k] for i in range(len(sequence) - k + 1)]
         return Counter(kmers)
 
-    def _plot_all_kmers(self, window_profiles, most_frequent_nplets, sequence_name, save_to_db, dir):
+    def _plot_all_kmers(self, window_profiles, most_frequent_nplets, sequence_name, save, dir):
         """
         Plots the frequency profile for all most frequent k-mers in the genome.
         """
         for k, kmers in most_frequent_nplets.items():
             for kmer, _ in kmers:
-                Graphs.plot_kmer_frequency(window_profiles, kmer, sequence_name, dir, True)
+                Graphs.plot_kmer_frequency(window_profiles, kmer, sequence_name, dir, save)
 
     def load_linear_repeats(self, window_profiles: list[dict], refseq_accession_number: str,
                             most_frequent_nplets: dict, regions_refseq_accession_number_list: list[str]):

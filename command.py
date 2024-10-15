@@ -34,7 +34,8 @@ def main():
     kmers_finder_genome_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
     kmers_finder_genome_parser.add_argument('-dir', help='Directory to save results')
     kmers_finder_genome_parser.add_argument('-window_length', help='Window/partition length to divide the chromosome')
-
+    kmers_finder_genome_parser.add_argument('-graph_from_file', choices=['true', 'false'], default='true',
+                                              help='Generate graphs directly from file without database')
 
     kmers_finder_sequence_parser = subparsers.add_parser('find_kmers_sequence', help='Find kmers (repeats of k nucleotides)')
     kmers_finder_sequence_parser.add_argument('-path', help='Path of the .fasta sequence file relative to command.py file')
@@ -45,7 +46,8 @@ def main():
     kmers_finder_sequence_parser.add_argument('-dir', help='Directory to save results')
     kmers_finder_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true', help='Save results to the database')
     kmers_finder_sequence_parser.add_argument('-window_length', help='Window/partition length to divide the chromosome')
-
+    kmers_finder_sequence_parser.add_argument('-graph_from_file', choices=['true', 'false'], default='true',
+                                                      help='Generate graphs directly from file without database')
 
     kmers_finder_linearly_genes_sequence_parser = subparsers.add_parser('find_kmers_linearly_genes_sequence', help='Find kmers using linear method(repeats of k nucleotides) only in the genes')
     kmers_finder_linearly_genes_sequence_parser.add_argument('-path',
@@ -152,8 +154,8 @@ def main():
     graph_linear_sequence_repeats_parser.add_argument('-name',
                                         help="Enter the scientific name of the organism")
     graph_linear_sequence_repeats_parser.add_argument('-path', help="Enter the path of the sequence")
-    graph_linear_sequence_repeats_parser.add_argument('-window_length', help="Enter the window length for region analysis")
     graph_linear_sequence_repeats_parser.add_argument('-dir', help="Enter the directory name (organism name) were the results will be saved")
+
 
     graph_linear_genome_repeats_parser = subparsers.add_parser('graph_linear_repeats_genome',
                                                         help='Graph results found by Linear algorithm')
@@ -259,7 +261,7 @@ def main():
         grapher.graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, dir=args.dir, n_max=args.n_max)
     elif args.command == 'graph_linear_repeats_sequence':
         grapher.graph_linear_repeats_sequence_command(path=args.path, save=args.save, name=args.name,
-                                                      window_length=int(args.window_length), dir=args.dir)
+                                                      dir=args.dir)
     elif args.command == 'graph_linear_repeats_genome':
         grapher.graph_linear_repeats_genome_command(save=args.save, name=args.name, window_length=int(args.window_length),
                                                     dir=args.dir, GCF=args.gcf)

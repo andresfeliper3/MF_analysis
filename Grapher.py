@@ -425,22 +425,23 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_linear_repeats_sequence_command(self, refseq_accession_number: str, save: bool, name: str,
-                                              window_length: int, dir: str, path: str = None):
+    def graph_linear_repeats_sequence_command(self,  save: bool, name: str, dir: str, path: str = None,
+                                              refseq_accession_number: str = None,):
         if refseq_accession_number is None:
             refseq_accession_number = self.loader.extract_refseq_accession_number(path)
 
         sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(refseq_accession_number)
         whole_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number)
         region_repeats_df = self.linear_repeats_region_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number)
+        window_length = region_repeats_df.iloc[0]['window_length']
         window_profiles = adapt_dataframe_to_window_profiles(region_repeats_df)
         most_frequent_nplets = adapt_dataframe_to_most_frequent_nplets(whole_repeats_df)
 
         Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_name,
-                                            dir, save, subfolder="linear_repeats_all_database")
+                                            dir, save, window_length, subfolder="linear_repeats_all_database")
         Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets,
-                                                        sequence_name,
-                                                        dir, save, subfolder=f"linear_repeats_all_database/per_k/{sequence_name}")
+                                                        sequence_name, dir, save, window_length,
+                                                        subfolder=f"linear_repeats_all_database/per_k/{sequence_name}")
 
     @DBConnection
     @TryExcept
