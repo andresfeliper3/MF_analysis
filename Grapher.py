@@ -465,17 +465,29 @@ class Grapher:
 
         sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(
             refseq_accession_number)
-        whole_repeats_in_genes_df = self.linear_repeats_whole_chromosomes_service.extract_linear_in_genes_repeats_by_refseq_accession_number(
-            refseq_accession_number, k_range=ast.literal_eval(k_range))
-        region_repeats_in_genes_df = self.linear_repeats_region_chromosomes_service.extract_linear_in_genes_repeats_by_refseq_accession_number(
-            refseq_accession_number, k_range=ast.literal_eval(k_range))
+        try:
+            whole_repeats_in_genes_df = self.linear_repeats_whole_chromosomes_service.extract_linear_in_genes_repeats_by_refseq_accession_number(
+                refseq_accession_number, k_range=ast.literal_eval(k_range))
+            region_repeats_in_genes_df = self.linear_repeats_region_chromosomes_service.extract_linear_in_genes_repeats_by_refseq_accession_number(
+                refseq_accession_number, k_range=ast.literal_eval(k_range))
 
-        window_length = region_repeats_in_genes_df.iloc[0]['window_length']
-        window_profiles_only_in_genes = adapt_dataframe_to_window_profiles(region_repeats_in_genes_df)
-        most_frequent_nplets = adapt_dataframe_to_most_frequent_nplets(whole_repeats_in_genes_df)
+            window_length = region_repeats_in_genes_df.iloc[0]['window_length']
+            window_profiles_only_in_genes = adapt_dataframe_to_window_profiles(region_repeats_in_genes_df)
+            most_frequent_nplets = adapt_dataframe_to_most_frequent_nplets(whole_repeats_in_genes_df)
+        except:
+            raise Exception(f"Check if the whole repeats in genes and region repeats in genes have been loaded to database for {refseq_accession_number}")
 
         Graphs.plot_combined_kmer_frequency(window_profiles_only_in_genes, most_frequent_nplets, sequence_name,
                                             dir, save, window_length, subfolder="linear_repeats_genes_database")
         Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles_only_in_genes, most_frequent_nplets,
                                                         sequence_name, dir, save, window_length,
                                                         subfolder=f"linear_repeats_genes_database/per_k/{sequence_name}")
+
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_linear_in_genes_repeats_genome_command(self, GCF: str, save: bool, dir: str, name: str, k_range: str):
+        refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
+        for refseq_accession_number in refseq_accession_numbers:
+            self.graph_linear_in_genes_repeats_sequence_command(refseq_accession_number=refseq_accession_number, save=save,
+                                                       dir=dir, name=name, k_range=k_range)
