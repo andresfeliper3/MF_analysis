@@ -107,7 +107,15 @@ This command can be used to execute a single chromosome
 ### Analyze and find kmers linearly only for kmers found in genes
 Find the kmers linearly. Find the most common kmers and get their frequency only in genes.
 
-    py .\command.py find_kmers_linearly_genes_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans"
+- -path: sequence path file.
+- k_range: "(4,12)". Range of values for k in kmers.
+- -name: organism name in sequence yaml file.
+- -window_length
+- -dir: subfolder name to store the graphs.
+- -graph_from_file: (true) generate graphs directly from sequence files.
+
+    
+    py .\command.py find_kmers_linearly_genes_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -k_range "(4, 12)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans" -graph_from_file true
 
 ## Executing RepeatMasker
 In order to use RepeatMasker from a Docker container. 
@@ -283,6 +291,17 @@ To graph the entire genome use the following command:
 
     py .\command.py graph_linear_repeats_genome --save true -name "Caenorhabditis elegans" -gcf GCF_000002985.6 -window_length 300000 -dir caenorhabditis_elegans
 
+### Graph repeats found linearly only in genes from the database
+Graph the repeats found with the linear algorithm ONLY IN GENES using a sequence path and results saved in the database.
+
+- --save: true (to save graphs)
+- -name: name of the organism to read it from yaml file.
+- -path: relative path to the sequence.
+- -window_length: window size for region analysis.
+- -dir: directory to save the graphs (organism_name).
+
+
+    py .\command.py graph_linear_in_genes_repeats_sequence --save true -name "Caenorhabditis elegans" -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -dir caenorhabditis_elegans
 
 ### Graph genes data
 #### Graph from .gtf file

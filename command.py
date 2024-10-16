@@ -59,7 +59,8 @@ def main():
     kmers_finder_linearly_genes_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true',
                                               help='Save results to the database')
     kmers_finder_linearly_genes_sequence_parser.add_argument('-window_length', help='Window/partition length to divide the chromosome')
-
+    kmers_finder_linearly_genes_sequence_parser.add_argument('-graph_from_file', choices=['true', 'false'], default='true',
+                                              help='Graph frequency of kmers across sequence only in genes')
 
     graph_parser = subparsers.add_parser('graph', help='Graph command')
     graph_parser.add_argument('-name', help='Name or GCF for graphing')
@@ -168,6 +169,16 @@ def main():
     graph_linear_genome_repeats_parser.add_argument('-dir',
                                              help="Enter the directory name (organism name) were the results will be saved")
 
+    graph_linear_sequence_repeats_parser = subparsers.add_parser('graph_linear_in_genes_repeats_sequence',
+                                                                 help='Graph results found by Linear algorithm only in genes')
+    graph_linear_sequence_repeats_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                                      help='Save graphs locally in /out directory')
+    graph_linear_sequence_repeats_parser.add_argument('-name',
+                                                      help="Enter the scientific name of the organism")
+    graph_linear_sequence_repeats_parser.add_argument('-path', help="Enter the path of the sequence")
+    graph_linear_sequence_repeats_parser.add_argument('-dir',
+                                                      help="Enter the directory name (organism name) were the results will be saved")
+
 
     graph_gtf_file_parser = subparsers.add_parser('graph_gtf_file', help='Graph genes from .gtf file')
     graph_gtf_file_parser.add_argument('-path', help="Enter the path of a genes .gtf file")
@@ -265,6 +276,9 @@ def main():
     elif args.command == 'graph_linear_repeats_genome':
         grapher.graph_linear_repeats_genome_command(save=args.save, name=args.name, window_length=int(args.window_length),
                                                     dir=args.dir, GCF=args.gcf)
+    elif args.command == 'graph_linear_in_genes_repeats_sequence':
+        grapher.graph_linear_in_genes_repeats_sequence_command(path=args.path, save=args.save, name=args.name,
+                                                               dir=args.dir)
     elif args.command == 'graph_gtf_file':
         grapher.graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
                             save=args.save, dir=args.dir)
