@@ -13,7 +13,10 @@ def list_to_str(lst):
 def str_to_list(string):
     return json.loads(string)
 
+
 def tuple_to_sequence_list(range_tuple: tuple):
+    if range_tuple is None:
+        return None
     return list(range(range_tuple[0], range_tuple[1] + 1))
 
 

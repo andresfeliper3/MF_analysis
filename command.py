@@ -156,6 +156,7 @@ def main():
                                         help="Enter the scientific name of the organism")
     graph_linear_sequence_repeats_parser.add_argument('-path', help="Enter the path of the sequence")
     graph_linear_sequence_repeats_parser.add_argument('-dir', help="Enter the directory name (organism name) were the results will be saved")
+    graph_linear_sequence_repeats_parser.add_argument('-k_range', help="Add a k_range to graph kmers of k values between the interval. For example: (4, 8).")
 
 
     graph_linear_genome_repeats_parser = subparsers.add_parser('graph_linear_repeats_genome',
@@ -165,9 +166,11 @@ def main():
     graph_linear_genome_repeats_parser.add_argument('-name',
                                              help="Enter the scientific name of the organism")
     graph_linear_genome_repeats_parser.add_argument('-gcf', help="Enter the GCF of the organism genome")
-    graph_linear_genome_repeats_parser.add_argument('-window_length', help="Enter the window length for region analysis")
     graph_linear_genome_repeats_parser.add_argument('-dir',
                                              help="Enter the directory name (organism name) were the results will be saved")
+    graph_linear_genome_repeats_parser.add_argument('-k_range', help="Add a k_range to graph kmers of k values between the interval. For example: (4, 8).")
+
+
 
     graph_linear_sequence_repeats_parser = subparsers.add_parser('graph_linear_in_genes_repeats_sequence',
                                                                  help='Graph results found by Linear algorithm only in genes')
@@ -272,11 +275,11 @@ def main():
     elif args.command == 'graph_recursive_genome':
         grapher.graph_recursive_genome_from_database(GCF=args.gcf, save=args.save, dir=args.dir, n_max=args.n_max)
     elif args.command == 'graph_linear_repeats_sequence':
-        grapher.graph_linear_repeats_sequence_command(path=args.path, save=args.save, name=args.name,
-                                                      dir=args.dir)
+        grapher.graph_linear_repeats_sequence_command(path=args.path, save=args.save, name=args.name, dir=args.dir,
+                                                      k_range=args.k_range)
     elif args.command == 'graph_linear_repeats_genome':
-        grapher.graph_linear_repeats_genome_command(save=args.save, name=args.name, window_length=int(args.window_length),
-                                                    dir=args.dir, GCF=args.gcf)
+        grapher.graph_linear_repeats_genome_command(save=args.save, name=args.name, dir=args.dir, GCF=args.gcf,
+                                                    k_range=args.k_range)
     elif args.command == 'graph_linear_in_genes_repeats_sequence':
         grapher.graph_linear_in_genes_repeats_sequence_command(path=args.path, save=args.save, name=args.name,
                                                                dir=args.dir, k_range=args.k_range)

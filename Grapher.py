@@ -426,14 +426,16 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_linear_repeats_sequence_command(self,  save: bool, name: str, dir: str, path: str = None,
-                                              refseq_accession_number: str = None,):
+    def graph_linear_repeats_sequence_command(self,  save: bool, name: str, dir: str, k_range: str, path: str = None,
+                                              refseq_accession_number: str = None):
         if refseq_accession_number is None:
             refseq_accession_number = self.loader.extract_refseq_accession_number(path)
 
         sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(refseq_accession_number)
-        whole_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number)
-        region_repeats_df = self.linear_repeats_region_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number)
+        whole_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number,
+                                                                                                                           k_range=ast.literal_eval(k_range))
+        region_repeats_df = self.linear_repeats_region_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number,
+                                                                                                                             k_range=ast.literal_eval(k_range))
         window_length = region_repeats_df.iloc[0]['window_length']
         window_profiles = adapt_dataframe_to_window_profiles(region_repeats_df)
         most_frequent_nplets = adapt_dataframe_to_most_frequent_nplets(whole_repeats_df)
@@ -447,11 +449,11 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_linear_repeats_genome_command(self, GCF: str, save: bool, window_length: int, dir: str, name: str):
+    def graph_linear_repeats_genome_command(self, GCF: str, save: bool, dir: str, name: str, k_range: str):
         refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
         for refseq_accession_number in refseq_accession_numbers:
             self.graph_linear_repeats_sequence_command(refseq_accession_number=refseq_accession_number, save=save,
-                                                       window_length=window_length, dir=dir, name=name)
+                                                       dir=dir, name=name, k_range=k_range)
 
     @DBConnection
     @TryExcept

@@ -282,14 +282,15 @@ Graph the repeats found with the linear algorithm using a sequence path and resu
 - -path: relative path to the sequence.
 - -window_length: window size for region analysis.
 - -dir: directory to save the graphs (organism_name).
+- -k_range: range of values of k in kmers.
 
 
-    py .\command.py graph_linear_repeats_sequence --save true -name "Caenorhabditis elegans" -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -window_length 300000 -dir caenorhabditis_elegans
+    py .\command.py graph_linear_repeats_sequence --save true -name "Caenorhabditis elegans" -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -dir caenorhabditis_elegans -k_range "(4,12)"
 
 
 To graph the entire genome use the following command:
 
-    py .\command.py graph_linear_repeats_genome --save true -name "Caenorhabditis elegans" -gcf GCF_000002985.6 -window_length 300000 -dir caenorhabditis_elegans
+    py .\command.py graph_linear_repeats_genome --save true -name "Caenorhabditis elegans" -gcf GCF_000002985.6 -dir caenorhabditis_elegans -k_range "(4,12)
 
 ### Graph repeats found linearly only in genes from the database
 Graph the repeats found with the linear algorithm ONLY IN GENES using a sequence path and results saved in the database.
