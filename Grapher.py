@@ -1,4 +1,5 @@
 import yaml
+import ast
 
 from Loader import Loader
 from src.Biocode.graphs.Graphs import Graphs
@@ -455,7 +456,7 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_linear_in_genes_repeats_sequence_command(self, save: bool, name: str, dir: str, path: str = None,
+    def graph_linear_in_genes_repeats_sequence_command(self, save: bool, name: str, dir: str, k_range: str, path: str = None,
                                                        refseq_accession_number: str = None, ):
         if refseq_accession_number is None:
             refseq_accession_number = self.loader.extract_refseq_accession_number(path)
@@ -463,9 +464,9 @@ class Grapher:
         sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(
             refseq_accession_number)
         whole_repeats_in_genes_df = self.linear_repeats_whole_chromosomes_service.extract_linear_in_genes_repeats_by_refseq_accession_number(
-            refseq_accession_number)
+            refseq_accession_number, k_range=ast.literal_eval(k_range))
         region_repeats_in_genes_df = self.linear_repeats_region_chromosomes_service.extract_linear_in_genes_repeats_by_refseq_accession_number(
-            refseq_accession_number)
+            refseq_accession_number, k_range=ast.literal_eval(k_range))
 
         window_length = region_repeats_in_genes_df.iloc[0]['window_length']
         window_profiles_only_in_genes = adapt_dataframe_to_window_profiles(region_repeats_in_genes_df)

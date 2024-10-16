@@ -178,6 +178,7 @@ def main():
     graph_linear_sequence_repeats_parser.add_argument('-path', help="Enter the path of the sequence")
     graph_linear_sequence_repeats_parser.add_argument('-dir',
                                                       help="Enter the directory name (organism name) were the results will be saved")
+    graph_linear_sequence_repeats_parser.add_argument('-k_range', help="Add a k_range to graph kmers of k values between the interval. For example: (4, 8).")
 
 
     graph_gtf_file_parser = subparsers.add_parser('graph_gtf_file', help='Graph genes from .gtf file')
@@ -278,7 +279,7 @@ def main():
                                                     dir=args.dir, GCF=args.gcf)
     elif args.command == 'graph_linear_in_genes_repeats_sequence':
         grapher.graph_linear_in_genes_repeats_sequence_command(path=args.path, save=args.save, name=args.name,
-                                                               dir=args.dir)
+                                                               dir=args.dir, k_range=args.k_range)
     elif args.command == 'graph_gtf_file':
         grapher.graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
                             save=args.save, dir=args.dir)

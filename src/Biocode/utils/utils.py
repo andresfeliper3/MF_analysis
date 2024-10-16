@@ -13,6 +13,9 @@ def list_to_str(lst):
 def str_to_list(string):
     return json.loads(string)
 
+def tuple_to_sequence_list(range_tuple: tuple):
+    return list(range(range_tuple[0], range_tuple[1] + 1))
+
 
 def remove_region_part(input_string: str) -> str:
     match = re.match(r"(.+)_region_\d+$", input_string)
