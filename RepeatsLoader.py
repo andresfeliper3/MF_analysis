@@ -51,6 +51,7 @@ class RepeatsLoader:
         self.genes_containing_repeats_service = genes_containing_repeats_service
         self.file_reader = file_reader
         self.loader = loader
+        self.IS_COVERED = False
 
     @DBConnection
     @TryExcept
@@ -233,8 +234,10 @@ class RepeatsLoader:
         genes_sequence_df = self.gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
         logger.info("Gtf_genes dataframe of chromosome extracted from database")
         #window_profiles, most_frequent_nplets = self.__get_kmers_mapped_in_windows(sequence_manager,k_range,window_length)
-        window_profiles, most_frequent_nplets = self.__get_kmers_mapped_in_windows_from_database(refseq_accession_number)
-        logger.info("RepeatsLoader._find_kmers_linearly_genes_sequence: window_profiles and most_frequent_nplets extracted from database")
+        window_profiles, most_frequent_nplets = self.__get_kmers_mapped_in_windows_from_database(
+            refseq_accession_number)
+        logger.info(
+            "RepeatsLoader._find_kmers_linearly_genes_sequence: window_profiles and most_frequent_nplets extracted from database")
         logger.info("Starting building window_profiles_only_genes")
         window_profiles_only_genes = []
         for window_index, window in enumerate(window_profiles):
@@ -251,7 +254,6 @@ class RepeatsLoader:
                     repeat_count_dict[repeat_key] = repeat_count_in_genes
                 kmer_key_dict[kmer_key] = repeat_count_dict
             window_profiles_only_genes.append(kmer_key_dict)
-        logger.warn(f"only genes {window_profiles_only_genes}")
         if save_to_db:
             self.load_linear_repeats(window_profiles_only_genes, refseq_accession_number, most_frequent_nplets,
                                      sequence_manager.get_regions_refseq_accessions_numbers(),
@@ -266,7 +268,8 @@ class RepeatsLoader:
         if graph_from_file:
             Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles_only_genes, most_frequent_nplets,
                                                             sequence_manager.get_sequence_name(), dir, True,
-                                                            window_length, subfolder=f"linear_repeats_genes/per_k/{sequence.get_name()}")
+                                                            window_length,
+                                                            subfolder=f"linear_repeats_genes/per_k/{sequence.get_name()}")
 
     def __get_kmers_mapped_in_windows_from_database(self, refseq_accession_number: str):
         whole_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(
@@ -347,7 +350,6 @@ class RepeatsLoader:
                                      regions_refseq_accession_number_list=sequence_manager.get_regions_refseq_accessions_numbers(),
                                      method_to_find_it='Linear')
 
-
     def __get_kmers_mapped_in_windows(self, sequence_manager: RegionSequenceManager, k_range: tuple,
                                       window_length: int):
         sequence = sequence_manager.get_sequence().get_sequence()
@@ -362,7 +364,7 @@ class RepeatsLoader:
     def __get_most_frequent_nplets(self, nplet_counts, top_n=10) -> dict[str, list[tuple[str, int]]]:
         most_frequent = {}
         for k, counts in nplet_counts.items():
-            most_frequent[k] = counts.  most_common(top_n)
+            most_frequent[k] = counts.most_common(top_n)
         return most_frequent
 
     def __map_kmers_in_windows(self, genome_sequence: str, k_mers, window_length):
@@ -372,31 +374,45 @@ class RepeatsLoader:
             window_seq = genome_sequence[start:start + window_length]
             window_count = {}
             for k, kmers in k_mers.items():
-                window_count[k] = {kmer: self.__count_non_overlapping_kmers_having_kmer(window_seq, kmer) for kmer, _ in kmers}
+                window_count[k] = {kmer: self.__count_non_overlapping_kmers_having_kmer(window_seq, kmer) for kmer, _ in
+                                   kmers}
             window_profiles.append(window_count)
         return window_profiles
 
-    def __count_non_overlapping_kmers_having_kmer(self, sequence, kmer):
-        return sequence.count(kmer)
-        """
-        count = 0
-        k = len(kmer)
-        i = 0
-        while i <= len(sequence) - k:
-            if sequence[i:i + k] == kmer:
-                count += 1
-                i += k
-            else:
-                i += 1
-        return count
-        """
+    def __count_non_overlapping_kmers_having_kmer(self, sequence: str, kmer: str) -> int:
+        def __aux_count_non_overlapping(seq: str, kmer: str) -> int:
+            count = 0
+            start = 0
 
-    def __count_overlapping_kmers_having_kmer(self, sequence, kmer):
-        count = 0
-        k = len(kmer)
-        for i in range(len(sequence) - k + 1):
-            if sequence[i:i + k] == kmer:
+            while True:
+                start = seq.find(kmer, start)
+                if start == -1:
+                    break
                 count += 1
+                start += len(kmer)
+
+            return count
+
+        if self.IS_COVERED:
+            return __aux_count_non_overlapping(sequence, kmer)
+        else:
+            valid_segments = self.___divide_in_valid_segments_of_nucleotides(sequence)
+            return sum(__aux_count_non_overlapping(segment, kmer) for segment in valid_segments)
+
+
+    def __count_overlapping_kmers_having_kmer(self, sequence: str, kmer: str) -> int:
+        k = len(kmer)
+        count = 0
+
+        if self.IS_COVERED:
+            for i in range(len(sequence) - k + 1):
+                if sequence[i:i + k] == kmer:
+                    count += 1
+        else:
+            valid_segments = self.___divide_in_valid_segments_of_nucleotides(sequence)
+            for segment in valid_segments:
+                count += sum(1 for i in range(len(segment) - k + 1) if segment[i:i + k] == kmer)
+
         return count
 
     def __count_overlapping_kmers_with_non_overlapping_counts_having_k(self, sequence, k):
@@ -410,16 +426,42 @@ class RepeatsLoader:
 
         return non_overlapping_counts
 
-    def __count_non_overlapping_kmers_having_k(self, sequence, k):
-        kmers = []
-        i = 0
-        while i <= len(sequence) - k:
-            kmers.append(sequence[i:i + k])
-            i += k
+    def __count_non_overlapping_kmers_having_k(self, sequence: str, k: int) -> Counter:
+        if self.IS_COVERED:
+            kmers = [sequence[i:i + k] for i in range(0, len(sequence) - k + 1, k)]
+        else:
+            valid_segments = self.___divide_in_valid_segments_of_nucleotides(sequence)
+            kmers = [
+                segment[i:i + k] for segment in valid_segments
+                for i in range(0, len(segment) - k + 1, k)
+            ]
+
         return Counter(kmers)
 
-    def __count_overlapping_kmers_having_k(self, sequence, k):
-        kmers = [sequence[i:i + k] for i in range(len(sequence) - k + 1)]
+    def ___divide_in_valid_segments_of_nucleotides(self, sequence: str) -> list[str]:
+        valid_segments = []
+        current_segment = []
+
+        for nuc in sequence:
+            if nuc in 'ATCG':
+                current_segment.append(nuc)
+            else:
+                if current_segment:
+                    valid_segments.append(''.join(current_segment))
+                    current_segment = []
+
+        # Add the last segment if it exists
+        if current_segment:
+            valid_segments.append(''.join(current_segment))
+        return valid_segments
+
+    def __count_overlapping_kmers_having_k(self, sequence: str, k: int) -> Counter:
+        if self.IS_COVERED:
+            kmers = [sequence[i:i + k] for i in range(len(sequence) - k + 1)]
+        else:
+            valid_segments = self.___divide_in_valid_segments_of_nucleotides(sequence)
+            kmers = [segment[i:i + k] for segment in valid_segments for i in range(len(segment) - k + 1)]
+
         return Counter(kmers)
 
     def _plot_all_kmers(self, window_profiles, most_frequent_nplets, sequence_name, save, dir):
@@ -476,7 +518,6 @@ class RepeatsLoader:
                 repeat_id = repeat['repeats_id']
                 repeat_sequence = repeat['name']
 
-                # Use the existing method to count overlapping occurrences
                 count = self.__count_non_overlapping_kmers_having_kmer(gene_sequence, repeat_sequence)
 
                 # If count > 0, save the record
