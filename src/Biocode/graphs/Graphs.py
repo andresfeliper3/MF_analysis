@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+
 from utils.logger import logger
 
 
@@ -843,9 +844,19 @@ class Graphs:
 
     @staticmethod
     def plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_name, dir, save, window_length,
-                                     subfolder):
+                                     subfolder, window_size_for_smoothing=4):
         """
-        Plots the frequency of all most frequent k-mers across genome windows in a single graph.
+        Plots the frequency of all most frequent k-mers across genome windows in a single graph with smoothed curves.
+
+        Args:
+            window_profiles: List of profiles containing k-mer counts
+            most_frequent_nplets: Dictionary of most frequent k-mers
+            sequence_name: Name of the sequence
+            dir: Directory to save the plot
+            save: Boolean indicating whether to save the plot
+            window_length: Length of the window in base pairs
+            subfolder: Subfolder for saving the plot
+            window_size_for_smoothing: Size of the moving average window
         """
         plt.figure(figsize=(12, 6))
 
@@ -860,11 +871,11 @@ class Graphs:
                     count = profile.get(k, {}).get(kmer, 0)
                     window_counts.append(count)
 
-                # Create x-axis values (window numbers)
                 windows = list(range(1, len(window_counts) + 1))
+                smoothed_counts = np.convolve(window_counts, np.ones(window_size_for_smoothing) / window_size_for_smoothing, mode='valid')
+                smoothed_windows = windows[window_size_for_smoothing - 1:]
 
-                # Plot the k-mer frequency
-                plt.plot(windows, window_counts, label=kmer, color=colors(i), marker='o')
+                plt.plot(smoothed_windows, smoothed_counts, label=kmer, color=colors(i), marker='.')
 
         title = f"Frequency of kmers across {sequence_name} genome windows in {dir}"
         plt.title(title)
@@ -881,12 +892,22 @@ class Graphs:
             Graphs._savefig(title, route)
         plt.show()
 
-
     @staticmethod
     def plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets, sequence_name, dir, save,
-                                                 window_length, subfolder):
+                                                 window_length, subfolder, window_size_for_smoothing=4):
         """
-        Plots the frequency of all most frequent k-mers for each k-mer length across genome windows in separate graphs.
+        Plots the frequency of all most frequent k-mers for each k-mer length across genome windows in separate graphs
+        with smoothed curves.
+
+        Args:
+            window_profiles: List of profiles containing k-mer counts
+            most_frequent_nplets: Dictionary of most frequent k-mers by length
+            sequence_name: Name of the sequence
+            dir: Directory to save the plots
+            save: Boolean indicating whether to save the plots
+            window_length: Length of the window in base pairs
+            subfolder: Subfolder for saving the plots
+            window_size_for_smoothing: Size of the moving average window
         """
         for k, kmers in most_frequent_nplets.items():
             plt.figure(figsize=(12, 6))
@@ -904,18 +925,17 @@ class Graphs:
                 # Create x-axis values (window numbers)
                 windows = list(range(1, len(window_counts) + 1))
 
-                # Plot the k-mer frequency
-                plt.plot(windows, window_counts, label=kmer, color=colors(i), marker='o')
+                smoothed_counts = np.convolve(window_counts, np.ones(window_size_for_smoothing) / window_size_for_smoothing, mode='valid')
+                smoothed_windows = windows[window_size_for_smoothing - 1:]
+                plt.plot(smoothed_windows, smoothed_counts, label=kmer, color=colors(i), marker='.')
 
-            # Add title and labels
             title = f"Frequency of {k} across {sequence_name} genome windows in {dir}"
             plt.title(title)
             plt.xlabel(f"Window ({window_length} bp)")
             plt.ylabel("Count of k-mers")
             plt.grid(True)
 
-            # Set the number of columns in the legend
-            num_columns = min(len(kmers), 4)  # Adjust the number of columns as needed
+            num_columns = min(len(kmers), 4)
             plt.legend(title="K-mers", bbox_to_anchor=(1.05, 1), loc='upper left', fontsize='small', ncol=num_columns)
 
             # Save the plot if requested
@@ -923,3 +943,4 @@ class Graphs:
             if save:
                 Graphs._savefig(title, route)
 
+            plt.show()
