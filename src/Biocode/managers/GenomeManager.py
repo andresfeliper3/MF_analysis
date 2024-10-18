@@ -25,8 +25,8 @@ class GenomeManager(GenomeManagerInterface):
 
     def generate_degrees_of_multifractality(self):
         for manager in self.managers:
-            manager.generate_degree_of_multifractality()
-            self.degrees_of_multifractality.append(manager.get_degree_of_multifractality())
+            manager.generate_degrees_of_multifractality()
+            self.degrees_of_multifractality.append(manager.get_degrees_of_multifractality())
 
     def graph_degrees_of_multifractality(self, y_range=None, top_labels=False):
         # Check if the lengths of x_array and y_array match

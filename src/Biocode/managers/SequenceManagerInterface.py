@@ -16,7 +16,7 @@ class SequenceManagerInterface:
         """Generate mfa_results with the MFA values"""
         pass
 
-    def generate_degree_of_multifractality(self):
+    def generate_degrees_of_multifractality(self):
         """Generate degrees of multifractality"""
         pass
 

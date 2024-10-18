@@ -67,7 +67,7 @@ class SequenceManager(SequenceManagerInterface):
         self.mfa_generator = MFA(sequence=self.sequence)
         self.mfa_results = None
         self.fq = None
-        self.degree_of_multifractality = None
+        self.degrees_of_multifractality = None
         self.cover = None
         self.cover_percentage = None
         self._10_largest_values_from_k_10_to_4 = None
@@ -76,7 +76,7 @@ class SequenceManager(SequenceManagerInterface):
 
     def calculate_multifractal_analysis_values(self, GCF):
         self.generate_mfa(GCF, self.whole_mi_grids_service, self.whole_chromosomes_service)
-        self.generate_degree_of_multifractality()
+        self.generate_degrees_of_multifractality()
         self._attach_cover_data()
 
     def generate_mfa(self, GCF, mi_grids_service, chromosomes_service):
@@ -116,8 +116,8 @@ class SequenceManager(SequenceManagerInterface):
         gc.collect()
 
 
-    def generate_degree_of_multifractality(self):
-        self.degree_of_multifractality = self.mfa_generator.get_DDq()
+    def generate_degrees_of_multifractality(self):
+        self.degrees_of_multifractality = self.mfa_generator.get_DDq()
 
     def graph_cgr(self):
         self.mfa_generator.get_cgr_gen().graph_cgr(title=f"CGR of {self.sequence_name}", name=f"{self.organism_name}/whole")
@@ -155,7 +155,7 @@ class SequenceManager(SequenceManagerInterface):
         super().graph_multifractal_analysis(_3d_cgr, linear_fit, degrees_of_multifractality,
                                             multifractal_spectrum, correlation_exponent)
         if degrees_of_multifractality:
-            logger.info(f"The degree of multifractality of {self.sequence_name} is {self.degree_of_multifractality}")
+            logger.info(f"The degree of multifractality of {self.sequence_name} is {self.degrees_of_multifractality}")
 
     def graph_coverage(self, subfolder="whole"):
         Graphs.graph_coverage(values=self.cover, sequence_name=self.sequence_name, name=f"{self.organism_name}/{subfolder}")
@@ -189,8 +189,8 @@ class SequenceManager(SequenceManagerInterface):
     def get_mfa_generator(self) -> MFA:
         return self.mfa_generator
 
-    def get_degree_of_multifractality(self) -> float:
-        return self.degree_of_multifractality
+    def get_degrees_of_multifractality(self) -> float:
+        return self.degrees_of_multifractality
 
     def get_mfa_results(self) -> dict:
         return self.mfa_results

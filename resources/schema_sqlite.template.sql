@@ -11,7 +11,7 @@ CREATE TABLE whole_chromosomes (
     id INTEGER PRIMARY KEY,
     name VARCHAR,
     refseq_accession_number VARCHAR,
-    organism_id INTEGER REFERENCES organisms(id),
+    organism_id INTEGER REFERENCES organisms(id) ON DELETE CASCADE,
     cover_percentage REAL,
     cover REAL[],
     size INTEGER
@@ -21,20 +21,20 @@ CREATE TABLE region_chromosomes (
     id INTEGER PRIMARY KEY,
     name VARCHAR,
     refseq_accession_number VARCHAR,
-    organism_id INTEGER REFERENCES organisms(id),
+    organism_id INTEGER REFERENCES organisms(id) ON DELETE CASCADE,
     cover_percentage REAL,
     cover REAL[],
     regions_total INTEGER,
     region_number INTEGER,
     size INTEGER,
-    whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id)
+    whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
 -- Create mi_grids table with foreign key constraint
 CREATE TABLE whole_mi_grids (
   id INTEGER PRIMARY KEY,
   mi_grid BLOB,
-  whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id),
+  whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id) ON DELETE CASCADE,
   epsilon_size REAL
 );
 
@@ -42,14 +42,14 @@ CREATE TABLE whole_mi_grids (
 CREATE TABLE region_mi_grids (
   id INTEGER PRIMARY KEY,
   mi_grid BLOB,
-  region_chromosome_id INTEGER REFERENCES region_chromosomes(id),
+  region_chromosome_id INTEGER REFERENCES region_chromosomes(id) ON DELETE CASCADE,
   epsilon_size REAL
 );
 
 -- Create chr_whole_results table with foreign key constraint
 CREATE TABLE chr_whole_results (
   id INTEGER PRIMARY KEY,
-  whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id),
+  whole_chromosome_id INTEGER REFERENCES whole_chromosomes(id) ON DELETE CASCADE,
   Dq_values REAL[],
   tau_q_values REAL[],
   DDq REAL
@@ -58,7 +58,7 @@ CREATE TABLE chr_whole_results (
 -- Create chr_region_results table with foreign key constraint
 CREATE TABLE chr_region_results (
   id INTEGER PRIMARY KEY,
-  region_chromosome_id INTEGER REFERENCES region_chromosomes(id),
+  region_chromosome_id INTEGER REFERENCES region_chromosomes(id) ON DELETE CASCADE,
   Dq_values REAL[],
   tau_q_values REAL[],
   DDq REAL
@@ -75,18 +75,17 @@ CREATE TABLE repeats (
 -- Table for identifying repeats in whole chromosomes with coordinates
 CREATE TABLE recursive_repeats_whole_chromosomes (
     id INTEGER PRIMARY KEY,
-    repeats_id INTEGER REFERENCES repeats(id),
-    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id),
+    repeats_id INTEGER REFERENCES repeats(id) ON DELETE CASCADE,
+    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id) ON DELETE CASCADE,
     size INTEGER,
     largest_value INTEGER,
     coordinates VARCHAR
 );
 
-
 CREATE TABLE RM_repeats_whole_chromosomes (
     id INTEGER PRIMARY KEY,
-    repeats_id INTEGER REFERENCES repeats(id),
-    whole_chromosomes_id INTEGER REFERENCES repeats(id),
+    repeats_id INTEGER REFERENCES repeats(id) ON DELETE CASCADE,
+    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id) ON DELETE CASCADE,
     sw_score  INTEGER,
     percentage_divergence REAL,
     percentage_deletions REAL,
@@ -103,7 +102,7 @@ CREATE TABLE RM_repeats_whole_chromosomes (
 
 CREATE TABLE gtf_genes (
     id INTEGER PRIMARY KEY,
-    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id),
+    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id) ON DELETE CASCADE,
     source VARCHAR,
     feature VARCHAR,
     start_position INTEGER,
@@ -120,25 +119,24 @@ CREATE TABLE gtf_genes (
 );
 
 CREATE TABLE linear_repeats_whole_chromosomes (
-	id INTEGER PRIMARY KEY,
-    repeats_id INTEGER REFERENCES repeats(id),
-    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id),
+    id INTEGER PRIMARY KEY,
+    repeats_id INTEGER REFERENCES repeats(id) ON DELETE CASCADE,
+    whole_chromosomes_id INTEGER REFERENCES whole_chromosomes(id) ON DELETE CASCADE,
     size INTEGER,
     count INTEGER
 );
 
 CREATE TABLE linear_repeats_region_chromosomes (
-	id INTEGER PRIMARY KEY,
-    repeats_id INTEGER REFERENCES repeats(id),
-    region_chromosomes_id INTEGER REFERENCES region_chromosomes(id),
+    id INTEGER PRIMARY KEY,
+    repeats_id INTEGER REFERENCES repeats(id) ON DELETE CASCADE,
+    region_chromosomes_id INTEGER REFERENCES region_chromosomes(id) ON DELETE CASCADE,
     size INTEGER,
     count INTEGER
 );
 
-CREATE TABLE genes_containing_repeats(
-	id INTEGER PRIMARY KEY,
-	gtf_genes_id INTEGER REFERENCES gtf_genes(id),
-	repeats_id INTEGER REFERENCES repeats(id),
-	count INTEGER
-
+CREATE TABLE genes_containing_repeats (
+    id INTEGER PRIMARY KEY,
+    gtf_genes_id INTEGER REFERENCES gtf_genes(id) ON DELETE CASCADE,
+    repeats_id INTEGER REFERENCES repeats(id) ON DELETE CASCADE,
+    count INTEGER
 );

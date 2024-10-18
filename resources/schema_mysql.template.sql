@@ -15,7 +15,7 @@ CREATE TABLE whole_chromosomes (
     cover_percentage FLOAT,
     cover FLOAT,
     size INT,
-    FOREIGN KEY (organism_id) REFERENCES organisms(id)
+    FOREIGN KEY (organism_id) REFERENCES organisms(id) ON DELETE CASCADE
 );
 
 -- Create region_chromosomes table
@@ -30,28 +30,27 @@ CREATE TABLE region_chromosomes (
     region_number INT,
     size INT,
     whole_chromosome_id INT,
-    FOREIGN KEY (organism_id) REFERENCES organisms(id),
-    FOREIGN KEY (whole_chromosome_id) REFERENCES whole_chromosomes(id)
+    FOREIGN KEY (organism_id) REFERENCES organisms(id) ON DELETE CASCADE,
+    FOREIGN KEY (whole_chromosome_id) REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
--- Create mi_grids table with foreign key constraint
+-- Create whole_mi_grids table with foreign key constraint
 CREATE TABLE whole_mi_grids (
   id INT AUTO_INCREMENT PRIMARY KEY,
   mi_grid LONGBLOB,
   whole_chromosome_id INT,
   epsilon_size FLOAT,
-  FOREIGN KEY (whole_chromosome_id) REFERENCES whole_chromosomes(id)
+  FOREIGN KEY (whole_chromosome_id) REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
--- Create mi_grids table with foreign key constraint
+-- Create region_mi_grids table with foreign key constraint
 CREATE TABLE region_mi_grids (
   id INT AUTO_INCREMENT PRIMARY KEY,
   mi_grid LONGBLOB,
   region_chromosome_id INT,
   epsilon_size FLOAT,
-  FOREIGN KEY (region_chromosome_id) REFERENCES region_chromosomes(id)
+  FOREIGN KEY (region_chromosome_id) REFERENCES region_chromosomes(id) ON DELETE CASCADE
 );
-
 
 -- Create chr_whole_results table with foreign key constraint
 CREATE TABLE chr_whole_results (
@@ -60,7 +59,7 @@ CREATE TABLE chr_whole_results (
   Dq_values FLOAT,
   tau_q_values FLOAT,
   DDq FLOAT,
-  FOREIGN KEY (whole_chromosome_id) REFERENCES whole_chromosomes(id)
+  FOREIGN KEY (whole_chromosome_id) REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
 -- Create chr_region_results table with foreign key constraint
@@ -70,7 +69,7 @@ CREATE TABLE chr_region_results (
   Dq_values FLOAT,
   tau_q_values FLOAT,
   DDq FLOAT,
-  FOREIGN KEY (region_chromosome_id) REFERENCES region_chromosomes(id)
+  FOREIGN KEY (region_chromosome_id) REFERENCES region_chromosomes(id) ON DELETE CASCADE
 );
 
 -- Create repeats table for identifying general repeats
@@ -89,8 +88,8 @@ CREATE TABLE recursive_repeats_whole_chromosomes (
     size INT,
     largest_value INT,
     coordinates VARCHAR(255),
-    FOREIGN KEY (repeats_id) REFERENCES repeats(id),
-    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
+    FOREIGN KEY (repeats_id) REFERENCES repeats(id) ON DELETE CASCADE,
+    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
 -- Create RM_repeats_whole_chromosomes table with foreign key constraint
@@ -110,8 +109,8 @@ CREATE TABLE RM_repeats_whole_chromosomes (
     repeat_begin INT,
     repeat_end INT,
     repeat_left INT,
-    FOREIGN KEY (repeats_id) REFERENCES repeats(id),
-    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
+    FOREIGN KEY (repeats_id) REFERENCES repeats(id) ON DELETE CASCADE,
+    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
 -- Create gtf_genes table
@@ -129,36 +128,38 @@ CREATE TABLE gtf_genes (
     gene_id_gtf VARCHAR(255),
     gene VARCHAR(255),
     gene_biotype VARCHAR(255),
-    category
-    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
+    category VARCHAR(255),
+    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
-
+-- Create linear_repeats_whole_chromosomes table
 CREATE TABLE linear_repeats_whole_chromosomes (
     id INT PRIMARY KEY,
     repeats_id INT,
     whole_chromosomes_id INT,
     size BIGINT,
     count INT,
-    FOREIGN KEY (repeats_id) REFERENCES repeats(id),
-    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
+    FOREIGN KEY (repeats_id) REFERENCES repeats(id) ON DELETE CASCADE,
+    FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
+-- Create linear_repeats_region_chromosomes table
 CREATE TABLE linear_repeats_region_chromosomes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     repeats_id INT,
     region_chromosomes_id INT,
     size INT,
     count INT,
-    FOREIGN KEY (repeats_id) REFERENCES repeats(id),
-    FOREIGN KEY (region_chromosomes_id) REFERENCES region_chromosomes(id)
+    FOREIGN KEY (repeats_id) REFERENCES repeats(id) ON DELETE CASCADE,
+    FOREIGN KEY (region_chromosomes_id) REFERENCES region_chromosomes(id) ON DELETE CASCADE
 );
 
+-- Create genes_containing_repeats table
 CREATE TABLE genes_containing_repeats (
     id INT AUTO_INCREMENT PRIMARY KEY,
     gtf_genes_id INT,
     repeats_id INT,
     count INT,
-    FOREIGN KEY (gtf_genes_id) REFERENCES gtf_genes(id),
-    FOREIGN KEY (repeats_id) REFERENCES repeats(id)
+    FOREIGN KEY (gtf_genes_id) REFERENCES gtf_genes(id) ON DELETE CASCADE,
+    FOREIGN KEY (repeats_id) REFERENCES repeats(id) ON DELETE CASCADE
 );

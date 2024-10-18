@@ -16,7 +16,7 @@ class Genome:
         self.loader = loader
         if (regions_number is None or regions_number < 0) and (
                 window_length is None or window_length < 0):
-            raise Exception('Enter a valid regions_1 number or window length')
+            raise Exception('Enter a valid regions number or window length')
         elif regions_number == 0 and window_length == 0:
             if chromosomes:
                 self.chromosomes = chromosomes

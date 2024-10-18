@@ -36,9 +36,9 @@ class RegionGenomeManager(GenomeManagerInterface):
 
     def generate_degrees_of_multifractality(self):
         for manager in self.managers:
-            if len(manager.get_degree_of_multifractality()) == 0:
-                manager.generate_degree_of_multifractality()
-            self.degrees_of_multifractality += manager.get_degree_of_multifractality()
+            if len(manager.get_degrees_of_multifractality()) == 0:
+                manager.generate_degrees_of_multifractality()
+            self.degrees_of_multifractality += manager.get_degrees_of_multifractality()
 
     def graph_degrees_of_multifractality(self, y_range=None, top_labels=False):
         # Check if the lengths of x_array and y_array match

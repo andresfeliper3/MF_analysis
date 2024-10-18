@@ -150,7 +150,6 @@ Remember to have all the chromosomes files .fna or .fasta in the input directory
 Load and graph the data:
 
         py .\command.py graph -name "caenorhabditis elegans" -mode whole
-        py .\command.py graph -name "caenorhabditis elegans" -mode regions
         py .\command.py graph -name GCF_000002985.6 -mode regions -regions_number 3 
         py .\command.py graph -name GCF_000002985.6 -mode regions -window_length 300000
         py .\command.py graph -name GCF_000002985.6 -mode whole
