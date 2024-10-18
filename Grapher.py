@@ -463,7 +463,7 @@ class Grapher:
     @Timer
     def graph_linear_in_genes_repeats_sequence_command(self, save: bool, name: str, dir: str, k_range: str,
                                                        path: str = None,
-                                                       refseq_accession_number: str = None, ):
+                                                       refseq_accession_number: str = None):
         if refseq_accession_number is None:
             refseq_accession_number = self.loader.extract_refseq_accession_number(path)
 
@@ -501,11 +501,14 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_linear_regression_sequence_command(self, args):
-        self.loader.set_organism(args.name)
-        refseq_accession_number = self.loader.extract_refseq_accession_number(args.path)
+    def graph_linear_regression_sequence_command(self, k_range: str, name: str, save: str, dir: str,
+                                                 refseq_accession_number: str = None, path: str = None):
+        if refseq_accession_number is None:
+            refseq_accession_number = self.loader.extract_refseq_accession_number(path)
+
+        self.loader.set_organism(name)
         sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(refseq_accession_number)
-        k_range = ast.literal_eval(args.k_range)
+        k_range = ast.literal_eval(k_range)
         ddq_df = self.region_results_service.extract_ddq_by_refseq_accession_number(refseq_accession_number)
         DDq_list = ddq_df['DDq'].to_list()
 
@@ -518,8 +521,16 @@ class Grapher:
                     row['name'], refseq_accession_number
                 )
                 repeats_counts_list = repeat_counts_df['count'].to_list()
-                Graphs.plot_linear_regression_pearson_coefficient(x=repeats_counts_list, y=DDq_list, dir=args.dir,
-                                                                  save=bool(args.save),
+                Graphs.plot_linear_regression_pearson_coefficient(x=repeats_counts_list, y=DDq_list, dir=dir,
+                                                                  save=bool(save),
                                                                   subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
                                                                   title=f"Linear Regression for {row['name']} - {self.loader.get_organism_name()}")
+            logger.info(f"Completed graph for linear regression DDq vs repeats - {sequence_name} - {refseq_accession_number}")
 
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_linear_regression_genome_command(self, GCF: str, k_range: str, name: str, save: str, dir: str):
+        refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
+        for refseq_accession_number in refseq_accession_numbers:
+            self.graph_linear_regression_sequence_command(k_range, name, save, dir, refseq_accession_number)

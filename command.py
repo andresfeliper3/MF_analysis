@@ -224,14 +224,26 @@ def main():
     graph_gtf_file_parser.add_argument('-dir',
                                        help="Enter the scientific name of the organism to use it as a folder name")
     
-    graph_linear_regression = subparsers.add_parser('graph_linear_regression_sequence', help='Graoh linear regression of DDq vs Repeats')
-    graph_linear_regression.add_argument('-path', help='Path of the chromosome fasta file')
-    graph_linear_regression.add_argument('-k_range', help='Range of values for k in kmers. Ex: "(4,12)".')
-    graph_linear_regression.add_argument('--save', choices=['true', 'false'], default='true',
+    graph_linear_regression_sequence_parser = subparsers.add_parser('graph_linear_regression_sequence', help='Graph linear regression of DDq vs Repeats')
+    graph_linear_regression_sequence_parser.add_argument('-path', help='Path of the chromosome fasta file')
+    graph_linear_regression_sequence_parser.add_argument('-k_range', help='Range of values for k in kmers. Ex: "(4,12)".')
+    graph_linear_regression_sequence_parser.add_argument('--save', choices=['true', 'false'], default='true',
                                        help='Save graphs locally in /out directory')
-    graph_linear_regression.add_argument('-dir',
+    graph_linear_regression_sequence_parser.add_argument('-dir',
                                        help="Enter the scientific name of the organism to use it as a folder name")
-    graph_linear_regression.add_argument('-name', help="Enter the scientific name of the organism")
+    graph_linear_regression_sequence_parser.add_argument('-name', help="Enter the scientific name of the organism")
+
+
+    graph_linear_regression_genome_parser = subparsers.add_parser('graph_linear_regression_genome',
+                                                    help='Graph linear regression of DDq vs Repeats')
+    graph_linear_regression_genome_parser.add_argument('-gcf', help='GCF of the organism')
+    graph_linear_regression_genome_parser.add_argument('-k_range', help='Range of values for k in kmers. Ex: "(4,12)".')
+    graph_linear_regression_genome_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                         help='Save graphs locally in /out directory')
+    graph_linear_regression_genome_parser.add_argument('-dir',
+                                         help="Enter the scientific name of the organism to use it as a folder name")
+    graph_linear_regression_genome_parser.add_argument('-name', help="Enter the scientific name of the organism")
+
 
     download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
                                                              'specified in the sequences.yaml file.')
@@ -315,7 +327,11 @@ def main():
         grapher.graph_gtf_from_database(GCF=args.gcf, refseq_accession_number=args.ran, partitions=args.partitions,
                                 regions=args.regions, plot_type=args.plot_type, save=args.save, dir=args.dir)
     elif args.command == 'graph_linear_regression_sequence':
-        grapher.graph_linear_regression_sequence_command(args)
+        grapher.graph_linear_regression_sequence_command(k_range=args.k_range, name=args.name, save=args.save,
+                                                         dir=args.dir, path=args.path)
+    elif args.command == 'graph_linear_regression_genome':
+        grapher.graph_linear_regression_genome_command(GCF=args.gcf, k_range=args.k_range, name=args.name, save=args.save,
+                                                       dir=args.dir)
     elif args.command == 'download':
         downloader.download_command(args)
     elif args.command == 'load_RM_repeats':

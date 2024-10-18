@@ -360,6 +360,20 @@ Short version:
     py .\command.py graph_gtf_database -ran NC_003279.8  -dir caenorhabditis_elegans 
     py .\command.py graph_gtf_database -ran NC_003279.8  -dir caenorhabditis_elegans -gcf anything_here
 
+## Graph linear regression
+### Linear regression DDq vs repeats frequency in regions
+- -path: path of the sequence.
+- -k_range
+- -dir: directory to save the graphs.
+- name: name of the organism name.
+
+
+    py .\command.py graph_linear_regression_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -k_range "(4,12)" -dir caenorhabditis_elegans -name "caenorhabditis elegans"
+
+For the genome:
+
+    py .\command.py graph_linear_regression_genome -gcf GCF_000002985.6 -k_range "(4,12)" -dir caenorhabditis_elegans -name "caenorhabditis elegans"
+
 
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
