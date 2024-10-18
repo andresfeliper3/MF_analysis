@@ -116,7 +116,9 @@ CREATE TABLE gtf_genes (
     frame CHAR(1),
     gene_id_gtf VARCHAR,
     gene VARCHAR,
-    gene_biotype VARCHAR
+    gene_biotype VARCHAR,
+    category VARCHAR,
+    subcategory VARCHAR
 );
 
 CREATE TABLE linear_repeats_whole_chromosomes (

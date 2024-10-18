@@ -32,3 +32,16 @@ class LinearRepeatsWholeChromosomesService(AbstractService):
         else:
             query += ";"
         return self.extract_with_custom_query(query)
+
+    def extract_repeats_names_by_size_and_by_refseq_accession_number(self, size: int, refseq_accession_number: str):
+        return self._extract_repeats_names_by_size_by_method_and_by_refseq_accession_number(size, 'Linear',
+                                                                                            refseq_accession_number)
+
+    def _extract_repeats_names_by_size_by_method_and_by_refseq_accession_number(self, size: int, method_to_find_it: str,
+                                                                                refseq_accession_number: str):
+        query = f"SELECT r.name, r.id AS repeats_id, lrwc.size, r.method_to_find_it FROM repeats r " \
+                f"JOIN linear_repeats_whole_chromosomes lrwc " \
+                f"ON r.id = lrwc.repeats_id JOIN whole_chromosomes wc ON lrwc.whole_chromosomes_id = wc.id " \
+                f"WHERE lrwc.SIZE = {size} AND r.method_to_find_it = '{method_to_find_it}' " \
+                f"AND wc.refseq_accession_number = '{refseq_accession_number}';"
+        return self.extract_with_custom_query(query)

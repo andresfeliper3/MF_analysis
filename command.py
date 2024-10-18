@@ -223,7 +223,15 @@ def main():
                                        help='Save graphs locally in /out directory')
     graph_gtf_file_parser.add_argument('-dir',
                                        help="Enter the scientific name of the organism to use it as a folder name")
-
+    
+    graph_linear_regression = subparsers.add_parser('graph_linear_regression_sequence', help='Graoh linear regression of DDq vs Repeats')
+    graph_linear_regression.add_argument('-path', help='Path of the chromosome fasta file')
+    graph_linear_regression.add_argument('-k_range', help='Range of values for k in kmers. Ex: "(4,12)".')
+    graph_linear_regression.add_argument('--save', choices=['true', 'false'], default='true',
+                                       help='Save graphs locally in /out directory')
+    graph_linear_regression.add_argument('-dir',
+                                       help="Enter the scientific name of the organism to use it as a folder name")
+    graph_linear_regression.add_argument('-name', help="Enter the scientific name of the organism")
 
     download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
                                                              'specified in the sequences.yaml file.')
@@ -249,6 +257,7 @@ def main():
     load_genes_parser.add_argument('-path', help='Add the relative path of the genes file. For example: '
                                                       'resources/dna_sequences/caenorhabditis_elegans/gtf/file.gtf')
 
+    
     args = parser.parse_args()
     analyzer = Analyzer()
     downloader = Downloader()
@@ -305,6 +314,8 @@ def main():
     elif args.command == 'graph_gtf_database':
         grapher.graph_gtf_from_database(GCF=args.gcf, refseq_accession_number=args.ran, partitions=args.partitions,
                                 regions=args.regions, plot_type=args.plot_type, save=args.save, dir=args.dir)
+    elif args.command == 'graph_linear_regression_sequence':
+        grapher.graph_linear_regression_sequence_command(args)
     elif args.command == 'download':
         downloader.download_command(args)
     elif args.command == 'load_RM_repeats':

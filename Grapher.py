@@ -125,7 +125,8 @@ class Grapher:
         dfs_per_sequence_list = [group for name, group in df.groupby('sequence_name_for_grouping')]
         return [split_df.to_dict(orient='records') for split_df in dfs_per_sequence_list]
 
-    def _graph_all_sequences_regions(self, dic_list: list[list[dict]], organism_name, data, regions_number, window_length):
+    def _graph_all_sequences_regions(self, dic_list: list[list[dict]], organism_name, data, regions_number,
+                                     window_length):
         window_length = int(window_length) if window_length else None
         regions_number = int(regions_number) if regions_number else None
         config = self.load_config()
@@ -153,7 +154,6 @@ class Grapher:
         region_sequence_manager.generate_df_results()
 
         self._graph_MFA_options(graphs_config, region_sequence_manager)
-
 
     def _prepare_mfa_results(self, dataframe) -> list[dict]:
         """Extract MFA results and return a list of dictionaries"""
@@ -426,16 +426,19 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_linear_repeats_sequence_command(self,  save: bool, name: str, dir: str, k_range: str, path: str = None,
+    def graph_linear_repeats_sequence_command(self, save: bool, name: str, dir: str, k_range: str, path: str = None,
                                               refseq_accession_number: str = None):
         if refseq_accession_number is None:
             refseq_accession_number = self.loader.extract_refseq_accession_number(path)
 
-        sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(refseq_accession_number)
-        whole_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number,
-                                                                                                                           k_range=ast.literal_eval(k_range))
-        region_repeats_df = self.linear_repeats_region_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(refseq_accession_number,
-                                                                                                                             k_range=ast.literal_eval(k_range))
+        sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(
+            refseq_accession_number)
+        whole_repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(
+            refseq_accession_number,
+            k_range=ast.literal_eval(k_range))
+        region_repeats_df = self.linear_repeats_region_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(
+            refseq_accession_number,
+            k_range=ast.literal_eval(k_range))
         window_length = region_repeats_df.iloc[0]['window_length']
         window_profiles = adapt_dataframe_to_window_profiles(region_repeats_df)
         most_frequent_nplets = adapt_dataframe_to_most_frequent_nplets(whole_repeats_df)
@@ -458,7 +461,8 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_linear_in_genes_repeats_sequence_command(self, save: bool, name: str, dir: str, k_range: str, path: str = None,
+    def graph_linear_in_genes_repeats_sequence_command(self, save: bool, name: str, dir: str, k_range: str,
+                                                       path: str = None,
                                                        refseq_accession_number: str = None, ):
         if refseq_accession_number is None:
             refseq_accession_number = self.loader.extract_refseq_accession_number(path)
@@ -475,7 +479,8 @@ class Grapher:
             window_profiles_only_in_genes = adapt_dataframe_to_window_profiles(region_repeats_in_genes_df)
             most_frequent_nplets = adapt_dataframe_to_most_frequent_nplets(whole_repeats_in_genes_df)
         except:
-            raise Exception(f"Check if the whole repeats in genes and region repeats in genes have been loaded to database for {refseq_accession_number}")
+            raise Exception(
+                f"Check if the whole repeats in genes and region repeats in genes have been loaded to database for {refseq_accession_number}")
 
         Graphs.plot_combined_kmer_frequency(window_profiles_only_in_genes, most_frequent_nplets, sequence_name,
                                             dir, save, window_length, subfolder="linear_repeats_genes_database")
@@ -489,5 +494,32 @@ class Grapher:
     def graph_linear_in_genes_repeats_genome_command(self, GCF: str, save: bool, dir: str, name: str, k_range: str):
         refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
         for refseq_accession_number in refseq_accession_numbers:
-            self.graph_linear_in_genes_repeats_sequence_command(refseq_accession_number=refseq_accession_number, save=save,
-                                                       dir=dir, name=name, k_range=k_range)
+            self.graph_linear_in_genes_repeats_sequence_command(refseq_accession_number=refseq_accession_number,
+                                                                save=save,
+                                                                dir=dir, name=name, k_range=k_range)
+
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_linear_regression_sequence_command(self, args):
+        self.loader.set_organism(args.name)
+        refseq_accession_number = self.loader.extract_refseq_accession_number(args.path)
+        sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(refseq_accession_number)
+        k_range = ast.literal_eval(args.k_range)
+        ddq_df = self.region_results_service.extract_ddq_by_refseq_accession_number(refseq_accession_number)
+        DDq_list = ddq_df['DDq'].to_list()
+
+        for k in range(k_range[0], k_range[1] + 1):
+            genes_names_per_size_df = self.linear_repeats_whole_chromosomes_service.extract_repeats_names_by_size_and_by_refseq_accession_number(
+                k, refseq_accession_number
+            )
+            for _, row in genes_names_per_size_df.iterrows():
+                repeat_counts_df = self.linear_repeats_region_chromosomes_service.extract_count_of_specific_repeat_by_refseq_accession_number(
+                    row['name'], refseq_accession_number
+                )
+                repeats_counts_list = repeat_counts_df['count'].to_list()
+                Graphs.plot_linear_regression_pearson_coefficient(x=repeats_counts_list, y=DDq_list, dir=args.dir,
+                                                                  save=bool(args.save),
+                                                                  subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
+                                                                  title=f"Linear Regression for {row['name']} - {self.loader.get_organism_name()}")
+

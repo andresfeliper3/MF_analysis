@@ -129,6 +129,7 @@ CREATE TABLE gtf_genes (
     gene_id_gtf VARCHAR(255),
     gene VARCHAR(255),
     gene_biotype VARCHAR(255),
+    category
     FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id)
 );
 

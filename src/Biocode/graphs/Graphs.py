@@ -7,7 +7,8 @@ import matplotlib.cm as cm
 import numpy as np
 import pandas as pd
 import seaborn as sns
-
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
 
 from utils.logger import logger
 
@@ -63,7 +64,7 @@ class Graphs:
         plt.ylabel(y_label)
         plt.title(title)
         plt.grid()
-        plt.legend(loc='upper left', bbox_to_anchor=(1, 1),  ncol=2)
+        plt.legend(loc='upper left', bbox_to_anchor=(1, 1), ncol=2)
         if save:
             Graphs._savefig(title, name)
         plt.show()
@@ -229,7 +230,8 @@ class Graphs:
     """
 
     @staticmethod
-    def graph_3d_cgr(count_matrix: list[list[int]], name, title='Multifractal measure representation', x_start=0, x_end=1,
+    def graph_3d_cgr(count_matrix: list[list[int]], name, title='Multifractal measure representation', x_start=0,
+                     x_end=1,
                      y_start=0, y_end=1,
                      epsilon=0.01, save=True):
         # set up the figure and axes
@@ -387,7 +389,6 @@ class Graphs:
             Graphs._savefig(title, f"{name}/stacked_coverage")
         plt.show()
 
-
     @staticmethod
     def graph_vertical_coverage(values: list[int], sequence_name: str, name, save=True):
         total = np.sum(np.abs(values))
@@ -424,7 +425,6 @@ class Graphs:
             Graphs._savefig(title, name)
         plt.show()
 
-
     @staticmethod
     def graph_linear_regression(fq_values: list[dict], epsilons: list[float], sequence_name: str, name, save=True):
         linear_coefficients = np.polyfit(np.log(epsilons), fq_values['fq'], 1)
@@ -449,7 +449,6 @@ class Graphs:
         # Show plot
         plt.show()
 
-
     ## Repeats graphs
     # merged with partitions
     @staticmethod
@@ -459,7 +458,7 @@ class Graphs:
 
         for i, row in df.iterrows():
             index = row[start_col_name] // partition_size
-            if index >= amount_partitions: #the residue is added to the last partition
+            if index >= amount_partitions:  #the residue is added to the last partition
                 index -= 1
             repeat_lengths[index] += row[length_col_name]
         return repeat_lengths
@@ -468,8 +467,8 @@ class Graphs:
     def graph_distribution_of_repeats_merged(df: pd.DataFrame, size: int, partitions: int = 300,
                                              filter_string: str = None,
                                              filter_column: str = None, regions: int = 3,
-                                             plot_type: str = "line", save: bool=True, name: str=None,
-                                             filename: str=None):
+                                             plot_type: str = "line", save: bool = True, name: str = None,
+                                             filename: str = None):
         if filter_string:
             df = Graphs._filter(df, filter_string, filter_column)
 
@@ -510,8 +509,8 @@ class Graphs:
 
     @staticmethod
     def graph_frequency_of_repeats_grouped(data, col=None, filtering=False, filter_string=None,
-                                           filter_column=None, n_max=10, save: bool=True, name: str=None,
-                                           filename: str=None):
+                                           filter_column=None, n_max=10, save: bool = True, name: str = None,
+                                           filename: str = None):
         grouped_data_sorted = Graphs._group_columns(data, col, "repeat_length", filtering, filter_string, filter_column)
         grouped_data_sorted = grouped_data_sorted.head(n_max)
 
@@ -657,10 +656,9 @@ class Graphs:
             Graphs._savefig(title, f"{name}/repeats/RM/distribution_subplots")
         plt.show()
 
-
     @staticmethod
     def graph_recursive_repeats_largest_values_from_database(df, col=None, n_max=None, save=True, name=None,
-                                                filename=None):
+                                                             filename=None):
         df = df.sort_values(by='largest_value', ascending=False)
         if n_max is not None:
             df = df.head(n_max)
@@ -726,7 +724,7 @@ class Graphs:
             plt.show()
 
     @staticmethod
-    def graph_distribution_of_genes_merged(df, name: str, size: int, partitions: int,regions: int, plot_type: str,
+    def graph_distribution_of_genes_merged(df, name: str, size: int, partitions: int, regions: int, plot_type: str,
                                            chromosome_name: str, save: bool):
         df = df[df['feature'] == 'gene']
         df = df.reset_index(drop=True)
@@ -759,7 +757,6 @@ class Graphs:
             route = f"{name}/genes/gtf_merged"
             Graphs._savefig(title, route)
         plt.show()
-
 
     @staticmethod
     def graph_distribution_of_genes(df, name: str, legend: bool, plot_type: str, limit: int, regions: int,
@@ -872,7 +869,9 @@ class Graphs:
                     window_counts.append(count)
 
                 windows = list(range(1, len(window_counts) + 1))
-                smoothed_counts = np.convolve(window_counts, np.ones(window_size_for_smoothing) / window_size_for_smoothing, mode='valid')
+                smoothed_counts = np.convolve(window_counts,
+                                              np.ones(window_size_for_smoothing) / window_size_for_smoothing,
+                                              mode='valid')
                 smoothed_windows = windows[window_size_for_smoothing - 1:]
 
                 plt.plot(smoothed_windows, smoothed_counts, label=kmer, color=colors(i), marker='.')
@@ -925,7 +924,9 @@ class Graphs:
                 # Create x-axis values (window numbers)
                 windows = list(range(1, len(window_counts) + 1))
 
-                smoothed_counts = np.convolve(window_counts, np.ones(window_size_for_smoothing) / window_size_for_smoothing, mode='valid')
+                smoothed_counts = np.convolve(window_counts,
+                                              np.ones(window_size_for_smoothing) / window_size_for_smoothing,
+                                              mode='valid')
                 smoothed_windows = windows[window_size_for_smoothing - 1:]
                 plt.plot(smoothed_windows, smoothed_counts, label=kmer, color=colors(i), marker='.')
 
@@ -944,3 +945,38 @@ class Graphs:
                 Graphs._savefig(title, route)
 
             plt.show()
+
+    @staticmethod
+    def plot_linear_regression_pearson_coefficient(x, y, dir: str, subfolder: str, save: bool, title: str):
+        x = np.array(x)
+        y = np.array(y)
+
+        scaler = StandardScaler()
+        x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
+        y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
+
+        correlation_matrix = np.corrcoef(x_normalized, y_normalized)
+        pearson_correlation = correlation_matrix[0, 1]
+
+        model = LinearRegression()
+        model.fit(x_normalized.reshape(-1, 1), y_normalized)
+        y_pred = model.predict(x_normalized.reshape(-1, 1))
+
+        plt.figure(figsize=(10, 6))
+        plt.scatter(x_normalized, y_normalized, color='blue', label='Data points')
+        plt.plot(x_normalized, y_pred, color='red', label='Regression line')
+        plt.title(title)
+        plt.xlabel('Normalized repeats frequency')
+        plt.ylabel('Normalized degree of multifractality')
+
+        plt.text(0.05, 0.85, f'Pearson Correlation: {pearson_correlation:.2f}',
+                 transform=plt.gca().transAxes, fontsize=12, verticalalignment='top',
+                 bbox=dict(facecolor='white', alpha=0.5, edgecolor='none'))
+
+        plt.legend()
+        plt.grid()
+
+        route = f"{dir}/{subfolder}"
+        if save:
+            Graphs._savefig(title, route)
+        plt.show()

@@ -2,6 +2,7 @@ from src.Biocode.services.AbstractService import AbstractService
 from src.Biocode.managers.DBConnectionManager import DBConnectionManager
 from src.Biocode.services.services_context.service_decorator import Service
 
+
 @Service
 class RegionResultsService(AbstractService):
     def __init__(self):
@@ -16,3 +17,11 @@ class RegionResultsService(AbstractService):
                 f"WHERE o.GCF = '{GCF}';"
         return self.extract_with_custom_query(query)
 
+    def extract_ddq_by_refseq_accession_number(self, refseq_accession_number: str):
+        query = f"SELECT rc.id, crr.DDq, rc.refseq_accession_number AS region_ran, " \
+                f"wc.refseq_accession_number AS whole_ran, rc.region_number, rc.regions_total, rc.SIZE " \
+                f"FROM chr_region_results crr JOIN region_chromosomes rc ON crr.region_chromosome_id = rc.id " \
+                f"JOIN whole_chromosomes wc ON rc.whole_chromosome_id = wc.id " \
+                f"WHERE whole_ran='{refseq_accession_number}' " \
+                f"ORDER BY rc.region_number;"
+        return self.extract_with_custom_query(query)

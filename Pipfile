@@ -13,6 +13,7 @@ seaborn = "==0.12.2"
 xlsxwriter = "*"
 openpyxl = "*"
 psycopg2-binary = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
