@@ -980,3 +980,50 @@ class Graphs:
         if save:
             Graphs._savefig(title, route)
         plt.show()
+
+    @staticmethod
+    def plot_multiple_linear_regression(data, dir: str, subfolder: str, save: bool, title: str):
+        plt.figure(figsize=(10, 8))
+
+        colors = plt.get_cmap('tab10').colors
+        pearson_correlations = []
+
+        for idx, (kmer_name, (repeats_counts_list, DDq_list)) in enumerate(data.items()):
+            x = np.array(repeats_counts_list)
+            y = np.array(DDq_list)
+
+            scaler = StandardScaler()
+            x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
+            y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
+
+            correlation_matrix = np.corrcoef(x_normalized, y_normalized)
+            pearson_correlation = correlation_matrix[0, 1]
+            pearson_correlations.append((kmer_name, pearson_correlation))  # Store for display
+            logger.info(f"{kmer_name} - Pearson correlation coefficient: {pearson_correlation:.2f}")
+
+            model = LinearRegression()
+            model.fit(x_normalized.reshape(-1, 1), y_normalized)
+            y_pred = model.predict(x_normalized.reshape(-1, 1))
+
+            plt.scatter(x_normalized, y_normalized, color=colors[idx % len(colors)],
+                        label=f'Data points for {kmer_name}')
+            plt.plot(x_normalized, y_pred, color=colors[idx % len(colors)], label=f'Regression line for {kmer_name}')
+
+        plt.title(title)
+        plt.xlabel('Normalized repeats frequency')
+        plt.ylabel('Normalized degree of multifractality')
+        plt.legend(loc='upper left', bbox_to_anchor=(1, 1), title='Legend')
+        plt.grid()
+
+        # Position the Pearson correlation coefficients outside the graph
+        text_str = "\n".join(
+            [f"{kmer_name}: Pearson Correlation: {pearson_correlation:.2f}" for kmer_name, pearson_correlation in
+             pearson_correlations]
+        )
+        plt.figtext(0.15, -0.05, text_str, fontsize=10, ha='left', va='top',
+                    bbox=dict(facecolor='white', alpha=0.5, edgecolor='none'))
+
+        route = f"{dir}/{subfolder}"
+        if save:
+            Graphs._savefig(title, route)
+        plt.show()

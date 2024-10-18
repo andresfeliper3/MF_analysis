@@ -516,15 +516,20 @@ class Grapher:
             genes_names_per_size_df = self.linear_repeats_whole_chromosomes_service.extract_repeats_names_by_size_and_by_refseq_accession_number(
                 k, refseq_accession_number
             )
+            kmers_data = {}
             for _, row in genes_names_per_size_df.iterrows():
                 repeat_counts_df = self.linear_repeats_region_chromosomes_service.extract_count_of_specific_repeat_by_refseq_accession_number(
                     row['name'], refseq_accession_number
                 )
                 repeats_counts_list = repeat_counts_df['count'].to_list()
+                kmers_data[row['name']] = (repeats_counts_list, DDq_list)
                 Graphs.plot_linear_regression_pearson_coefficient(x=repeats_counts_list, y=DDq_list, dir=dir,
                                                                   save=bool(save),
                                                                   subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
                                                                   title=f"Linear Regression for {row['name']} - {self.loader.get_organism_name()}")
+                Graphs.plot_multiple_linear_regression(kmers_data, dir=dir, save=bool(save),
+                                                        subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
+                                                        title=f"Linear Regression for Multiple {k}-mers - {self.loader.get_organism_name()}")
             logger.info(f"Completed graph for linear regression DDq vs repeats - {sequence_name} - {refseq_accession_number}")
 
     @DBConnection
