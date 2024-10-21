@@ -128,7 +128,6 @@ CREATE TABLE gtf_genes (
     gene_id_gtf VARCHAR(255),
     gene VARCHAR(255),
     gene_biotype VARCHAR(255),
-    category VARCHAR(255),
     FOREIGN KEY (whole_chromosomes_id) REFERENCES whole_chromosomes(id) ON DELETE CASCADE
 );
 
@@ -162,4 +161,33 @@ CREATE TABLE genes_containing_repeats (
     count INT,
     FOREIGN KEY (gtf_genes_id) REFERENCES gtf_genes(id) ON DELETE CASCADE,
     FOREIGN KEY (repeats_id) REFERENCES repeats(id) ON DELETE CASCADE
+);
+
+-- KEGG PATHWAY
+CREATE TABLE kegg_categories(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+	category VARCHAR(255)
+);
+
+CREATE TABLE kegg_subcategories(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	subcategory VARCHAR (255),
+	category_id INT,
+	FOREIGN KEY (category_id) REFERENCES kegg_categories(id) ON DELETE CASCADE
+);
+
+CREATE TABLE gtf_genes_kegg_categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gtf_genes_id INT,
+    kegg_categories_id INT,
+    FOREIGN KEY (gtf_genes_id) REFERENCES gtf_genes(id) ON DELETE CASCADE,
+    FOREIGN KEY (kegg_categories_id) REFERENCES kegg_categories(id) ON DELETE CASCADE
+);
+
+CREATE TABLE gtf_genes_kegg_subcategories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gtf_genes_id INT,
+    kegg_subcategories_id INT,
+    FOREIGN KEY (gtf_genes_id) REFERENCES gtf_genes(id) ON DELETE CASCADE,
+    FOREIGN KEY (kegg_subcategories_id) REFERENCES kegg_subcategories(id) ON DELETE CASCADE
 );

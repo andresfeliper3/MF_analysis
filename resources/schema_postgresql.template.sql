@@ -116,9 +116,7 @@ CREATE TABLE gtf_genes (
     frame CHAR(1),
     gene_id_gtf VARCHAR,
     gene VARCHAR,
-    gene_biotype VARCHAR,
-    category VARCHAR,
-    subcategory VARCHAR
+    gene_biotype VARCHAR
 );
 
 -- Create linear_repeats_whole_chromosomes table
@@ -145,4 +143,28 @@ CREATE TABLE genes_containing_repeats (
     gtf_genes_id INTEGER REFERENCES gtf_genes(id) ON DELETE CASCADE,
     repeats_id INTEGER REFERENCES repeats(id) ON DELETE CASCADE,
     count INTEGER
+);
+
+-- KEGG PATHWAY
+CREATE TABLE kegg_categories(
+    id SERIAL PRIMARY KEY,
+	category VARCHAR
+);
+
+CREATE TABLE kegg_subcategories(
+	id SERIAL PRIMARY KEY,
+	subcategory VARCHAR,
+	category_id INTEGER REFERENCES kegg_categories(id) ON DELETE CASCADE
+);
+
+CREATE TABLE gtf_genes_kegg_categories (
+    id SERIAL PRIMARY KEY,
+    gtf_genes_id INTEGER REFERENCES gtf_genes(id) ON DELETE CASCADE,
+    kegg_categories_id INTEGER REFERENCES kegg_categories(id) ON DELETE CASCADE
+);
+
+CREATE TABLE gtf_genes_kegg_subcategories (
+    id SERIAL PRIMARY KEY,
+    gtf_genes_id INTEGER REFERENCES gtf_genes(id) ON DELETE CASCADE,
+    kegg_subcategories_id INTEGER REFERENCES kegg_subcategories(id) ON DELETE CASCADE
 );
