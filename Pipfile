@@ -14,6 +14,8 @@ xlsxwriter = "*"
 openpyxl = "*"
 psycopg2-binary = "*"
 scikit-learn = "*"
+requests = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 
