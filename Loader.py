@@ -105,6 +105,10 @@ class Loader:
             logger.error("Invalid data entered")
             return None
 
+    def get_organism_path(self) -> str | None:
+        organism_path = f"{self.get_sequences_folder()}/{self.get_organism_folder()}"
+        return organism_path
+
     def get_organism_gtf_subfolder(self) -> str:
         return f"{self.get_organism_folder()}/gtf"
 

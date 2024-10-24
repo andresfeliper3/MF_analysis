@@ -1,7 +1,6 @@
 import pandas as pd
 from typing import List, Dict
 
-from utils.logger import  logger
 
 class FileReader:
 

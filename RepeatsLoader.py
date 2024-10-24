@@ -13,11 +13,12 @@ from src.Biocode.services.GenesContainingRepeatsService import GenesContainingRe
 from src.Biocode.services.GtfGenesService import GtfGenesService
 from src.Biocode.services.LinearRepeatsRegionChromosomesService import LinearRepeatsRegionChromosomesService
 from src.Biocode.services.LinearRepeatsWholeChromosomesService import LinearRepeatsWholeChromosomesService
+from src.Biocode.services.OrganismsService import OrganismsService
 from src.Biocode.services.RMRepeatsWholeChromosomesService import RMRepeatsWholeChromosomesService
 from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
 from src.Biocode.services.RepeatsService import RepeatsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
-from src.Biocode.utils.utils import adapt_dataframe_to_window_profiles, adapt_dataframe_to_most_frequent_nplets
+from src.Biocode.utils.utils import (adapt_dataframe_to_window_profiles, adapt_dataframe_to_most_frequent_nplets)
 from utils.FileReader import FileReader
 from utils.decorators import Timer, DBConnection, TryExcept, Inject
 from utils.folder import apply_function_to_files_in_folder
@@ -27,6 +28,7 @@ from utils.logger import logger
 @Inject(repeats_service=RepeatsService,
         rm_repeats_service=RMRepeatsWholeChromosomesService,
         gtf_genes_service=GtfGenesService,
+        organisms_service=OrganismsService,
         whole_chromosomes_service=WholeChromosomesService,
         region_chromosomes_service=RegionChromosomesService,
         linear_repeats_whole_chromosomes_service=LinearRepeatsWholeChromosomesService,
@@ -37,13 +39,14 @@ from utils.logger import logger
 class RepeatsLoader:
 
     def __init__(self, repeats_service=None, rm_repeats_service=None, whole_chromosomes_service=None,
-                 region_chromosomes_service=None, file_reader=None,
+                 region_chromosomes_service=None, file_reader=None, organisms_service=None,
                  gtf_genes_service=None, linear_repeats_whole_chromosomes_service=None,
                  linear_repeats_region_chromosomes_service=None,
                  genes_containing_repeats_service=None, loader=None):
         self.repeats_service = repeats_service
         self.rm_repeats_service = rm_repeats_service
         self.gtf_genes_service = gtf_genes_service
+        self.organisms_service = organisms_service
         self.whole_chromosomes_service = whole_chromosomes_service
         self.region_chromosomes_service = region_chromosomes_service
         self.linear_repeats_whole_chromosomes_service = linear_repeats_whole_chromosomes_service
@@ -200,34 +203,47 @@ class RepeatsLoader:
     @DBConnection
     @TryExcept
     @Timer
-    def find_kmers_linearly_genes_sequence_command(self, args):
+    def find_kmers_linearly_genes_genome_command(self, args):
+        if args.name:
+            self.organism = args.name
+            self.loader.set_organism(self.organism)
+        else:
+            raise Exception("Please provide either a -name (lowercase name or GCF).")
+        apply_function_to_files_in_folder(self.loader.get_organism_path(),
+                                          self.find_kmers_linearly_genes_sequence_command, args)
+
+
+    @DBConnection
+    @TryExcept
+    @Timer
+    def find_kmers_linearly_genes_sequence_command(self, filepath: str, args):
         if args.name:
             self.organism = args.name
             self.loader.set_organism(self.organism)
         else:
             raise Exception("Please provide either a -name (lowercase name or GCF).")
 
-        if args.path:
-            sequence = Sequence(sequence=self.loader.read_fasta_sequence(file_path=args.path),
-                                name=self.loader.extract_file_name(file_path=args.path),
+        if filepath:
+            sequence = Sequence(sequence=self.loader.read_fasta_sequence(file_path=filepath),
+                                name=self.loader.extract_file_name(file_path=filepath),
                                 organism_name=self.loader.get_organism_name(),
-                                refseq_accession_number=self.loader.extract_refseq_accession_number(args.path))
+                                refseq_accession_number=self.loader.extract_refseq_accession_number(filepath))
             save_to_db = False if args.save_to_db == 'false' else True
 
             #self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
             #                    amount_chromosomes=self.loader.get_amount_chromosomes())
 
-            self._find_kmers_linearly_genes_sequence(gcf=self.loader.get_gcf(), sequence=sequence,
-                                                     k_range=ast.literal_eval(args.k_range), save_to_db=save_to_db,
-                                                     dir=args.dir, window_length=int(args.window_length),
+            self._find_kmers_linearly_genes_sequence(sequence=sequence, save_to_db=save_to_db, dir=args.dir,
+                                                     window_length=int(args.window_length),
                                                      refseq_accession_number=self.loader.extract_refseq_accession_number(
-                                                         args.path), graph_from_file=bool(args.graph_from_file))
+                                                         filepath), graph_from_file=bool(args.graph_from_file),
+                                                     size=int(args.size))
         else:
             raise Exception("Please provide a .fasta file path relative to command.py file")
 
-    def _find_kmers_linearly_genes_sequence(self, gcf: str, sequence: Sequence, k_range, window_length,
+    def _find_kmers_linearly_genes_sequence(self, sequence: Sequence, window_length,
                                             save_to_db: bool, dir: str, refseq_accession_number: str,
-                                            graph_from_file: bool):
+                                            graph_from_file: bool, size: int):
         sequence_manager = RegionSequenceManager(sequence=sequence, window_length=window_length)
         sequence_nts = sequence_manager.get_sequence().get_sequence()
 
@@ -238,6 +254,7 @@ class RepeatsLoader:
             refseq_accession_number)
         logger.info(
             "RepeatsLoader._find_kmers_linearly_genes_sequence: window_profiles and most_frequent_nplets extracted from database")
+
         logger.info("Starting building window_profiles_only_genes")
         window_profiles_only_genes = []
         for window_index, window in enumerate(window_profiles):
@@ -254,12 +271,14 @@ class RepeatsLoader:
                     repeat_count_dict[repeat_key] = repeat_count_in_genes
                 kmer_key_dict[kmer_key] = repeat_count_dict
             window_profiles_only_genes.append(kmer_key_dict)
+        logger.info("Completed building of window_profile_only_genes")
         if save_to_db:
             self.load_linear_repeats(window_profiles_only_genes, refseq_accession_number, most_frequent_nplets,
                                      sequence_manager.get_regions_refseq_accessions_numbers(),
                                      method_to_find_it='Linear in genes')
             logger.info("Completed loading of 'Linear in genes' repeats")
-            self.load_genes_containing_repeats(refseq_accession_number, sequence_nts, genes_sequence_df)
+            self.load_genes_containing_repeats(refseq_accession_number, sequence_nts, genes_sequence_df,
+                                               most_frequent_nplets, size)
             logger.info("Completed loading of genes_containing_repeats")
 
         # Graphs.plot_combined_kmer_frequency(window_profiles_only_genes, most_frequent_nplets, sequence_manager.get_sequence_name(),
@@ -399,7 +418,6 @@ class RepeatsLoader:
             valid_segments = self.___divide_in_valid_segments_of_nucleotides(sequence)
             return sum(__aux_count_non_overlapping(segment, kmer) for segment in valid_segments)
 
-
     def __count_overlapping_kmers_having_kmer(self, sequence: str, kmer: str) -> int:
         k = len(kmer)
         count = 0
@@ -501,10 +519,10 @@ class RepeatsLoader:
                         repeat_id, region_chromosome_id, len(kmer), count
                     ))
 
-    def load_genes_containing_repeats(self, refseq_accession_number: str, sequence_nts: str, genes_df: pd.DataFrame):
+    def load_genes_containing_repeats(self, refseq_accession_number: str, sequence_nts: str, genes_df: pd.DataFrame,
+                                      most_frequent_nplets: dict[str, list], size: int):
         repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_in_genes_repeats_by_refseq_accession_number(
-            refseq_accession_number)
-
+            refseq_accession_number, k_range=(size, size))
         # Iterate over each gene in genes_df
         for index, gene in genes_df.iterrows():
             gene_id = gene['id']

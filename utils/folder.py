@@ -1,6 +1,7 @@
 import os
 from utils.logger import logger
 
+
 def apply_function_to_files_in_folder(directory_path: str, func, *args, **kwargs):
     """
     Apply a given function to each file in a specified directory.

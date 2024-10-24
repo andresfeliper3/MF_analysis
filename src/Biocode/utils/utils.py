@@ -1,9 +1,8 @@
 import json
 import re
-from typing import Dict, List, Any
+from typing import Any
 
 import pandas as pd
-from collections import defaultdict
 
 
 def list_to_str(lst):
@@ -63,3 +62,12 @@ def adapt_dataframe_to_most_frequent_nplets(df: pd.DataFrame) -> dict[str, list[
         most_frequent_nplets[key] = sorted_nplets
 
     return most_frequent_nplets
+
+
+def get_size_repeats_from_most_frequent_nplets(most_frequent_nplets: dict[str, list], size: int) -> list:
+    size_repeats_list = []
+    tuples_list = most_frequent_nplets[f"{size}-mers"]
+    for kmer_tuple in tuples_list:
+        size_repeats_list.append(kmer_tuple[0])
+    return size_repeats_list
+

@@ -98,7 +98,7 @@ In this case, adding window_length a value is mandatory for a good performance.
 
 This command can be used to execute the whole genome.
 
-    py .\command.py find_kmers_genome -method l -k_range "(4, 8)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans" -graph_from_file true
+    py .\command.py find_kmers_genome -method l -k_range "(4, 12)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans" -graph_from_file true
 
 This command can be used to execute a single chromosome
     
@@ -108,14 +108,20 @@ This command can be used to execute a single chromosome
 Find the kmers linearly. Find the most common kmers and get their frequency only in genes.
 
 - -path: sequence path file.
-- k_range: "(4,12)". Range of values for k in kmers.
 - -name: organism name in sequence yaml file.
 - -window_length
 - -dir: subfolder name to store the graphs.
 - -graph_from_file: (true) generate graphs directly from sequence files.
+- -size: size of the kmers/repeats that are going to be searched in the genes.
 
     
-    py .\command.py find_kmers_linearly_genes_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -k_range "(4, 12)" -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans" -graph_from_file true
+    py .\command.py find_kmers_linearly_genes_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans" -graph_from_file true -size 4
+
+Execution for genomes:
+- -name: it helps identify the folder where all the chromosomes files are.
+
+
+    py .\command.py find_kmers_linearly_genes_genome -name "caenorhabditis elegans" -window_length 300000 -dir "caenorhabditis_elegans" -graph_from_file true -size 4
 
 ## Executing RepeatMasker
 In order to use RepeatMasker from a Docker container. 
@@ -402,4 +408,20 @@ Example using the command:
 Example using the command:
 
     py .\command.py load_genes -path resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf 
+
+## Add categories and subcategories from KEGG website
+Use this command to scrape the KEGG website and link the identified genes for the repeats 
+with their categories and subcategories of KEGG pathway.
+- -path: path of the sequence that whose genes are going to be linked to KEGG categories and subcategories.
+- -name: name of the organism in YAML file.
+- -size: size of the kmers/repeats whose genes are going to be linked with KEGG info.
+
+
+    py .\command.py load_categories -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -size 4
+
+For genome:
+
+    py .\command.py load_categories_genome -name "caenorhabditis elegans" -size 4
+
+
 

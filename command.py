@@ -52,8 +52,6 @@ def main():
     kmers_finder_linearly_genes_sequence_parser = subparsers.add_parser('find_kmers_linearly_genes_sequence', help='Find kmers using linear method(repeats of k nucleotides) only in the genes')
     kmers_finder_linearly_genes_sequence_parser.add_argument('-path',
                                               help='Path of the .fasta sequence file relative to command.py file')
-    kmers_finder_linearly_genes_sequence_parser.add_argument('-k_range',
-                                              help="Add a k_range to find kmers of k values between the interval. For example: (4, 8).")
     kmers_finder_linearly_genes_sequence_parser.add_argument('-name', help='Name or GCF for analysis')
     kmers_finder_linearly_genes_sequence_parser.add_argument('-dir', help='Directory to save results')
     kmers_finder_linearly_genes_sequence_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true',
@@ -61,6 +59,21 @@ def main():
     kmers_finder_linearly_genes_sequence_parser.add_argument('-window_length', help='Window/partition length to divide the chromosome')
     kmers_finder_linearly_genes_sequence_parser.add_argument('-graph_from_file', choices=['true', 'false'], default='true',
                                               help='Graph frequency of kmers across sequence only in genes')
+    kmers_finder_linearly_genes_sequence_parser.add_argument('-size', help='Size of kmers/repeats that are going to be searched in genes')
+
+    kmers_finder_linearly_genes_genome_parser = subparsers.add_parser('find_kmers_linearly_genes_genome',
+                                                                        help='Find kmers using linear method(repeats of k nucleotides) only in the genes')
+    kmers_finder_linearly_genes_genome_parser.add_argument('-name', help='Name or GCF for analysis')
+    kmers_finder_linearly_genes_genome_parser.add_argument('-dir', help='Directory to save results')
+    kmers_finder_linearly_genes_genome_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true',
+                                                             help='Save results to the database')
+    kmers_finder_linearly_genes_genome_parser.add_argument('-window_length',
+                                                             help='Window/partition length to divide the chromosome')
+    kmers_finder_linearly_genes_genome_parser.add_argument('-graph_from_file', choices=['true', 'false'],
+                                                             default='true',
+                                                             help='Graph frequency of kmers across sequence only in genes')
+    kmers_finder_linearly_genes_genome_parser.add_argument('-size', help='Size of kmers/repeats that are going to be searched in genes')
+
 
     graph_parser = subparsers.add_parser('graph', help='Graph command')
     graph_parser.add_argument('-name', help='Name or GCF for graphing')
@@ -269,7 +282,20 @@ def main():
     load_genes_parser.add_argument('-path', help='Add the relative path of the genes file. For example: '
                                                       'resources/dna_sequences/caenorhabditis_elegans/gtf/file.gtf')
 
-    
+    load_categories_parser = subparsers.add_parser('load_categories',
+                                                                        help='Scrape on KEGG website and add categories to corresponding genes')
+    load_categories_parser.add_argument('-path',
+                                                             help='Path of the .fasta sequence file relative to command.py file')
+    load_categories_parser.add_argument('-name', help='Name or GCF for analysis')
+    load_categories_parser.add_argument('-size',
+                                                    help='Size of kmers/repeats that are going to be searched in genes')
+
+    load_categories_genome_parser = subparsers.add_parser('load_categories_genome',
+                                                   help='Scrape on KEGG website and add categories to corresponding genes')
+    load_categories_genome_parser.add_argument('-name', help='Name or GCF for analysis')
+    load_categories_genome_parser.add_argument('-size',
+                                        help='Size of kmers/repeats that are going to be searched in genes')
+
     args = parser.parse_args()
     analyzer = Analyzer()
     downloader = Downloader()
@@ -286,7 +312,9 @@ def main():
     elif args.command == 'find_kmers_sequence':
         repeats_loader.find_kmers_sequence_command(args)
     elif args.command == 'find_kmers_linearly_genes_sequence':
-        repeats_loader.find_kmers_linearly_genes_sequence_command(args)
+        repeats_loader.find_kmers_linearly_genes_sequence_command(filepath=args.path, args=args)
+    elif args.command == 'find_kmers_linearly_genes_genome':
+        repeats_loader.find_kmers_linearly_genes_genome_command(args)
     elif args.command == 'graph':
         grapher.graph_command(args)
     elif args.command == 'graph_rm_file_sequence':
@@ -342,7 +370,10 @@ def main():
        repeats_loader.load_genome_repeats_file(args.path)
     elif args.command == 'load_genes':
         genes_loader.load_genes_from_file(args.path)
-
+    elif args.command == 'load_categories':
+        genes_loader.load_categories_from_kegg(filepath=args.path, args=args)
+    elif args.command == 'load_categories_genome':
+        genes_loader.load_categories_from_kegg_genome(args)
 
 if __name__ == "__main__":
     main()

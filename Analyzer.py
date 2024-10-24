@@ -31,7 +31,7 @@ class Analyzer:
         save_to_db = False if args.save_to_db == 'false' else True
 
         if args.name:
-            self.organism= args.name
+            self.organism = args.name
             self.loader.set_organism(self.organism)
             self._validate_mode_analyzing_genome(args, save_to_db=save_to_db)
 
