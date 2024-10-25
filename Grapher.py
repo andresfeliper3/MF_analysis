@@ -574,11 +574,10 @@ class Grapher:
         heatmap_categories_data = categories_df.pivot(index="category", columns="name", values="count")
         heatmap_subcategories_data = subcategories_df.pivot(index="category_subcategory", columns="name",
                                                             values="count")
-
         Graphs.plot_heatmap(heatmap_categories_data, title=f"Functional categories for {size}-mers - {chromosome_filename}"
                                                 f" - {name}", xlabel='Kmers', ylabel='Functional category',
-                            dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/{chromosome_filename}")
+                            dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/categories")
         Graphs.plot_heatmap(heatmap_subcategories_data,
                             title=f"Functional subcategories for {size}-mers - {chromosome_filename}"
                                   f" - {name}", xlabel='Kmers', ylabel='Functional category: subcategory',
-                            dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/{chromosome_filename}")
+                            dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/subcategories")
