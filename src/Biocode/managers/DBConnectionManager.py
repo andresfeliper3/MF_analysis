@@ -105,7 +105,7 @@ class DBConnectionManager:
 
         if existing_record:
             existing_record_id = existing_record[0]
-            logger.info(f"Existing record with id {existing_record_id} in table {table_name}")
+            #logger.info(f"Existing record with id {existing_record_id} in table {table_name}")
             return existing_record_id
 
         # Build the insert query
