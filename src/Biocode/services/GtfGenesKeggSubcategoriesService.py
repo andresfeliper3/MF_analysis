@@ -18,7 +18,9 @@ class GtfGenesKeggSubcategoriesService(AbstractService):
                 f"JOIN kegg_subcategories ks ON ks.id = ggks.kegg_subcategories_id " \
                 f"JOIN whole_chromosomes wc ON wc.id = gg.whole_chromosomes_id " \
                 f"JOIN kegg_categories kc ON ks.category_id = kc.id " \
-                f"JOIN linear_repeats_whole_chromosomes lrwc ON lrwc.repeats_id = r.id "\
+                f"JOIN linear_repeats_whole_chromosomes lrwc ON lrwc.repeats_id = r.id " \
+                f"WHERE r.method_to_find_it = 'Linear in genes' " \
                 f"AND wc.refseq_accession_number = '{refseq_accession_number}' AND lrwc.SIZE={size} " \
                 f"GROUP BY r.name, ks.subcategory;"
+        print(query)
         return self.extract_with_custom_query(query)
