@@ -537,7 +537,7 @@ class Grapher:
                                                                   subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
                                                                   title=f"Linear Regression for {row['name']} - {self.loader.get_organism_name()}")
                 Graphs.plot_multiple_linear_regression(kmers_data, dir=dir, save=bool(save),
-                                                       subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
+                                                       subfolder=f"Dq_repeats_regression/{sequence_name}",
                                                        title=f"Linear Regression for Multiple {k}-mers - {self.loader.get_organism_name()}")
             logger.info(
                 f"Completed graph for linear regression DDq vs repeats - {sequence_name} - {refseq_accession_number}")
