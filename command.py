@@ -258,6 +258,35 @@ def main():
     graph_linear_regression_genome_parser.add_argument('-name', help="Enter the scientific name of the organism")
 
 
+    graph_categories_repeats_heatmap_sequence_parser = subparsers.add_parser('graph_categories_repeats_heatmap_sequence',
+                                                                  help='Graph KEGG categories vs repeats heatmap')
+
+    graph_categories_repeats_heatmap_sequence_parser.add_argument('-path', help='Path of the chromosome fasta file')
+    graph_categories_repeats_heatmap_sequence_parser.add_argument('-size',
+                                                         help='Size value of the kmers/repeats')
+    graph_categories_repeats_heatmap_sequence_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                                         help='Save graphs locally in /out directory')
+    graph_categories_repeats_heatmap_sequence_parser.add_argument('-dir',
+                                                         help="Enter the scientific name of the organism to use it as a folder name")
+    graph_categories_repeats_heatmap_sequence_parser.add_argument('-name', help="Enter the scientific name of the organism")
+    graph_categories_repeats_heatmap_sequence_parser.add_argument('--tags', choices=['true', 'false'],
+                                                                  default='true', help="Include tags/annotations in the heatmap plot")
+
+    graph_categories_repeats_heatmap_genome_parser = subparsers.add_parser('graph_categories_repeats_heatmap_genome',
+        help='Graph KEGG categories vs repeats heatmap')
+
+    graph_categories_repeats_heatmap_genome_parser.add_argument('-size',
+                                                                  help='Size value of the kmers/repeats')
+    graph_categories_repeats_heatmap_genome_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                                                  help='Save graphs locally in /out directory')
+    graph_categories_repeats_heatmap_genome_parser.add_argument('-dir',
+                                                                  help="Enter the scientific name of the organism to use it as a folder name")
+    graph_categories_repeats_heatmap_genome_parser.add_argument('-name',
+                                                                  help="Enter the scientific name of the organism")
+    graph_categories_repeats_heatmap_genome_parser.add_argument('--tags', choices=['true', 'false'],
+                                                                  default='true',
+                                                                  help="Include tags/annotations in the heatmap plot")
+
     download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
                                                              'specified in the sequences.yaml file.')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
@@ -364,6 +393,12 @@ def main():
     elif args.command == 'graph_linear_regression_genome':
         grapher.graph_linear_regression_genome_command(GCF=args.gcf, k_range=args.k_range, name=args.name, save=args.save,
                                                        dir=args.dir)
+    elif args.command == 'graph_categories_repeats_heatmap_sequence':
+        grapher.graph_categories_repeats_heatmap_sequence_command(path=args.path, size=args.size, save=args.save, dir=args.dir,
+                                                                  name=args.name, tags=args.tags)
+    elif args.command == 'graph_categories_repeats_heatmap_genome':
+        grapher.graph_categories_repeats_heatmap_genome_command(size=args.size, save=args.save, dir=args.dir,
+                                                                  name=args.name, tags=args.tags)
     elif args.command == 'download':
         downloader.download_command(args)
     elif args.command == 'load_RM_repeats':

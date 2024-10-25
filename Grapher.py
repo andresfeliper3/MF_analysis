@@ -16,6 +16,8 @@ from src.Biocode.services.RegionResultsService import RegionResultsService
 from src.Biocode.services.WholeChromosomesService import WholeChromosomesService
 from src.Biocode.services.RegionChromosomesService import RegionChromosomesService
 from src.Biocode.services.WholeResultsService import WholeResultsService
+from src.Biocode.services.GtfGenesKeggCategoriesService import GtfGenesKeggCategoriesService
+from src.Biocode.services.GtfGenesKeggSubcategoriesService import GtfGenesKeggSubcategoriesService
 from src.Biocode.utils.utils import str_to_list
 from utils.FileReader import FileReader
 from utils.decorators import Timer, DBConnection, TryExcept, Inject
@@ -33,6 +35,8 @@ from src.Biocode.utils.utils import adapt_dataframe_to_window_profiles, adapt_da
         rm_repeats_service=RMRepeatsWholeChromosomesService,
         linear_repeats_whole_chromosomes_service=LinearRepeatsWholeChromosomesService,
         linear_repeats_region_chromosomes_service=LinearRepeatsRegionChromosomesService,
+        gtf_genes_kegg_categories_service=GtfGenesKeggCategoriesService,
+        gtf_genes_kegg_subcategories_service=GtfGenesKeggSubcategoriesService,
         organisms_service=OrganismsService,
         gtf_genes_service=GtfGenesService,
         loader=Loader)
@@ -49,6 +53,8 @@ class Grapher:
                  recursive_repeats_service: RecursiveRepeatsWholeChromosomesService,
                  linear_repeats_whole_chromosomes_service: LinearRepeatsWholeChromosomesService,
                  linear_repeats_region_chromosomes_service: LinearRepeatsRegionChromosomesService,
+                 gtf_genes_kegg_categories_service: GtfGenesKeggCategoriesService,
+                 gtf_genes_kegg_subcategories_service: GtfGenesKeggSubcategoriesService,
                  organisms_service: OrganismsService, gtf_genes_service: GtfGenesService, loader: Loader):
         self.recursive_repeats_whole_chromosomes_service = recursive_repeats_service
         self.whole_results_service = whole_results_service
@@ -59,6 +65,8 @@ class Grapher:
         self.recursive_repeats_service = recursive_repeats_service
         self.linear_repeats_whole_chromosomes_service = linear_repeats_whole_chromosomes_service
         self.linear_repeats_region_chromosomes_service = linear_repeats_region_chromosomes_service
+        self.gtf_genes_kegg_categories_service = gtf_genes_kegg_categories_service
+        self.gtf_genes_kegg_subcategories_service = gtf_genes_kegg_subcategories_service
         self.organisms_service = organisms_service
         self.gtf_genes_service = gtf_genes_service
         self.loader = loader
@@ -507,7 +515,8 @@ class Grapher:
             refseq_accession_number = self.loader.extract_refseq_accession_number(path)
 
         self.loader.set_organism(name)
-        sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(refseq_accession_number)
+        sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(
+            refseq_accession_number)
         k_range = ast.literal_eval(k_range)
         ddq_df = self.region_results_service.extract_ddq_by_refseq_accession_number(refseq_accession_number)
         DDq_list = ddq_df['DDq'].to_list()
@@ -528,9 +537,10 @@ class Grapher:
                                                                   subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
                                                                   title=f"Linear Regression for {row['name']} - {self.loader.get_organism_name()}")
                 Graphs.plot_multiple_linear_regression(kmers_data, dir=dir, save=bool(save),
-                                                        subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
-                                                        title=f"Linear Regression for Multiple {k}-mers - {self.loader.get_organism_name()}")
-            logger.info(f"Completed graph for linear regression DDq vs repeats - {sequence_name} - {refseq_accession_number}")
+                                                       subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
+                                                       title=f"Linear Regression for Multiple {k}-mers - {self.loader.get_organism_name()}")
+            logger.info(
+                f"Completed graph for linear regression DDq vs repeats - {sequence_name} - {refseq_accession_number}")
 
     @DBConnection
     @TryExcept
@@ -539,3 +549,36 @@ class Grapher:
         refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
         for refseq_accession_number in refseq_accession_numbers:
             self.graph_linear_regression_sequence_command(k_range, name, save, dir, refseq_accession_number)
+
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_categories_repeats_heatmap_genome_command(self, size: str, save: str, dir: str, name: str, tags: str):
+        self.loader.set_organism(name)
+        directory_path = self.loader.get_organism_path()
+        apply_function_to_files_in_folder(directory_path, self.graph_categories_repeats_heatmap_sequence_command,
+                                          size=size, save=save, dir=dir, name=name, tags=tags)
+
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_categories_repeats_heatmap_sequence_command(self, path: str, size: str, save: str, dir: str, name: str, tags: str):
+        refseq_accession_number = self.loader.extract_refseq_accession_number(path)
+        chromosome_filename = self.loader.extract_file_name(file_path=path)
+        categories_df = self.gtf_genes_kegg_categories_service.extract_count_of_repeats_per_category_by_size_and_chromosome(
+            refseq_accession_number, int(size))
+        subcategories_df = self.gtf_genes_kegg_subcategories_service.extract_count_of_repeats_per_subcategory_by_size_and_chromosome(
+            refseq_accession_number, int(size))
+        subcategories_df['category_subcategory'] = subcategories_df['category'] + ': ' + subcategories_df['subcategory']
+
+        heatmap_categories_data = categories_df.pivot(index="category", columns="name", values="count")
+        heatmap_subcategories_data = subcategories_df.pivot(index="category_subcategory", columns="name",
+                                                            values="count")
+
+        Graphs.plot_heatmap(heatmap_categories_data, title=f"Functional categories for {size}-mers - {chromosome_filename}"
+                                                f" - {name}", xlabel='Kmers', ylabel='Functional category',
+                            dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/{chromosome_filename}")
+        Graphs.plot_heatmap(heatmap_subcategories_data,
+                            title=f"Functional subcategories for {size}-mers - {chromosome_filename}"
+                                  f" - {name}", xlabel='Kmers', ylabel='Functional category: subcategory',
+                            dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/{chromosome_filename}")

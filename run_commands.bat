@@ -44,12 +44,15 @@ py .\command.py graph_linear_regression_genome -gcf %GCF% -k_range %K_RANGE% -di
 echo Running load_genes...
 py .\command.py load_genes -path %GTF_PATH%
 
+:: Last three are dependent
 echo Running find_kmers_linearly_genes_genome...
 py .\command.py find_kmers_linearly_genes_genome -name %NAME% -window_length %WINDOW_LENGTH% -dir %DIR% -graph_from_file true -size %GENES_KMER_SIZE%
 
-echo Scraping categories and subcategories..
-py .\command.py load_categories_genome -name "caenorhabditis elegans" -size %GENES_KMER_SIZE% -genes_amount %GENES_AMOUNT%
+echo Scraping functional categories and subcategories from KEGG..
+py .\command.py load_categories_genome -name %NAME% -size %GENES_KMER_SIZE% -genes_amount %GENES_AMOUNT%
 
-:: Graph heatmaps
+echo Graphing functonal categories and subcategories heatmaps...
+py .\command.py graph_categories_repeats_heatmap_genome -size %GENES_KMER_SIZE% --save true -dir %DIR% -name %NAME% --tags true
+
 
 endlocal

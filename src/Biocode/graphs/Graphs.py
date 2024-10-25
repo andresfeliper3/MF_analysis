@@ -1027,3 +1027,20 @@ class Graphs:
         if save:
             Graphs._savefig(title, route)
         plt.show()
+
+    @staticmethod
+    def plot_heatmap(heatmap_data, title: str, xlabel: str, ylabel: str, dir: str, save: bool, subfolder: str,
+                     tags: bool):
+        plt.figure(figsize=(12, 8))
+        ax = sns.heatmap(heatmap_data, annot=tags, fmt='d', cmap='viridis', cbar_kws={'label': 'Count'})
+        cbar = ax.collections[0].colorbar
+        cbar.ax.set_position([0.1, 0.2, 0.03, 0.6])
+
+        plt.title(title)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.yticks(rotation=0, ha='right')
+        route = f"{dir}/{subfolder}"
+        if save:
+            Graphs._savefig(title, route)
+        plt.show()

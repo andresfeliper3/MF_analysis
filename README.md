@@ -379,6 +379,20 @@ For the genome:
 
     py .\command.py graph_linear_regression_genome -gcf GCF_000002985.6 -k_range "(4,12)" -dir caenorhabditis_elegans -name "caenorhabditis elegans"
 
+## Graph KEGG categories vs repeats heatmaps
+Heatmaps of the KEGG functional categories and subcategories associated to the genes (the indicated amount of genes) and 
+the repeats related to those genes. The count value is the amount of repeats per genes belonging to that specific
+functional category or subcategory.
+- --tags: include tags/annotations in the graph.
+- -size: size of the kmers/repeats analyzed.
+
+
+    py .\command.py graph_categories_repeats_heatmap_sequence -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -size 4 --save true -dir caenorhabditis_elegans -name "caenorhabditis elegans" --tags true
+    
+
+For the genome:
+
+    py .\command.py graph_categories_repeats_heatmap_genome -size 4 --save true -dir caenorhabditis_elegans -name "caenorhabditis elegans" --tags true
 
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
