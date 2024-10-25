@@ -11,6 +11,7 @@ set PARTITIONS=300
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4
+set GENES_AMOUNT=100
 
 rem Execute commands
 echo Running download...
@@ -47,7 +48,7 @@ echo Running find_kmers_linearly_genes_genome...
 py .\command.py find_kmers_linearly_genes_genome -name %NAME% -window_length %WINDOW_LENGTH% -dir %DIR% -graph_from_file true -size %GENES_KMER_SIZE%
 
 echo Scraping categories and subcategories..
-py .\command.py load_categories -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -size 4
+py .\command.py load_categories_genome -name "caenorhabditis elegans" -size %GENES_KMER_SIZE% -genes_amount %GENES_AMOUNT%
 
 :: Graph heatmaps
 

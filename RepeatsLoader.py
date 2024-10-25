@@ -277,8 +277,7 @@ class RepeatsLoader:
                                      sequence_manager.get_regions_refseq_accessions_numbers(),
                                      method_to_find_it='Linear in genes')
             logger.info("Completed loading of 'Linear in genes' repeats")
-            self.load_genes_containing_repeats(refseq_accession_number, sequence_nts, genes_sequence_df,
-                                               most_frequent_nplets, size)
+            self.load_genes_containing_repeats(refseq_accession_number, sequence_nts, genes_sequence_df, size)
             logger.info("Completed loading of genes_containing_repeats")
 
         # Graphs.plot_combined_kmer_frequency(window_profiles_only_genes, most_frequent_nplets, sequence_manager.get_sequence_name(),
@@ -520,7 +519,7 @@ class RepeatsLoader:
                     ))
 
     def load_genes_containing_repeats(self, refseq_accession_number: str, sequence_nts: str, genes_df: pd.DataFrame,
-                                      most_frequent_nplets: dict[str, list], size: int):
+                                      size: int):
         repeats_df = self.linear_repeats_whole_chromosomes_service.extract_linear_in_genes_repeats_by_refseq_accession_number(
             refseq_accession_number, k_range=(size, size))
         # Iterate over each gene in genes_df

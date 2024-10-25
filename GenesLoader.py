@@ -12,6 +12,7 @@ from utils.logger import logger
 from Loader import Loader
 from utils.folder import apply_function_to_files_in_folder
 
+
 @Inject(gtf_genes_service=GtfGenesService,
         file_reader=FileReader,
         whole_chromosomes_service=WholeChromosomesService,
@@ -70,7 +71,6 @@ class GenesLoader:
         record = self._build_record(row, whole_chromosome_id, attributes)
         gtf_genes_id = self.gtf_genes_service.insert(record=record)
 
-
     def _build_record(self, row, whole_chromosome_id, attributes):
 
         return (
@@ -105,15 +105,16 @@ class GenesLoader:
     def load_categories_from_kegg(self, filepath, args):
         refseq_accesssion_number = self.loader.extract_refseq_accession_number(filepath)
         gene_id_gtf_df = (self.genes_containing_repeats_service.
-                            extract_distinct_gene_id_gtf_by_size_and_refseq_accession_number(
-            size=int(args.size), refseq_accession_number=refseq_accesssion_number))
+        extract_distinct_gene_id_gtf_by_size_and_refseq_accession_number(
+            size=int(args.size), refseq_accession_number=refseq_accesssion_number,
+            unique_genes_limit=int(args.genes_amount)))
         genes_tuples_list = list(zip(gene_id_gtf_df['id'].to_list(), gene_id_gtf_df['gene_id_gtf'].to_list()))
-        for gene_tuple in genes_tuples_list[988:]:
-            self._add_categories_and_subcategories_to_gene(gtf_genes_id=gene_tuple[0], gene_id_gtf=gene_tuple[1])
+        for index, gene_tuple in enumerate(genes_tuples_list):
+            self._add_categories_and_subcategories_to_gene(gtf_genes_id=gene_tuple[0], gene_id_gtf=gene_tuple[1],
+                                                           index=index)
 
-
-    def _add_categories_and_subcategories_to_gene(self, gtf_genes_id: int, gene_id_gtf: str):
-        logger.info(f"Starting adding KEGG categories and subcategories for gene {gene_id_gtf}")
+    def _add_categories_and_subcategories_to_gene(self, gtf_genes_id: int, gene_id_gtf: str, index: int):
+        logger.info(f"Starting adding KEGG categories and subcategories for gene {gene_id_gtf} - index: {index}")
 
         categories_result = self.kegg_scraper.get_categories_and_subcategories_by_gene_id_gtf(gene_id_gtf)
         if categories_result is None:

@@ -289,12 +289,16 @@ def main():
     load_categories_parser.add_argument('-name', help='Name or GCF for analysis')
     load_categories_parser.add_argument('-size',
                                                     help='Size of kmers/repeats that are going to be searched in genes')
+    load_categories_parser.add_argument('-genes_amount', help='The top N amount of genes that will be '
+                                                              'considered. Top is based on genes which include more repeats.')
 
     load_categories_genome_parser = subparsers.add_parser('load_categories_genome',
                                                    help='Scrape on KEGG website and add categories to corresponding genes')
     load_categories_genome_parser.add_argument('-name', help='Name or GCF for analysis')
     load_categories_genome_parser.add_argument('-size',
                                         help='Size of kmers/repeats that are going to be searched in genes')
+    load_categories_genome_parser.add_argument('-genes_amount', help='The top N amount of genes that will be '
+                                                              'considered. Top is based on genes which include more repeats.')
 
     args = parser.parse_args()
     analyzer = Analyzer()

@@ -417,11 +417,11 @@ with their categories and subcategories of KEGG pathway.
 - -size: size of the kmers/repeats whose genes are going to be linked with KEGG info.
 
 
-    py .\command.py load_categories -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -size 4
+    py .\command.py load_categories -path resources/dna_sequences/caenorhabditis_elegans/chrI.fna -name "caenorhabditis elegans" -size 4 -genes_amount 100
 
 For genome:
 
-    py .\command.py load_categories_genome -name "caenorhabditis elegans" -size 4
+    py .\command.py load_categories_genome -name "caenorhabditis elegans" -size 4 -genes_amount 100
 
 
 
