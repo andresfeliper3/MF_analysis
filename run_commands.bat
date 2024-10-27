@@ -2,11 +2,11 @@
 setlocal
 
 rem Editable parameters
-set NAME="caenorhabditis elegans"
+set NAME="caenorhabditis briggsae"
 set WINDOW_LENGTH=300000
-set DIR="caenorhabditis_elegans"
-set GCF=GCF_000002985.6
-set GTF_PATH=resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf
+set DIR="caenorhabditis_briggsae"
+set GCF=GCF_000004555.2
+set GTF_PATH=resources/genes/caenorhabditis_briggsae/gtf/GCF_000004555.2_CB4_genomic.gtf
 set PARTITIONS=300
 set REGIONS=3
 set K_RANGE="(4,12)"
@@ -14,8 +14,8 @@ set GENES_KMER_SIZE=4
 set GENES_AMOUNT=100
 
 rem Execute commands
-echo Running download...
-py .\command.py download -name %NAME%
+::echo Running download...
+::py .\command.py download -name %NAME%
 
 echo Running analyze_genome -mode whole...
 py .\command.py analyze_genome -name %NAME% -mode whole
@@ -29,8 +29,8 @@ py .\command.py find_kmers_genome -method l -k_range %K_RANGE% -name %NAME% -win
 echo Running graph -mode whole...
 py .\command.py graph -name %NAME% -mode whole
 
-echo Running graph -mode region...
-py .\command.py graph -name %NAME% -mode region -window_length %WINDOW_LENGTH%
+echo Running graph -mode regions...
+py .\command.py graph -name %NAME% -mode regions -window_length %WINDOW_LENGTH%
 
 echo Running graph_linear_repeats_genome...
 py .\command.py graph_linear_repeats_genome --save true -name %NAME% -gcf %GCF% -dir %DIR% -k_range %K_RANGE%
@@ -48,10 +48,10 @@ py .\command.py load_genes -path %GTF_PATH%
 echo Running find_kmers_linearly_genes_genome...
 py .\command.py find_kmers_linearly_genes_genome -name %NAME% -window_length %WINDOW_LENGTH% -dir %DIR% -graph_from_file true -size %GENES_KMER_SIZE%
 
-echo Scraping functional categories and subcategories from KEGG..
+echo Running scraping functional categories and subcategories from KEGG..
 py .\command.py load_categories_genome -name %NAME% -size %GENES_KMER_SIZE% -genes_amount %GENES_AMOUNT%
 
-echo Graphing functonal categories and subcategories heatmaps...
+echo Running Graphing functional categories and subcategories heatmaps...
 py .\command.py graph_categories_repeats_heatmap_genome -size %GENES_KMER_SIZE% --save true -dir %DIR% -name %NAME% --tags true
 
 

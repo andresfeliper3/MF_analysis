@@ -11,15 +11,13 @@ class GtfGenesKeggCategoriesService(AbstractService):
         self.pk_column = "id"
 
     def extract_count_of_repeats_per_category_by_size_and_chromosome(self, refseq_accession_number: str, size: int):
-        query = f"SELECT r.id, r.name, kc.category, gcr.count FROM repeats r " \
+        query = f"SELECT r.id, r.name, kc.category, SUM(gcr.count) count FROM repeats r " \
                 f"JOIN genes_containing_repeats gcr ON r.id = gcr.repeats_id " \
                 f"JOIN gtf_genes gg ON gcr.gtf_genes_id=gg.id " \
                 f"JOIN gtf_genes_kegg_categories ggkc ON gg.id=ggkc.gtf_genes_id " \
                 f"JOIN kegg_categories kc ON kc.id = ggkc.kegg_categories_id " \
-                f"JOIN whole_chromosomes wc ON wc.id = gg.whole_chromosomes_id "\
-                f"JOIN linear_repeats_whole_chromosomes lrwc ON lrwc.repeats_id = r.id " \
+                f"JOIN whole_chromosomes wc ON wc.id = gg.whole_chromosomes_id  " \
                 f"WHERE r.method_to_find_it = 'Linear in genes' " \
                 f"AND wc.refseq_accession_number = '{refseq_accession_number}' " \
-                f"AND lrwc.SIZE={size} "\
-                f"GROUP BY r.name, kc.category;"
+                f"AND LENGTH(r.name) = {size} GROUP BY r.name, kc.category;"
         return self.extract_with_custom_query(query)

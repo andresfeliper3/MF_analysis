@@ -16,9 +16,8 @@ class GenesContainingRepeatsService(AbstractService):
                 f"FROM genes_containing_repeats gcr JOIN " \
                 f"gtf_genes gg ON gcr.gtf_genes_id = gg.id " \
                 f"JOIN repeats r ON gcr.repeats_id = r.id " \
-                f"JOIN linear_repeats_whole_chromosomes lrwc ON lrwc.repeats_id = r.id " \
-                f"JOIN whole_chromosomes wc ON lrwc.whole_chromosomes_id = wc.id " \
+                f"JOIN whole_chromosomes wc ON gg.whole_chromosomes_id = wc.id " \
                 f"WHERE r.method_to_find_it='Linear in genes' " \
                 f"AND wc.refseq_accession_number='{refseq_accession_number}' " \
-                f"AND lrwc.SIZE = {size} GROUP BY gg.id ORDER BY repeats_in_genes_count DESC LIMIT {unique_genes_limit}"
+                f"AND LENGTH(r.name) = {size} GROUP BY gg.id ORDER BY repeats_in_genes_count DESC LIMIT {unique_genes_limit}"
         return self.extract_with_custom_query(query)
