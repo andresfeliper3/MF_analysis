@@ -56,6 +56,7 @@ drosophila melanogaster: &d_melanogaster
   organism_name: "drosophila_melanogaster"
   GCF: "GCF_000001215.4"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_melanogaster/latest_assembly_versions/GCF_000001215.4_Release_6_plus_ISO1_MT/GCF_000001215.4_Release_6_plus_ISO1_MT_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_melanogaster/latest_assembly_versions/GCF_000001215.4_Release_6_plus_ISO1_MT/"
   regions_number: 3
 GCF_000001215.4: *d_melanogaster
 

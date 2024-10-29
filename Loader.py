@@ -41,12 +41,12 @@ class Loader:
                 if first_part.startswith("gi|"):
                     # If it starts with 'gi|', extract the third part (refseq accession number)
                     refseq_accession_number = first_part.split('|')[3]
-                elif first_part.startswith("NC_") or first_part.startswith("XM_") or first_part.startswith("XP_"):
+                elif first_part.startswith("NC_") or first_part.startswith("XM_") or first_part.startswith("XP_") or first_part.startswith("NT_"):
                     # If it starts directly with the accession number (e.g., NC_), use it as is
                     refseq_accession_number = first_part
                 else:
                     # Handle any unexpected format if needed
-                    logger.error(f"Unexpected format in sequence description: {record.description}")
+                    logger.error(f"Loader: Unexpected format in sequence description: {record.description}")
                     continue
 
                 return refseq_accession_number
@@ -65,8 +65,9 @@ class Loader:
 
         return [
             {"path": os.path.join(path, file), "name": file.split(".")[0], "organism_name": self.organism}
-            for file in sorted_files
+            for file in files
         ]
+
 
     def set_organism(self, organism: str):
         self.organism = organism

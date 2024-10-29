@@ -2,11 +2,11 @@
 setlocal
 
 rem Editable parameters
-set NAME="caenorhabditis briggsae"
+set NAME="drosophila melanogaster"
 set WINDOW_LENGTH=300000
-set DIR="caenorhabditis_briggsae"
-set GCF=GCF_000004555.2
-set GTF_PATH=resources/genes/caenorhabditis_briggsae/gtf/GCF_000004555.2_CB4_genomic.gtf
+set DIR="drosophila_melanogaster"
+set GCF=GCF_000001215.4
+set GTF_PATH=resources/genes/drosophila_melanogaster/gtf/GCF_000001215.4_Release_6_plus_ISO1_MT_genomic.gtf
 set PARTITIONS=300
 set REGIONS=3
 set K_RANGE="(4,12)"
@@ -24,7 +24,7 @@ echo Running analyze_genome -mode regions...
 py .\command.py analyze_genome -name %NAME% -mode regions -window_length %WINDOW_LENGTH%
 
 echo Running find_kmers_genome linearly...
-py .\command.py find_kmers_genome -method l -k_range %K_RANGE% -name %NAME% -window_length %WINDOW_LENGTH% -dir %DIR% -graph_from_file true
+py .\command.py find_kmers_genome -method l -k_range %K_RANGE% -name %NAME% -window_length %WINDOW_LENGTH% -dir %DIR%
 
 echo Running graph -mode whole...
 py .\command.py graph -name %NAME% -mode whole

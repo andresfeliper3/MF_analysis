@@ -353,6 +353,7 @@ class RepeatsLoader:
         if graph_from_file:
             # self._plot_all_kmers(window_profiles, most_frequent_nplets, sequence_manager.get_sequence_name(), save_to_db, dir)
 
+            logger.warn(sequence.get_name())
             Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets,
                                                 sequence_manager.get_sequence_name(),
                                                 dir, True, window_length, subfolder="linear_repeats_all")

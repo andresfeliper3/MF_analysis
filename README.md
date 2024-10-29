@@ -295,7 +295,7 @@ Graph the repeats found with the linear algorithm using a sequence path and resu
 
 To graph the entire genome use the following command:
 
-    py .\command.py graph_linear_repeats_genome --save true -name "Caenorhabditis elegans" -gcf GCF_000002985.6 -dir caenorhabditis_elegans -k_range "(4,12)
+    py .\command.py graph_linear_repeats_genome --save true -name "Caenorhabditis elegans" -gcf GCF_000002985.6 -dir caenorhabditis_elegans -k_range "(4,12)"
 
 ### Graph repeats found linearly only in genes from the database
 Graph the repeats found with the linear algorithm ONLY IN GENES using a sequence path and results saved in the database.

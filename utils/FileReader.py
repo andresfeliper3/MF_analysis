@@ -34,10 +34,9 @@ class FileReader:
         df = df[df['refseq_accession_number'].str.startswith("NC")]
         df_list = []
         start_idx = 0
-
         for i in range(1, len(df)):
             # If chromosome changes in df
-            if df.loc[i, 'refseq_accession_number'] != df.loc[i - 1, 'refseq_accession_number']:
+            if df.iloc[i]['refseq_accession_number'] != df.iloc[i - 1]['refseq_accession_number']:
                 # Append the slice of the DataFrame to the list with index reset
                 df_list.append(df.iloc[start_idx:i].reset_index(drop=True))
                 start_idx = i

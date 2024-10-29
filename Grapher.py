@@ -139,7 +139,6 @@ class Grapher:
         regions_number = int(regions_number) if regions_number else None
         config = self.load_config()
         graphs_config = config.get('MFA', {})
-
         region_genome_manager = RegionGenomeManager(
             genome_data=data, organism_name=organism_name, regions_number=regions_number, window_length=window_length
         )
@@ -562,7 +561,8 @@ class Grapher:
     @DBConnection
     @TryExcept
     @Timer
-    def graph_categories_repeats_heatmap_sequence_command(self, path: str, size: str, save: str, dir: str, name: str, tags: str):
+    def graph_categories_repeats_heatmap_sequence_command(self, path: str, size: str, save: str, dir: str, name: str,
+                                                          tags: str):
         refseq_accession_number = self.loader.extract_refseq_accession_number(path)
         chromosome_filename = self.loader.extract_file_name(file_path=path)
         categories_df = self.gtf_genes_kegg_categories_service.extract_count_of_repeats_per_category_by_size_and_chromosome(
@@ -574,8 +574,9 @@ class Grapher:
         heatmap_categories_data = categories_df.pivot(index="category", columns="name", values="count")
         heatmap_subcategories_data = subcategories_df.pivot(index="category_subcategory", columns="name",
                                                             values="count")
-        Graphs.plot_heatmap(heatmap_categories_data, title=f"Functional categories for {size}-mers - {chromosome_filename}"
-                                                f" - {name}", xlabel='Kmers', ylabel='Functional category',
+        Graphs.plot_heatmap(heatmap_categories_data,
+                            title=f"Functional categories for {size}-mers - {chromosome_filename}"
+                                  f" - {name}", xlabel='Kmers', ylabel='Functional category',
                             dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/categories")
         Graphs.plot_heatmap(heatmap_subcategories_data,
                             title=f"Functional subcategories for {size}-mers - {chromosome_filename}"
