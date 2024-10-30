@@ -31,7 +31,7 @@ class FileReader:
 
     @staticmethod
     def divide_genome_df_rows_by_chromosome(df: pd.DataFrame) -> List[pd.DataFrame]:
-        df = df[df['refseq_accession_number'].str.startswith("NC")]
+        df = df[df['refseq_accession_number'].str.startswith(("NC", "NT"))]
         df_list = []
         start_idx = 0
         for i in range(1, len(df)):
