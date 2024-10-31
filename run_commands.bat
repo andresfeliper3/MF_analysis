@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="drosophila melanogaster"
-set WINDOW_LENGTH=300000
-set DIR="drosophila_melanogaster"
-set GCF=GCF_000001215.4
-set GTF_PATH=resources/genes/drosophila_melanogaster/gtf/GCF_000001215.4_Release_6_plus_ISO1_MT_genomic.gtf
-set PARTITIONS=300
+set NAME="saccharomyces cerevisiae"
+set WINDOW_LENGTH=30000
+set DIR="saccharomyces_cerevisiae"
+set GCF=GCF_000146045.2
+set GTF_PATH=resources/genes/saccharomyces_cerevisiae/gtf/GCF_000146045.2_R64_genomic.gtf
+set PARTITIONS=100
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4

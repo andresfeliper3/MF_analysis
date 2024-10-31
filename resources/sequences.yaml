@@ -60,6 +60,24 @@ drosophila melanogaster: &d_melanogaster
   regions_number: 3
 GCF_000001215.4: *d_melanogaster
 
+drosophila pseudoobscura: &d_pseudoobscura
+  organism_name: "drosophila_pseudoobscura"
+  GCF: "GCF_009870125.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_pseudoobscura/latest_assembly_versions/GCF_009870125.1_UCI_Dpse_MV25/GCF_009870125.1_UCI_Dpse_MV25_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_pseudoobscura/latest_assembly_versions/GCF_009870125.1_UCI_Dpse_MV25/"
+  regions_number: 3
+GCF_009870125.1: *d_pseudoobscura
+
+drosophila simulans: &d_simulans
+  organism_name: "drosophila_simulans"
+  GCF: "GCF_016746395.2"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_simulans/latest_assembly_versions/GCF_016746395.2_Prin_Dsim_3.1/GCF_016746395.2_Prin_Dsim_3.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_simulans/latest_assembly_versions/GCF_016746395.2_Prin_Dsim_3.1/"
+  regions_number: 3
+GCF_016746395.2: *d_simulans
+
+
+
 nematostella vectensis: &n_vectensis
   organism_name: "nematostella_vectensis"
   GCF: "GCF_932526225.1"
@@ -87,3 +105,18 @@ octopus sinensis: &o_sinensis
   regions_number: 3
 GCF_006345805.1: *o_sinensis
 
+eremothecium gossypii: &e_gossypii
+  organism_name: "eremothecium_gossypii"
+  GCF: "GCF_000091025.4"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Eremothecium_gossypii/latest_assembly_versions/GCF_000091025.4_ASM9102v4/GCF_000091025.4_ASM9102v4_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Eremothecium_gossypii/latest_assembly_versions/GCF_000091025.4_ASM9102v4/"
+  regions_number: 3
+GCF_000091025.4: *e_gossypii
+
+saccharomyces cerevisiae: &s_cerevisiae
+  organism_name: "saccharomyces_cerevisiae"
+  GCF: "GCF_000146045.2"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/"
+  regions_number: 3
+GCF_000146045.2: *s_cerevisiae

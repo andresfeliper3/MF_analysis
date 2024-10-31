@@ -1032,7 +1032,7 @@ class Graphs:
     def plot_heatmap(heatmap_data, title: str, xlabel: str, ylabel: str, dir: str, save: bool, subfolder: str,
                      tags: bool):
         plt.figure(figsize=(12, 8))
-        ax = sns.heatmap(heatmap_data, annot=tags, fmt='d', cmap='viridis', cbar_kws={'label': 'Count'})
+        ax = sns.heatmap(heatmap_data, annot=tags, fmt='.2f', cmap='viridis', cbar_kws={'label': 'Count'})
         cbar = ax.collections[0].colorbar
         cbar.ax.set_position([0.1, 0.2, 0.03, 0.6])
 
