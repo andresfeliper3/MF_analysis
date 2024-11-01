@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="saccharomyces cerevisiae"
+set NAME="brettanomyces nanus"
 set WINDOW_LENGTH=30000
-set DIR="saccharomyces_cerevisiae"
-set GCF=GCF_000146045.2
-set GTF_PATH=resources/genes/saccharomyces_cerevisiae/gtf/GCF_000146045.2_R64_genomic.gtf
-set PARTITIONS=100
+set DIR="brettanomyces_nanus"
+set GCF=GCF_011074865.1
+set GTF_PATH=resources/genes/brettanomyces_nanus/gtf/GCF_011074865.1_ASM1107486v2_genomic.gtf
+set PARTITIONS=300
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4

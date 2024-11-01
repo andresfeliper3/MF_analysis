@@ -438,4 +438,7 @@ For genome:
     py .\command.py load_categories_genome -name "caenorhabditis elegans" -size 4 -genes_amount 100
 
 
+## Split fasta genome file into chromosomes file
+Some genome data comes in just one single file. Use this command to split the genome fasta file into the chromosomes files
 
+    py split_fasta.py resources/dna_sequences/pichia_kudriavzevii/GCF_003054445.1_ASM305444v1_genomic.fna resources/pichia_kudriavzevii

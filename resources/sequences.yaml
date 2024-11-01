@@ -105,6 +105,7 @@ octopus sinensis: &o_sinensis
   regions_number: 3
 GCF_006345805.1: *o_sinensis
 
+
 eremothecium gossypii: &e_gossypii
   organism_name: "eremothecium_gossypii"
   GCF: "GCF_000091025.4"
@@ -120,3 +121,23 @@ saccharomyces cerevisiae: &s_cerevisiae
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/"
   regions_number: 3
 GCF_000146045.2: *s_cerevisiae
+
+aspergillus luchuensis: &a_luchuensis
+  organism_name: "aspergillus_luchuensis"
+  GCF: "GCF_016861625.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Aspergillus_luchuensis/latest_assembly_versions/GCF_016861625.1_AkawachiiIFO4308_assembly01/GCF_016861625.1_AkawachiiIFO4308_assembly01_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Aspergillus_luchuensis/latest_assembly_versions/GCF_016861625.1_AkawachiiIFO4308_assembly01/"
+  regions_number: 3
+GCF_016861625.1: *a_luchuensis
+
+brettanomyces nanus: &b_nanus
+  organism_name: "brettanomyces_nanus"
+  GCF: "GCF_011074865.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Brettanomyces_nanus/latest_assembly_versions/GCF_011074865.1_ASM1107486v2/GCF_011074865.1_ASM1107486v2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Brettanomyces_nanus/latest_assembly_versions/GCF_011074865.1_ASM1107486v2/"
+  regions_number: 3
+GCF_011074865.1: *b_nanus
+
+
+
+
