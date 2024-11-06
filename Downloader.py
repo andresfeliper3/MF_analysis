@@ -21,14 +21,18 @@ class Downloader:
         if args.name:
             self.organism = args.name
             self.loader.set_organism(self.organism)
-            self.remove_files(folder=self.loader.get_organism_folder())
+            #self.remove_files(folder=self.loader.get_organism_folder())
             self.check_directory(directory_path=os.path.join(self.folder_path, self.loader.get_organism_folder()))
-            self.download_genome_from_repository(folder=self.loader.get_organism_folder(),
-                                                 download_url=self.loader.get_download_url(),
-                                                 suffix=".gz")
+            download_url = self.loader.get_download_url()
+            if download_url:
+                self.download_genome_from_repository(folder=self.loader.get_organism_folder(),
+                                                     download_url=self.loader.get_download_url(),
+                                                     suffix=".gz")
 
             self.uncompress_all_files(directory_path=f"{self.folder_path}{self.loader.get_organism_folder()}")
-            if bool(args.gtf):
+
+            download_gtf_url = self.loader.get_download_gtf_url()
+            if bool(args.gtf) and download_gtf_url:
                 self.check_directory(directory_path=os.path.join(self.genes_folder_path, self.loader.get_organism_gtf_subfolder()))
                 self.download_genes_from_repository(folder=self.loader.get_organism_gtf_subfolder(),
                                                      download_url=self.loader.get_download_gtf_url(), suffix=".gtf.gz")
@@ -48,7 +52,7 @@ class Downloader:
 
         if os.path.exists(directory_path) and os.path.isdir(directory_path):
             try:
-                # Walk thr ough all the files and folders within the directory and delete them
+                # Walk through all the files and folders within the directory and delete them
                 for root, dirs, files in os.walk(directory_path, topdown=False):
                     for file in files:
                         file_path = os.path.join(root, file)
