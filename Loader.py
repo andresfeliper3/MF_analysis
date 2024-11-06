@@ -4,7 +4,6 @@ from utils.logger import logger
 from Bio import SeqIO
 
 
-
 class Loader:
     def __init__(self):
         self.organism = None
@@ -41,7 +40,8 @@ class Loader:
                 if first_part.startswith("gi|"):
                     # If it starts with 'gi|', extract the third part (refseq accession number)
                     refseq_accession_number = first_part.split('|')[3]
-                elif first_part.startswith("NC_") or first_part.startswith("XM_") or first_part.startswith("XP_") or first_part.startswith("NT_"):
+                elif first_part.startswith("NC_") or first_part.startswith("XM_") or first_part.startswith(
+                        "XP_") or first_part.startswith("NT_"):
                     # If it starts directly with the accession number (e.g., NC_), use it as is
                     refseq_accession_number = first_part
                 else:
@@ -59,15 +59,19 @@ class Loader:
             os.makedirs(path)
 
         files = os.listdir(path)
-        sorted_files = sorted(files,
-                              key=lambda x: int(x.rstrip('.fna')[3:]) if x.rstrip('.fna')[3:].isdigit() else float(
-                                  'inf'))
-
-        return [
-            {"path": os.path.join(path, file), "name": file.split(".")[0], "organism_name": self.organism}
-            for file in files
-        ]
-
+        if bool(self.config[self.organism]['sorted_files']):
+            sorted_files = sorted(files,
+                                  key=lambda x: int(x.rstrip('.fna')[3:]) if x.rstrip('.fna')[3:].isdigit() else float(
+                                      'inf'))
+            data_dict = [
+                {"path": os.path.join(path, file), "name": file.split(".")[0], "organism_name": self.organism}
+                for file in sorted_files]
+        else:
+            data_dict = [
+                {"path": os.path.join(path, file), "name": file.split(".")[0], "organism_name": self.organism}
+                for file in files]
+        logger.info(f"DATA_DICT: {data_dict}")
+        return data_dict
 
     def set_organism(self, organism: str):
         self.organism = organism
@@ -134,5 +138,3 @@ class Loader:
 
     def get_amount_chromosomes(self) -> int:
         return len(self.get_data())
-
-

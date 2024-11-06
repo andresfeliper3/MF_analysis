@@ -47,8 +47,9 @@ GCF_000090985.2: *m_commoda
 
 musa acuminata: &musa_acuminata
   organism_name: "musa_acuminata"
-  GCF: "GCF_000313855.2"
-  download_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/latest_assembly_versions/GCF_000313855.2_ASM31385v2/GCF_000313855.2_ASM31385v2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/'
+  GCF: "GCF_036884655.1"
+  download_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/latest_assembly_versions/GCF_036884655.1_Cavendish_Baxijiao_AAA/'
+  download_files_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/latest_assembly_versions/GCF_036884655.1_Cavendish_Baxijiao_AAA/'
   regions_number: 3
 GCF_000313855.2: *musa_acuminata
 
@@ -120,3 +121,28 @@ saccharomyces cerevisiae: &s_cerevisiae
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/"
   regions_number: 3
 GCF_000146045.2: *s_cerevisiae
+
+arabidopsis thaliana: &a_thaliana
+  organism_name: "arabidopsis_thaliana"
+  GCF: "GCF_000001735.4"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Arabidopsis_thaliana/latest_assembly_versions/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Arabidopsis_thaliana/latest_assembly_versions/GCF_000001735.4_TAIR10.1/"
+  regions_number: 3
+GCF_000001735.4: *a_thaliana
+
+camelina sativa: &c_sativa
+  organism_name: "camelina_sativa"
+  GCF: "GCF_000633955.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Camelina_sativa/all_assembly_versions/GCF_000633955.1_Cs/GCF_000633955.1_Cs_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Camelina_sativa/all_assembly_versions/GCF_000633955.1_Cs/"
+  regions_number: 3
+GCF_000633955.1: *c_sativa
+
+ostreococcus tauri: &o_tauri
+  organism_name: "ostreococcus_tauri"
+  GCF: "GCF_000214015.3"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Ostreococcus_tauri/latest_assembly_versions/GCF_000214015.3_version_140606/GCF_000214015.3_version_140606_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Ostreococcus_tauri/latest_assembly_versions/GCF_000214015.3_version_140606/"
+  regions_number: 3
+  sorted_files: true
+GCF_000214015.3: *o_tauri
