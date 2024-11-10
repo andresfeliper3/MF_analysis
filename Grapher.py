@@ -582,3 +582,81 @@ class Grapher:
                             title=f"Functional subcategories for {size}-mers - {chromosome_filename}"
                                   f" - {name}", xlabel='Kmers', ylabel='Functional category: subcategory',
                             dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/subcategories")
+
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_compare_command(self, organisms, save, dir):
+        self.graph_compare_ddq_command(organisms, save, dir, soften=False)
+        self.graph_compare_genes_command(organisms, save, dir, soften=False)
+        for i in range(4, 12+1):
+            self.graph_compare_repeats_command(organisms, save, dir, size_list=[i, i], soften=False)
+        self.graph_compare_repeats_command(organisms, save, dir, size_list=[4, 12], soften=False)
+
+    def graph_compare_ddq_command(self, organisms, save, dir, soften):
+        ddq_y_values = []
+        different_chromosomes_names = []
+        for name in organisms:
+            if name:
+                self.organism = name
+                self.loader.set_organism(self.organism)
+                mfa_df = self.whole_results_service.extract_results(GCF=self.loader.get_gcf())
+                ddq_y_values.append(mfa_df['DDq'].to_list())
+                chromosome_names = self.organisms_service.extract_chromosomes_names_by_GCF(GCF=self.loader.get_gcf())
+                if len(different_chromosomes_names) == 0:
+                    different_chromosomes_names = chromosome_names
+                else:
+                    for index, chr_name in different_chromosomes_names:
+                        different_chromosomes_names[index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+            else:
+                raise Exception("Please provide a list of organisms names")
+        Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=ddq_y_values,
+                                      title="Degree of multifractality", ylabel="Degrees of multifractality",
+                                      organisms_names=organisms, save=bool(save), dir=dir, soften=soften)
+
+    def graph_compare_genes_command(self, organisms, save, dir, soften):
+        genes_count_y_values = []
+        different_chromosomes_names = []
+        for name in organisms:
+            if name:
+                self.organism = name
+                self.loader.set_organism(self.organism)
+                genes_df = self.gtf_genes_service.extract_genes_count_by_organism(GCF=self.loader.get_gcf())
+                genes_count_y_values.append(genes_df['count'].to_list())
+                chromosome_names = self.organisms_service.extract_chromosomes_names_by_GCF(GCF=self.loader.get_gcf())
+                if len(different_chromosomes_names) == 0:
+                    different_chromosomes_names = chromosome_names
+                else:
+                    for index, chr_name in different_chromosomes_names:
+                        different_chromosomes_names[index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+            else:
+                raise Exception("Please provide a list of organisms names")
+        Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=genes_count_y_values,
+                                      title="Count of genes", ylabel="Count of genes", organisms_names=organisms,
+                                      save=bool(save), dir=dir, soften=soften)
+
+    def graph_compare_repeats_command(self, organisms, save, dir, size_list, soften):
+        repeats_count_y_values = []
+        different_chromosomes_names = []
+        for name in organisms:
+            if name:
+                self.organism = name
+                self.loader.set_organism(self.organism)
+
+                repeats_df = (self.linear_repeats_region_chromosomes_service
+                              .extract_count_of_repeats_by_size_and_chromosome(GCF=self.loader.get_gcf(),
+                                                                               size_list=[size_list[0], size_list[1]]))
+                repeats_count_y_values.append(repeats_df['counts_summary'].to_list())
+                chromosome_names = self.organisms_service.extract_chromosomes_names_by_GCF(GCF=self.loader.get_gcf())
+
+                if len(different_chromosomes_names) == 0:
+                    different_chromosomes_names = chromosome_names
+                else:
+                    for index, chr_name in different_chromosomes_names:
+                        different_chromosomes_names[
+                            index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+            else:
+                raise Exception("Please provide a list of organisms names")
+        Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=repeats_count_y_values,
+                                      title=f"Count of kmers of size {size_list}", ylabel="Count of kmers", organisms_names=organisms,
+                                      save=bool(save), dir=dir, soften=soften)

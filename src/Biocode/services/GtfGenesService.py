@@ -17,3 +17,9 @@ class GtfGenesService(AbstractService):
                 f"on wc.organism_id = o.id WHERE refseq_accession_number='{refseq_accession_number}';"
         return self.extract_with_custom_query(query)
 
+    def extract_genes_count_by_organism(self, GCF: str):
+        query = f"SELECT wc.refseq_accession_number, COUNT(*) AS count FROM gtf_genes " \
+                f"JOIN whole_chromosomes wc ON gtf_genes.whole_chromosomes_id = wc.id " \
+                f"JOIN organisms o ON wc.organism_id = o.id WHERE o.GCF='{GCF}' " \
+                f"GROUP BY wc.refseq_accession_number;"
+        return self.extract_with_custom_query(query)

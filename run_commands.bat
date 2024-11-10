@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="brettanomyces nanus"
-set WINDOW_LENGTH=30000
-set DIR="brettanomyces_nanus"
-set GCF=GCF_011074865.1
-set GTF_PATH=resources/genes/brettanomyces_nanus/gtf/GCF_011074865.1_ASM1107486v2_genomic.gtf
-set PARTITIONS=300
+set NAME="caenorhabditis elegans"
+set WINDOW_LENGTH=300000
+set DIR="caenorhabditis_elegans"
+set GCF=GCF_000002985.6
+set GTF_PATH=resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf
+set PARTITIONS=100
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4
@@ -48,11 +48,11 @@ py .\command.py load_genes -path %GTF_PATH%
 echo Running find_kmers_linearly_genes_genome...
 py .\command.py find_kmers_linearly_genes_genome -name %NAME% -window_length %WINDOW_LENGTH% -dir %DIR% -graph_from_file true -size %GENES_KMER_SIZE%
 
-echo Running scraping functional categories and subcategories from KEGG..
-py .\command.py load_categories_genome -name %NAME% -size %GENES_KMER_SIZE% -genes_amount %GENES_AMOUNT%
+::echo Running scraping functional categories and subcategories from KEGG..
+::py .\command.py load_categories_genome -name %NAME% -size %GENES_KMER_SIZE% -genes_amount %GENES_AMOUNT%
 
-echo Running Graphing functional categories and subcategories heatmaps...
-py .\command.py graph_categories_repeats_heatmap_genome -size %GENES_KMER_SIZE% --save true -dir %DIR% -name %NAME% --tags true
+::echo Running Graphing functional categories and subcategories heatmaps...
+::py .\command.py graph_categories_repeats_heatmap_genome -size %GENES_KMER_SIZE% --save true -dir %DIR% -name %NAME% --tags true
 
 
 endlocal

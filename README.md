@@ -394,9 +394,13 @@ For the genome:
 
     py .\command.py graph_categories_repeats_heatmap_genome -size 4 --save true -dir caenorhabditis_elegans -name "caenorhabditis elegans" --tags true
 
+## Graph comparisons between different organisms genomes
+
+    py .\command.py graph_compare -organisms "caenorhabditis elegans" "caenorhabditis remanei" "caenorhabditis briggsae" --save true -dir caenorhabditis
+
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
-These files can be saved in the following directory _resources/RM_resources/<organism_name>_
+These files can be saved in the following directory resources/RM_resources/<organism_name>_
 
 ### Save RepeatMasker results to database 
 Save the repeats found by RepeatMasker into the database using the results file path as a parameter.

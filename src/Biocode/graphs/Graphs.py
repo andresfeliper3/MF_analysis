@@ -1044,3 +1044,33 @@ class Graphs:
         if save:
             Graphs._savefig(title, route)
         plt.show()
+
+    @staticmethod
+    def moving_average(data, window_size):
+        """Compute the moving average of the data using a specified window size."""
+        return np.convolve(data, np.ones(window_size) / window_size, mode='valid')
+
+    @staticmethod
+    def graph_comparison_lines(x_values: list, y_values_list: list, title: str, ylabel: str,
+                               organisms_names: list[str], save: bool, dir: str, soften: bool, window_size: int = 4):
+        plt.figure(figsize=(10, 6))
+        colors = plt.cm.get_cmap('viridis', len(y_values_list))
+
+        for index, y_values in enumerate(y_values_list):
+            # Plot original data points connected by a line
+            plt.plot(x_values, y_values, color=colors(index), label=organisms_names[index], marker='o')
+
+            if soften:
+                # Plot original data points connected by a line
+                plt.plot(x_values, y_values, color=colors(index), label=organisms_names[index], marker='o')
+
+
+        plt.title(title)
+        plt.xlabel("Chromosomes")
+        plt.ylabel(ylabel)
+        plt.legend()
+        plt.grid(False)
+        route = f"comparisons/{dir}"
+        if save:
+            Graphs._savefig(title, route)
+        plt.show()

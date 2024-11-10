@@ -52,4 +52,13 @@ class LinearRepeatsRegionChromosomesService(AbstractService):
                 f"ORDER BY rc.region_number;"
         return self.extract_with_custom_query(query)
 
-
+    def extract_count_of_repeats_by_size_and_chromosome(self, GCF: str, size_list: list):
+        query = f"SELECT rc.whole_chromosome_id, SUM(lrrc.count) AS counts_summary FROM repeats r "\
+                 f"JOIN linear_repeats_region_chromosomes lrrc ON r.id = lrrc.repeats_id "\
+                 f"JOIN  region_chromosomes rc ON lrrc.region_chromosomes_id = r.id "\
+                 f"JOIN organisms o ON o.id = rc.organism_id "\
+                 f"WHERE r.method_to_find_it = 'Linear' "\
+                 f"AND o.GCF = '{GCF}' "\
+                 f"AND lrrc.size IN ({self._list_to_sql_list(size_list)}) "\
+                 f"GROUP BY rc.whole_chromosome_id;"
+        return self.extract_with_custom_query(query)

@@ -287,6 +287,13 @@ def main():
                                                                   default='true',
                                                                   help="Include tags/annotations in the heatmap plot")
 
+    graph_compare_parser = subparsers.add_parser('graph_compare',  help='Graph comparing degrees of multifractality of different organisms')
+    graph_compare_parser.add_argument('-organisms', nargs='+', help='List of organisms to compare')
+    graph_compare_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                                                help='Save graphs locally in /out directory')
+    graph_compare_parser.add_argument('-dir',
+                                                                help="Enter the name of the genre or family")
+
     download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
                                                              'specified in the sequences.yaml file.')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
@@ -399,6 +406,8 @@ def main():
     elif args.command == 'graph_categories_repeats_heatmap_genome':
         grapher.graph_categories_repeats_heatmap_genome_command(size=args.size, save=args.save, dir=args.dir,
                                                                   name=args.name, tags=args.tags)
+    elif args.command == 'graph_compare':
+        grapher.graph_compare_command(organisms=args.organisms, save=args.save, dir=args.dir)
     elif args.command == 'download':
         downloader.download_command(args)
     elif args.command == 'load_RM_repeats':

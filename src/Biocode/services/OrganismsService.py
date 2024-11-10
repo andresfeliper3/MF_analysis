@@ -19,3 +19,9 @@ class OrganismsService(AbstractService):
         query = f"SELECT refseq_accession_number FROM whole_chromosomes JOIN organisms o on whole_chromosomes.organism_id = o.id " \
                 f"WHERE GCF='{GCF}';"
         return self.extract_with_custom_query(query)['refseq_accession_number'].to_numpy()
+
+    def extract_chromosomes_names_by_GCF(self, GCF: str) -> List:
+        query = f"SELECT whole_chromosomes.name FROM whole_chromosomes JOIN organisms o on whole_chromosomes.organism_id = o.id " \
+                f"WHERE GCF='{GCF}';"
+        return self.extract_with_custom_query(query)['name'].to_numpy()
+
