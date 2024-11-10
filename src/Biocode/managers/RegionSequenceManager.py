@@ -107,18 +107,18 @@ class RegionSequenceManager(SequenceManagerInterface):
 
     def graph_cgr(self):
         for manager in self.managers:
-            manager.graph_cgr(name=f"{self.organism_name}/regions")
+            manager.graph_cgr(name=f"regions/{self.organism_name}")
 
     def graph_3d_cgr(self, grid_size=512):
         for manager in self.managers:
-            manager.graph_3d_cgr(grid_size, name=f"{self.organism_name}/regions")
+            manager.graph_3d_cgr(grid_size, name=f"regions/{self.organism_name}")
 
     def graph_linear_fit(self):
         for index, regional_fq in enumerate(self.fq):
             Graphs.graph_linear_fit(fq_values=regional_fq,
                                     epsilons=self.managers[index].get_mfa_generator().get_epsilons(),
                                     sequence_name=self.sequence.get_regions_names()[index],
-                                    name=f"{self.organism_name}/regions")
+                                    name=f"regions/{self.organism_name}")
 
     def graph_degrees_of_multifractality(self, y_range=None, top_labels=False):
         # Check if the lengths of x_array and y_array match
@@ -129,32 +129,32 @@ class RegionSequenceManager(SequenceManagerInterface):
 
         Graphs.graph_bars(x_array=self.sequence.get_regions_names(), y_array=self.degrees_of_multifractality,
                           title=f"Degree of multifractality by regions for {self.sequence_name}",
-                          name=f"{self.organism_name}/regions",
+                          name=f"regions/{self.organism_name}",
                           y_label="Degree of multifractality", y_range=y_range, top_labels=top_labels)
 
     def graph_multifractal_spectrum(self, color_by='region'):
         Graphs.graph_many_grouped(results_array=self.flattened_mfa_results, X='q_values', Y='Dq_values', x_label='q',
                                   y_label='Dq',
                                   title=f"Multifractal spectrum of chromosome {self.sequence_name} by regions of {self.organism_name}",
-                                  name=f"{self.organism_name}/regions",
+                                  name=f"regions/{self.organism_name}",
                                   regions_number=self.sequence.get_regions_number(), labels_array=self.sequence.get_regions_names(),
                                   color_by=color_by)
     def graph_multifractal_spectrum_old(self):
         Graphs.graph_many(results_array=self.mfa_results, X='q_values', Y='Dq_values', x_label='q', y_label='Dq',
-                          title=f'Dq vs q by regions for {self.sequence_name}', name=f"{self.organism_name}/regions",
+                          title=f'Dq vs q by regions for {self.sequence_name}', name=f"regions/{self.organism_name}",
                           labels_array=self.sequence.get_regions_names())
 
     def graph_correlation_exponent(self, color_by='region', markersize=3):
         Graphs.graph_many_grouped(results_array=self.flattened_mfa_results, X='q_values', Y='tau_q_values', x_label='q',
                                   y_label='t(q)',
                                   title=f"Correlation exponent of chromosome {self.sequence_name} by regions of {self.organism_name}",
-                                  name=f"{self.organism_name}/regions",
+                                  name=f"regions/{self.organism_name}",
                                   regions_number=self.sequence.get_regions_number(), labels_array=self.sequence.get_regions_names(),
                                   markersize=markersize, color_by=color_by)
 
     def graph_correlation_exponent_old(self):
         Graphs.graph_many(results_array=self.mfa_results, X='q_values', Y='tau_q_values', x_label='q', y_label='t(q)',
-                          title=f't(q) vs q by regions for {self.sequence_name}', name=f"{self.organism_name}/regions",
+                          title=f't(q) vs q by regions for {self.sequence_name}', name=f"regions/{self.organism_name}",
                           labels_array=self.sequence.get_regions_names(), markersize=2)
 
     def _attach_cover_data(self):

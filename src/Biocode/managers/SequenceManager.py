@@ -120,30 +120,30 @@ class SequenceManager(SequenceManagerInterface):
         self.degrees_of_multifractality = self.mfa_generator.get_DDq()
 
     def graph_cgr(self):
-        self.mfa_generator.get_cgr_gen().graph_cgr(title=f"CGR of {self.sequence_name}", name=f"{self.organism_name}/whole")
+        self.mfa_generator.get_cgr_gen().graph_cgr(title=f"CGR of {self.sequence_name}", name=f"whole/{self.organism_name}")
 
     def graph_3d_cgr(self, grid_size=512):
         epsilons = self.mfa_generator.get_epsilons()
         sizes = self.mfa_generator.get_sizes()
         for index, mi_grid in enumerate(self.mfa_generator.get_cgrs_mi_grids()):
             if sizes[index] == grid_size:
-                Graphs.graph_3d_cgr(count_matrix=mi_grid, name=f"{self.organism_name}/whole",
+                Graphs.graph_3d_cgr(count_matrix=mi_grid, name=f"whole/{self.organism_name}",
                                     title=f"MMR for {self.sequence.get_name()} with grid size {sizes[index]}",
                                     epsilon=epsilons[index])
 
     def graph_linear_fit(self):
         Graphs.graph_linear_fit(fq_values=self.fq, epsilons=self.mfa_generator.get_epsilons(),
-                                sequence_name=self.sequence_name, name=f"{self.organism_name}/whole")
+                                sequence_name=self.sequence_name, name=f"whole/{self.organism_name}")
 
     def graph_multifractal_spectrum(self):
         Graphs.graph_many(results_array=[self.mfa_results], X='q_values', Y='Dq_values', x_label='q', y_label='Dq',
-                          title=f'Dq vs q for {self.sequence_name}', name=f"{self.organism_name}/whole",
+                          title=f'Dq vs q for {self.sequence_name}', name=f"whole/{self.organism_name}",
                           labels_array=[self.sequence.get_name()])
 
     def graph_correlation_exponent(self):
         Graphs.graph_many(results_array=[self.mfa_results], X='q_values', Y='tau_q_values', x_label='q', y_label='t(q)',
                           title=f't(q) vs q for chromosomes {self.sequence_name}',
-                          name=f"{self.organism_name}/whole",
+                          name=f"whole/{self.organism_name}",
                           labels_array=[self.sequence.get_name()], markersize=3)
 
     def _attach_cover_data(self):
@@ -158,7 +158,7 @@ class SequenceManager(SequenceManagerInterface):
             logger.info(f"The degree of multifractality of {self.sequence_name} is {self.degrees_of_multifractality}")
 
     def graph_coverage(self, subfolder="whole"):
-        Graphs.graph_coverage(values=self.cover, sequence_name=self.sequence_name, name=f"{self.organism_name}/{subfolder}")
+        Graphs.graph_coverage(values=self.cover, sequence_name=self.sequence_name, name=f"{subfolder}/{self.organism_name}")
 
 
     def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step:int, amount_sequences: int) -> \

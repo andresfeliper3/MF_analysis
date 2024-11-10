@@ -20,6 +20,7 @@ caenorhabditis elegans: &c_elegans
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/"
   regions_number: 3
+  sorted_files: true
 GCF_000002985.6: *c_elegans
 
 caenorhabditis remanei: &c_remanei
@@ -82,7 +83,9 @@ GCF_016746395.2: *d_simulans
 nematostella vectensis: &n_vectensis
   organism_name: "nematostella_vectensis"
   GCF: "GCF_932526225.1"
-  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Nematostella_vectensis/all_assembly_versions/GCF_932526225.1_jaNemVect1.1/GCF_932526225.1_jaNemVect1.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Nematostella_vectensis/latest_assembly_versions/GCF_932526225.1_jaNemVect1.1/GCF_932526225.1_jaNemVect1.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Nematostella_vectensis/latest_assembly_versions/GCF_932526225.1_jaNemVect1.1/"
+  sorted_files: "true"
   regions_number: 3
 GCF_932526225.1: *n_vectensis
 
@@ -90,7 +93,9 @@ acropora millepora: &a_millepora
   organism_name: "acropora_millepora"
   GCF: "GCF_013753865.1"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Acropora_millepora/latest_assembly_versions/GCF_013753865.1_Amil_v2.1/GCF_013753865.1_Amil_v2.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
-  regions_number:
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Acropora_millepora/latest_assembly_versions/GCF_013753865.1_Amil_v2.1/"
+  regions_number: 3
+  sorted_files: true
 GCF_013753865.1: *a_millepora
 
 # NOT EXECUTED
@@ -163,5 +168,7 @@ brettanomyces nanus: &b_nanus
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Brettanomyces_nanus/latest_assembly_versions/GCF_011074865.1_ASM1107486v2/"
   regions_number: 3
 GCF_011074865.1: *b_nanus
+
+
 
 

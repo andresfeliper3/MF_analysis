@@ -40,17 +40,17 @@ class GenomeManager(GenomeManagerInterface):
 
         Graphs.graph_bars(x_array=self.genome.get_chromosomes_names(), y_array=y_array,
                           title=f"Degree of multifractality by chromosomes of {self.organism_name}",
-                          name=f"{self.organism_name}/whole",
+                          name=f"whole/{self.organism_name}",
                           y_label="Degree of multifractality", y_range=y_range, top_labels=top_labels)
 
     def graph_multifractal_spectrum(self):
         Graphs.graph_many(results_array=self.mfa_results, X='q_values', Y='Dq_values', x_label='q', y_label='Dq',
-                          title=f"Dq vs q by chromosomes of {self.organism_name}", name=f"{self.organism_name}/whole",
+                          title=f"Dq vs q by chromosomes of {self.organism_name}", name=f"whole/{self.organism_name}",
                           labels_array=self.genome.get_chromosomes_names())
 
     def graph_correlation_exponent(self):
         Graphs.graph_many(results_array=self.mfa_results, X='q_values', Y='tau_q_values', x_label='q', y_label='t(q)',
-                          title=f"t(q) vs q by chromosomes of {self.organism_name}", name=f"{self.organism_name}/whole",
+                          title=f"t(q) vs q by chromosomes of {self.organism_name}", name=f"whole/{self.organism_name}",
                           labels_array=self.genome.get_chromosomes_names(), markersize=3)
 
     def graph_multifractal_analysis_merged(self, y_range_degrees_of_multifractality=None,

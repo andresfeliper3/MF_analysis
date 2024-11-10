@@ -754,7 +754,7 @@ class Graphs:
 
         plt.tight_layout()
         if save:
-            route = f"{name}/genes/gtf_merged"
+            route = f"genes/gtf_merged/{name}"
             Graphs._savefig(title, route)
         plt.show()
 
@@ -806,7 +806,7 @@ class Graphs:
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
         if save:
-            route = f"{name}/genes/gtf"
+            route = f"genes/gtf/{name}"
             Graphs._savefig(title, route)
         plt.show()
 
@@ -886,7 +886,7 @@ class Graphs:
         num_columns = min(len(most_frequent_nplets), 4)  # Adjust the number of columns as needed
         plt.legend(title="K-mers", bbox_to_anchor=(1.05, 1), loc='upper left', fontsize='small', ncol=num_columns)
 
-        route = f"{dir}/{subfolder}"
+        route = f"{subfolder}/{dir}"
         if save:
             Graphs._savefig(title, route)
         plt.show()
@@ -940,7 +940,7 @@ class Graphs:
             plt.legend(title="K-mers", bbox_to_anchor=(1.05, 1), loc='upper left', fontsize='small', ncol=num_columns)
 
             # Save the plot if requested
-            route = f"{dir}/{subfolder}"
+            route = f"{subfolder}/{dir}"
             if save:
                 Graphs._savefig(title, route)
 
@@ -976,7 +976,7 @@ class Graphs:
         plt.legend()
         plt.grid()
 
-        route = f"{dir}/{subfolder}"
+        route = f"{subfolder}/{dir}"
         if save:
             Graphs._savefig(title, route)
         plt.show()
@@ -1023,7 +1023,7 @@ class Graphs:
         plt.figtext(0.15, -0.05, text_str, fontsize=10, ha='left', va='top',
                     bbox=dict(facecolor='white', alpha=0.5, edgecolor='none'))
 
-        route = f"{dir}/{subfolder}"
+        route = f"{subfolder}/{dir}"
         if save:
             Graphs._savefig(title, route)
         plt.show()
@@ -1040,7 +1040,7 @@ class Graphs:
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.yticks(rotation=0, ha='right')
-        route = f"{dir}/{subfolder}"
+        route = f"{subfolder}/{dir}"
         if save:
             Graphs._savefig(title, route)
         plt.show()

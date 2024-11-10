@@ -51,7 +51,7 @@ class RegionGenomeManager(GenomeManagerInterface):
 
         Graphs.graph_bars_grouped(x_array=self.regions_names, y_array=self.degrees_of_multifractality,
                                   title=f"Degrees of multifractality by regions of {self.organism_name}",
-                                  name=f"{self.organism_name}/regions",
+                                  name=f"regions/{self.organism_name}",
                                   regions_number=self.regions_number, y_label="Degrees of multifractality",
                                   x_labels=self.genome.get_chromosomes_names(), legend_labels=legend_labels,
                                   y_range=y_range, top_labels=top_labels)
@@ -60,7 +60,7 @@ class RegionGenomeManager(GenomeManagerInterface):
         Graphs.graph_many_grouped(results_array=self.flattened_mfa_results, X='q_values', Y='Dq_values', x_label='q',
                                   y_label='Dq',
                                   title=f"Multifractal spectrum of genome by regions of {self.organism_name}",
-                                  name=f"{self.organism_name}/regions",
+                                  name=f"regions/{self.organism_name}",
                                   regions_number=self.regions_number, labels_array=self.regions_names,
                                   color_by=color_by)
 
@@ -68,7 +68,7 @@ class RegionGenomeManager(GenomeManagerInterface):
         Graphs.graph_many_grouped(results_array=self.flattened_mfa_results, X='q_values', Y='tau_q_values', x_label='q',
                                   y_label='t(q)',
                                   title=f"Correlation exponent of genome by regions of {self.organism_name}",
-                                  name=f"{self.organism_name}/regions",
+                                  name=f"regions/{self.organism_name}",
                                   regions_number=self.regions_number, labels_array=self.regions_names,
                                   markersize=markersize, color_by=color_by)
 
