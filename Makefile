@@ -1,61 +1,72 @@
-.PHONY: all clean
+NAME="saccharomyces mikatae"
+WINDOW_LENGTH=30000
+DIR="saccharomyces_mikatae"
+GCF=GCF_947241705.1
+GTF_PATH=resources/genes/saccharomyces_mikatae/gtf/GCF_947241705.1_Smik-IFO1815_genomic.gtf
+PARTITIONS=300
+REGIONS=3
+K_RANGE="(4,12)"
+GENES_KMER_SIZE=4
+GENES_AMOUNT=100
 
-# Makefile for running genome analysis tasks
+.PHONY: all download analyze_genome_whole analyze_genome_regions \
+        graph_whole graph_regions find_kmers_genome \
+        graph_linear_repeats graph_gtf_file graph_linear_regression \
+        load_genes find_kmers_genes load_categories graph_categories
 
-# Editable parameters
-NAME := "drosophila pseudoobscura"
-WINDOW_LENGTH := 600000
-DIR := "drosophila_pseudoobscura"
-GCF := GCF_009870125.1
-GTF_PATH := resources/genes/drosophila_pseudoobscura/gtf/GCF_009870125.1_UCI_Dpse_MV25_genomic.gtf
-PARTITIONS := 300
-REGIONS := 3
-K_RANGE := "(4,12)"
-GENES_KMER_SIZE := 4
-GENES_AMOUNT := 100
+all: analyze_genome_whole analyze_genome_regions graph_whole \
+     graph_regions find_kmers_genome graph_linear_repeats \
+     graph_gtf_file graph_linear_regression load_genes \
+     find_kmers_genes
 
-.PHONY: all analyze_genome find_kmers_genome graph load_genes find_kmers_linearly_genes_genome load_categories_genome graph_categories_repeats_heatmap_genome
+download:
+	@echo "Running download..."
+	python3 command.py download -name $(NAME)
 
-all: analyze_genome find_kmers_genome graph load_genes find_kmers_linearly_genes_genome load_categories_genome graph_categories_repeats_heatmap_genome
-
-analyze_genome:
+analyze_genome_whole:
 	@echo "Running analyze_genome -mode whole..."
-	py ./command.py analyze_genome -name $(NAME) -mode whole
+	python3 command.py analyze_genome -name $(NAME) -mode whole
+
+analyze_genome_regions:
 	@echo "Running analyze_genome -mode regions..."
-	py ./command.py analyze_genome -name $(NAME) -mode regions -window_length $(WINDOW_LENGTH)
+	python3 command.py analyze_genome -name $(NAME) -mode regions -window_length $(WINDOW_LENGTH)
+
+graph_whole:
+	@echo "Running graph -mode whole..."
+	python3 command.py graph -name $(NAME) -mode whole
+
+graph_regions:
+	@echo "Running graph -mode regions..."
+	python3 command.py graph -name $(NAME) -mode regions -window_length $(WINDOW_LENGTH)
 
 find_kmers_genome:
 	@echo "Running find_kmers_genome linearly..."
-	py ./command.py find_kmers_genome -method l -k_range $(K_RANGE) -name $(NAME) -window_length $(WINDOW_LENGTH) -dir $(DIR)
+	python3 command.py find_kmers_genome -method l -k_range $(K_RANGE) -name $(NAME) -window_length $(WINDOW_LENGTH) -dir $(DIR)
 
-graph:
-	@echo "Running graph -mode whole..."
-	py ./command.py graph -name $(NAME) -mode whole
-	@echo "Running graph -mode regions..."
-	py ./command.py graph -name $(NAME) -mode regions -window_length $(WINDOW_LENGTH)
+graph_linear_repeats:
 	@echo "Running graph_linear_repeats_genome..."
-	py ./command.py graph_linear_repeats_genome --save true -name $(NAME) -gcf $(GCF) -dir $(DIR) -k_range $(K_RANGE)
+	python3 command.py graph_linear_repeats_genome --save true -name $(NAME) -gcf $(GCF) -dir $(DIR) -k_range $(K_RANGE)
+
+graph_gtf_file:
 	@echo "Running graph_gtf_file..."
-	py ./command.py graph_gtf_file -path $(GTF_PATH) -partitions $(PARTITIONS) -regions $(REGIONS) -plot_type line -dir $(DIR) --save true
+	python3 command.py graph_gtf_file -path $(GTF_PATH) -partitions $(PARTITIONS) -regions $(REGIONS) -plot_type line -dir $(DIR) --save true
+
+graph_linear_regression:
 	@echo "Running graph_linear_regression_genome..."
-	py ./command.py graph_linear_regression_genome -gcf $(GCF) -k_range $(K_RANGE) -dir $(DIR) -name $(NAME)
+	python3 command.py graph_linear_regression_genome -gcf $(GCF) -k_range $(K_RANGE) -dir $(DIR) -name $(NAME)
 
 load_genes:
 	@echo "Running load_genes..."
-	py ./command.py load_genes -path $(GTF_PATH)
+	python3 command.py load_genes -path $(GTF_PATH)
 
-find_kmers_linearly_genes_genome:
+find_kmers_genes: load_genes
 	@echo "Running find_kmers_linearly_genes_genome..."
-	py ./command.py find_kmers_linearly_genes_genome -name $(NAME) -window_length $(WINDOW_LENGTH) -dir $(DIR) -graph_from_file true -size $(GENES_KMER_SIZE)
+	python3 command.py find_kmers_linearly_genes_genome -name $(NAME) -window_length $(WINDOW_LENGTH) -dir $(DIR) -graph_from_file true -size $(GENES_KMER_SIZE)
 
-load_categories_genome:
-	@echo "Running scraping functional categories and subcategories from KEGG..."
-	py ./command.py load_categories_genome -name $(NAME) -size $(GENES_KMER_SIZE) -genes_amount $(GENES_AMOUNT)
+load_categories:
+	@echo "Running load_categories_genome..."
+	python3 command.py load_categories_genome -name $(NAME) -size $(GENES_KMER_SIZE) -genes_amount $(GENES_AMOUNT)
 
-graph_categories_repeats_heatmap_genome:
-	@echo "Running Graphing functional categories and subcategories heatmaps..."
-	py ./command.py graph_categories_repeats_heatmap_genome -size $(GENES_KMER_SIZE) --save true -dir $(DIR) -name $(NAME) --tags true
-
-clean:
-	@echo "Cleaning up..."
-	# Add commands to clean up generated files
+graph_categories: load_categories
+	@echo "Running graph_categories_repeats_heatmap_genome..."
+	python3 command.py graph_categories_repeats_heatmap_genome -size $(GENES_KMER_SIZE) --save true -dir $(DIR) -name $(NAME) --tags true
