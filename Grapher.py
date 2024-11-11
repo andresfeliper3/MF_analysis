@@ -453,8 +453,8 @@ class Grapher:
         Graphs.plot_combined_kmer_frequency(window_profiles, most_frequent_nplets, sequence_name,
                                             dir, save, window_length, subfolder="linear_repeats_all_database")
         Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles, most_frequent_nplets,
-                                                        sequence_name, dir, save, window_length,
-                                                        subfolder=f"linear_repeats_all_database/per_k/{sequence_name}")
+                                                        sequence_name, f"{dir}/{sequence_name}", save, window_length,
+                                                        subfolder=f"linear_repeats_all_database/per_k")
 
     @DBConnection
     @TryExcept
@@ -492,8 +492,8 @@ class Grapher:
         Graphs.plot_combined_kmer_frequency(window_profiles_only_in_genes, most_frequent_nplets, sequence_name,
                                             dir, save, window_length, subfolder="linear_repeats_genes_database")
         Graphs.plot_combined_kmer_frequency_graph_per_k(window_profiles_only_in_genes, most_frequent_nplets,
-                                                        sequence_name, dir, save, window_length,
-                                                        subfolder=f"linear_repeats_genes_database/per_k/{sequence_name}")
+                                                        sequence_name, f"{dir}/{sequence_name}", save, window_length,
+                                                        subfolder=f"linear_repeats_genes_database/per_k")
 
     @DBConnection
     @TryExcept
@@ -531,12 +531,12 @@ class Grapher:
                 )
                 repeats_counts_list = repeat_counts_df['count'].to_list()
                 kmers_data[row['name']] = (repeats_counts_list, DDq_list)
-                Graphs.plot_linear_regression_pearson_coefficient(x=repeats_counts_list, y=DDq_list, dir=dir,
+                Graphs.plot_linear_regression_pearson_coefficient(x=repeats_counts_list, y=DDq_list, dir=f"{dir}/{sequence_name}",
                                                                   save=bool(save),
-                                                                  subfolder=f"Dq_repeats_regression/{sequence_name}/k={k}",
+                                                                  subfolder=f"Dq_repeats_regression/k={k}",
                                                                   title=f"Linear Regression for {row['name']} - {self.loader.get_organism_name()}")
-                Graphs.plot_multiple_linear_regression(kmers_data, dir=dir, save=bool(save),
-                                                       subfolder=f"Dq_repeats_regression/{sequence_name}",
+                Graphs.plot_multiple_linear_regression(kmers_data, dir=f"{dir}/{sequence_name}", save=bool(save),
+                                                       subfolder=f"Dq_repeats_regression",
                                                        title=f"Linear Regression for Multiple {k}-mers - {self.loader.get_organism_name()}")
             logger.info(
                 f"Completed graph for linear regression DDq vs repeats - {sequence_name} - {refseq_accession_number}")

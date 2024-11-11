@@ -17,16 +17,18 @@ class Graphs:
 
     @staticmethod
     def _savefig(title, name, bbox_inches='tight'):
-        directory = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), "out/graphs")
+        directory = os.path.join(
+            os.path.abspath(os.path.join(os.path.dirname(__file__), '..')),
+            "out/graphs",
+            name
+        )
         os.makedirs(directory, exist_ok=True)
 
-        actual_path = f"{directory}/{name}"
+        file_path = os.path.join(directory, f"{title}.png")
         plt.tight_layout()
-        if not os.path.exists(actual_path):
-            os.makedirs(actual_path)
         plt.ioff()
-        plt.savefig(f'{actual_path}/{title}.png', bbox_inches=bbox_inches)
-        plt.close()
+        plt.savefig(file_path, bbox_inches=bbox_inches)
+        plt.close('all')
 
     @staticmethod
     def graph_one(x_array, y_array, x_label, y_label, title, name, save=True):
@@ -930,7 +932,7 @@ class Graphs:
                 smoothed_windows = windows[window_size_for_smoothing - 1:]
                 plt.plot(smoothed_windows, smoothed_counts, label=kmer, color=colors(i), marker='.')
 
-            title = f"Frequency of {k} across {sequence_name} genome windows in {dir}"
+            title = f"Frequency of {k} across {sequence_name} genome windows in {dir.split('/')[0]}"
             plt.title(title)
             plt.xlabel(f"Window ({window_length} bp)")
             plt.ylabel("Count of k-mers")
