@@ -1069,6 +1069,7 @@ class Graphs:
 
         plt.title(title)
         plt.xlabel("Chromosomes")
+        plt.xticks(rotation=90)
         plt.ylabel(ylabel)
         plt.legend()
         plt.grid(False)
