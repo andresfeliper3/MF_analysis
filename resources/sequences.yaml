@@ -28,6 +28,7 @@ caenorhabditis remanei: &c_remanei
   GCF: "GCF_010183535.1"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_remanei/latest_assembly_versions/GCF_010183535.1_CRPX506/GCF_010183535.1_CRPX506_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_remanei/latest_assembly_versions/GCF_010183535.1_CRPX506/"
+  sorted_files: true
 GCF_010183535.1: *c_remanei
 
 caenorhabditis briggsae: &c_briggsae
@@ -35,6 +36,7 @@ caenorhabditis briggsae: &c_briggsae
   GCF: "GCF_000004555.2"
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_briggsae/latest_assembly_versions/GCF_000004555.2_CB4/GCF_000004555.2_CB4_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_briggsae/latest_assembly_versions/GCF_000004555.2_CB4/"
+  sorted_files: true
 GCF_000004555.2: *c_briggsae
 
 micromonas commoda: &m_commoda

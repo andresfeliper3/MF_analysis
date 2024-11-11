@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="saccharomyces cerevisiae"
-set WINDOW_LENGTH=30000
-set DIR="saccharomyces_cerevisiae"
-set GCF=GCF_000146045.2
-set GTF_PATH=resources/genes/saccharomyces_cerevisiae/gtf/GCF_000146045.2_R64_genomic.gtf
-set PARTITIONS=300
+set NAME="caenorhabditis briggsae"
+set WINDOW_LENGTH=300000
+set DIR="caenorhabditis_briggsae"
+set GCF=GCF_000004555.2
+set GTF_PATH=resources/genes/caenorhabditis_briggsae/gtf/GCF_000004555.2_CB4_genomic.gtf
+set PARTITIONS=100
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4

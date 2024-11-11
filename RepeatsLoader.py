@@ -54,7 +54,7 @@ class RepeatsLoader:
         self.genes_containing_repeats_service = genes_containing_repeats_service
         self.file_reader = file_reader
         self.loader = loader
-        self.IS_COVERED = True
+        self.IS_COVERED = False
 
     @DBConnection
     @TryExcept
