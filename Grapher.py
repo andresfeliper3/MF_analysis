@@ -606,7 +606,7 @@ class Grapher:
                 if len(different_chromosomes_names) == 0:
                     different_chromosomes_names = chromosome_names
                 else:
-                    for index, chr_name in different_chromosomes_names:
+                    for index, chr_name in enumerate(different_chromosomes_names):
                         different_chromosomes_names[index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
             else:
                 raise Exception("Please provide a list of organisms names")
@@ -627,7 +627,7 @@ class Grapher:
                 if len(different_chromosomes_names) == 0:
                     different_chromosomes_names = chromosome_names
                 else:
-                    for index, chr_name in different_chromosomes_names:
+                    for index, chr_name in enumerate(different_chromosomes_names):
                         different_chromosomes_names[index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
             else:
                 raise Exception("Please provide a list of organisms names")
@@ -652,7 +652,7 @@ class Grapher:
                 if len(different_chromosomes_names) == 0:
                     different_chromosomes_names = chromosome_names
                 else:
-                    for index, chr_name in different_chromosomes_names:
+                    for index, chr_name in enumerate(different_chromosomes_names):
                         different_chromosomes_names[
                             index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
             else:
