@@ -957,13 +957,17 @@ class Graphs:
         x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
         y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
 
+        # Calculate Pearson correlation coefficient
         correlation_matrix = np.corrcoef(x_normalized, y_normalized)
         pearson_correlation = correlation_matrix[0, 1]
 
+        # Fit linear regression model and calculate R^2
         model = LinearRegression()
         model.fit(x_normalized.reshape(-1, 1), y_normalized)
         y_pred = model.predict(x_normalized.reshape(-1, 1))
+        r_squared = model.score(x_normalized.reshape(-1, 1), y_normalized)
 
+        # Plot the data and the regression line
         plt.figure(figsize=(10, 6))
         plt.scatter(x_normalized, y_normalized, color='blue', label='Data points')
         plt.plot(x_normalized, y_pred, color='red', label='Regression line')
@@ -971,13 +975,15 @@ class Graphs:
         plt.xlabel('Normalized repeats frequency')
         plt.ylabel('Normalized degree of multifractality')
 
-        plt.text(0.05, 0.85, f'Pearson Correlation: {pearson_correlation:.2f}',
+        # Display Pearson correlation and R^2 values
+        plt.text(0.05, 0.85, f'Pearson Correlation: {pearson_correlation:.2f}\nR²: {r_squared:.2f}',
                  transform=plt.gca().transAxes, fontsize=12, verticalalignment='top',
                  bbox=dict(facecolor='white', alpha=0.5, edgecolor='none'))
 
         plt.legend()
         plt.grid()
 
+        # Save the plot if required
         route = f"{subfolder}/{dir}"
         if save:
             Graphs._savefig(title, route)
@@ -988,7 +994,7 @@ class Graphs:
         plt.figure(figsize=(10, 8))
 
         colors = plt.get_cmap('tab10').colors
-        pearson_correlations = []
+        stats = []  # Store k-mer names, Pearson correlations, and R^2 values
 
         for idx, (kmer_name, (repeats_counts_list, DDq_list)) in enumerate(data.items()):
             x = np.array(repeats_counts_list)
@@ -998,15 +1004,21 @@ class Graphs:
             x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
             y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
 
+            # Calculate Pearson correlation coefficient
             correlation_matrix = np.corrcoef(x_normalized, y_normalized)
             pearson_correlation = correlation_matrix[0, 1]
-            pearson_correlations.append((kmer_name, pearson_correlation))  # Store for display
             logger.info(f"{kmer_name} - Pearson correlation coefficient: {pearson_correlation:.2f}")
 
+            # Fit linear regression model and calculate R^2
             model = LinearRegression()
             model.fit(x_normalized.reshape(-1, 1), y_normalized)
             y_pred = model.predict(x_normalized.reshape(-1, 1))
+            r_squared = model.score(x_normalized.reshape(-1, 1), y_normalized)
 
+            # Append the k-mer, Pearson correlation, and R^2 to stats
+            stats.append((kmer_name, pearson_correlation, r_squared))
+
+            # Plot data points and regression line for each k-mer
             plt.scatter(x_normalized, y_normalized, color=colors[idx % len(colors)],
                         label=f'Data points for {kmer_name}')
             plt.plot(x_normalized, y_pred, color=colors[idx % len(colors)], label=f'Regression line for {kmer_name}')
@@ -1017,10 +1029,10 @@ class Graphs:
         plt.legend(loc='upper left', bbox_to_anchor=(1, 1), title='Legend')
         plt.grid()
 
-        # Position the Pearson correlation coefficients outside the graph
+        # Display Pearson correlations and R^2 values outside the graph
         text_str = "\n".join(
-            [f"{kmer_name}: Pearson Correlation: {pearson_correlation:.2f}" for kmer_name, pearson_correlation in
-             pearson_correlations]
+            [f"{kmer_name}: Pearson Correlation: {pearson_correlation:.2f}, R²: {r_squared:.2f}"
+             for kmer_name, pearson_correlation, r_squared in stats]
         )
         plt.figtext(0.15, -0.05, text_str, fontsize=10, ha='left', va='top',
                     bbox=dict(facecolor='white', alpha=0.5, edgecolor='none'))
