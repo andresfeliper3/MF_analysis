@@ -17,7 +17,7 @@ GENES_AMOUNT=100
 all: analyze_genome_whole analyze_genome_regions graph_whole \
      graph_regions find_kmers_genome graph_linear_repeats \
      graph_gtf_file graph_linear_regression load_genes \
-     find_kmers_genes
+     find_kmers_genes load_categories graph_categories
 
 download:
 	@echo "Running download..."
