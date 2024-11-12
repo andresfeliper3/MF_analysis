@@ -2,11 +2,11 @@
 setlocal
 
 rem Editable parameters
-set NAME="caenorhabditis elegans"
-set WINDOW_LENGTH=300000
-set DIR="caenorhabditis_elegans"
-set GCF=GCF_000002985.6
-set GTF_PATH=resources/genes/caenorhabditis_elegans/gtf/GCF_000002985.6_WBcel235_genomic.gtf
+set NAME="saccharomyces mikatae"
+set WINDOW_LENGTH=30000
+set DIR="saccharomyces_mikatae"
+set GCF=GCF_947241705.1
+set GTF_PATH=resources/genes/saccharomyces_mikatae/gtf/GCF_947241705.1_Smik-IFO1815_genomic.gtf
 set PARTITIONS=100
 set REGIONS=3
 set K_RANGE="(4,12)"
