@@ -3,11 +3,11 @@ database:
   sqlite:
     db_file: "resources/MFA_analysis.db"
   postgresql:
-    host: "localhost"
-    port: 5433
-    user: "postgres"
-    password: "310301"
-    database: "MFA_analysis"
+    host: "dpg-csheilaj1k6c7396lgq0-a.ohio-postgres.render.com"
+    port: 5432
+    user: "mf_analysis_user"
+    password: "Ie3DuiGoogJwndjXLQYX9irXcUJnVtUk"
+    database: "mf_analysis"
   mysql:
     host: "localhost"
     port: 3306

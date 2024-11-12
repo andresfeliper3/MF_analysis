@@ -587,11 +587,29 @@ class Grapher:
     @TryExcept
     @Timer
     def graph_compare_command(self, organisms, save, dir):
-        self.graph_compare_ddq_command(organisms, save, dir, soften=False)
-        self.graph_compare_genes_command(organisms, save, dir, soften=False)
+        different_chromosomes_names, ddq_y_values = self.graph_compare_ddq_command(organisms, save, dir, soften=False)
+        different_chromosomes_names, genes_count_y_values = self.graph_compare_genes_command(organisms, save, dir, soften=False)
         for i in range(4, 12+1):
             self.graph_compare_repeats_command(organisms, save, dir, size_list=[i, i], soften=False)
-        self.graph_compare_repeats_command(organisms, save, dir, size_list=[4, 12], soften=False)
+        different_chromosomes_names, repeats_count_y_values = self.graph_compare_repeats_command(organisms, save, dir, size_list=[4, 12], soften=False)
+
+        for y_organism_index in range(len(organisms) - 1):
+            for x_organism_index in range(y_organism_index + 1, len(organisms)):
+                Graphs.plot_linear_regression_pearson_coefficient(x=ddq_y_values[x_organism_index], y=ddq_y_values[y_organism_index],
+                                                                  dir=dir, save=bool(save),
+                                                                  subfolder="comparisons/linear_regressions",
+                                                                  title=f"Degrees of multifractality - Linear Regression for {organisms[y_organism_index]} vs {organisms[x_organism_index]}")
+                Graphs.plot_linear_regression_pearson_coefficient(x=genes_count_y_values[x_organism_index],
+                                                                  y=genes_count_y_values[y_organism_index],
+                                                                  dir=dir, save=bool(save),
+                                                                  subfolder="comparisons/linear_regressions",
+                                                                  title=f"Genes count - Linear Regression for {organisms[y_organism_index]} vs {organisms[x_organism_index]}")
+                Graphs.plot_linear_regression_pearson_coefficient(x=repeats_count_y_values[x_organism_index],
+                                                                  y=repeats_count_y_values[y_organism_index],
+                                                                  dir=dir, save=bool(save),
+                                                                  subfolder="comparisons/linear_regressions",
+                                                                  title=f"Kmers count - Linear Regression for {organisms[y_organism_index]} vs {organisms[x_organism_index]}")
+
 
     def graph_compare_ddq_command(self, organisms, save, dir, soften):
         ddq_y_values = []
@@ -613,6 +631,7 @@ class Grapher:
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=ddq_y_values,
                                       title="Degree of multifractality", ylabel="Degrees of multifractality",
                                       organisms_names=organisms, save=bool(save), dir=dir, soften=soften)
+        return different_chromosomes_names, ddq_y_values
 
     def graph_compare_genes_command(self, organisms, save, dir, soften):
         genes_count_y_values = []
@@ -634,6 +653,7 @@ class Grapher:
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=genes_count_y_values,
                                       title="Count of genes", ylabel="Count of genes", organisms_names=organisms,
                                       save=bool(save), dir=dir, soften=soften)
+        return different_chromosomes_names, genes_count_y_values
 
     def graph_compare_repeats_command(self, organisms, save, dir, size_list, soften):
         repeats_count_y_values = []
@@ -660,3 +680,4 @@ class Grapher:
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=repeats_count_y_values,
                                       title=f"Count of kmers of size {size_list}", ylabel="Count of kmers", organisms_names=organisms,
                                       save=bool(save), dir=dir, soften=soften)
+        return different_chromosomes_names, repeats_count_y_values

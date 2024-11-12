@@ -1,8 +1,8 @@
-NAME="saccharomyces mikatae"
+NAME="malassezia restricta"
 WINDOW_LENGTH=30000
-DIR="saccharomyces_mikatae"
-GCF=GCF_947241705.1
-GTF_PATH=resources/genes/saccharomyces_mikatae/gtf/GCF_947241705.1_Smik-IFO1815_genomic.gtf
+DIR="malassezia_restricta"
+GCF=GCF_003290485.1
+GTF_PATH=resources/genes/malassezia_restricta/gtf/GCF_003290485.1_ASM329048v1_genomic.gtf
 PARTITIONS=300
 REGIONS=3
 K_RANGE="(4,12)"

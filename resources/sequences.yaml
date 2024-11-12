@@ -126,7 +126,18 @@ saccharomyces cerevisiae: &s_cerevisiae
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/"
   regions_number: 3
+  window_length: 30000
 GCF_000146045.2: *s_cerevisiae
+
+saccharomyces mikatae: &s_mikatae
+  organism_name: "saccharomyces_mikatae"
+  GCF: "GCF_947241705.1"
+  download_url: ""
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_mikatae/latest_assembly_versions/GCF_947241705.1_Smik-IFO1815/"
+  regions_number: 3
+  window_length: 30000
+  sorted_files: false
+GCF_947241705.1: *s_mikatae
 
 arabidopsis thaliana: &a_thaliana
   organism_name: "arabidopsis_thaliana"
@@ -161,6 +172,16 @@ aspergillus luchuensis: &a_luchuensis
   regions_number: 3
 GCF_016861625.1: *a_luchuensis
 
+aspergillus chevalieri: &a_chevalieri
+  organism_name: "aspergillus chevalieri"
+  GCF: "GCF_016861735.1"
+  download_url: ""
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Aspergillus_chevalieri/latest_assembly_versions/GCF_016861735.1_AchevalieriM1_assembly01/"
+  regions_number: 3
+  window_length: 150000
+  sorted_files: false
+GCF_016861735.1: *a_chevalieri
+
 brettanomyces nanus: &b_nanus
   organism_name: "brettanomyces_nanus"
   GCF: "GCF_011074865.1"
@@ -168,6 +189,52 @@ brettanomyces nanus: &b_nanus
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Brettanomyces_nanus/latest_assembly_versions/GCF_011074865.1_ASM1107486v2/"
   regions_number: 3
 GCF_011074865.1: *b_nanus
+
+pichia kudriavzevii: &p_kudriavzevii
+  organism_name: "pichia_kudriavzevii"
+  GCF: "GCF_003054445.1"
+  download_url: ""
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Pichia_kudriavzevii/latest_assembly_versions/GCF_003054445.1_ASM305444v1/"
+  regions_number: 3
+GCF_003054445.1: *p_kudriavzevii
+
+bathycoccus prasinos: &b_prasinos
+  organism_name: "bathycoccus_prasinos"
+  GCF: "GCF_002220235.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Bathycoccus_prasinos/latest_assembly_versions/GCF_002220235.1_ASM222023v1/GCF_002220235.1_ASM222023v1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Bathycoccus_prasinos/latest_assembly_versions/GCF_002220235.1_ASM222023v1/"
+  regions_number: 3
+  sorted_files: true
+GCF_002220235.1: *b_prasinos
+
+anopheles gambiae: &a_gambiae
+  organism_name: "anopheles_gambiae"
+  GCF: "GCF_943734735.2"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_gambiae/latest_assembly_versions/GCF_943734735.2_idAnoGambNW_F1_1/GCF_943734735.2_idAnoGambNW_F1_1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_gambiae/latest_assembly_versions/GCF_943734735.2_idAnoGambNW_F1_1/"
+  regions_number: 3
+  sorted_files: true
+GCF_943734735.2: *a_gambiae
+
+anopheles stephensi: &a_stephensi
+  organism_name: "anopheles_stephensi"
+  GCF: "GCF_013141755.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_stephensi/latest_assembly_versions/GCF_013141755.1_UCI_ANSTEP_V1.0/GCF_013141755.1_UCI_ANSTEP_V1.0_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_stephensi/latest_assembly_versions/GCF_013141755.1_UCI_ANSTEP_V1.0/"
+  regions_number: 3
+  sorted_files: true
+GCF_013141755.1: *a_stephensi
+
+malassezia restricta: &m_restricta
+  organism_name: "malassezia_restricta"
+  GCF: "GCF_003290485.1"
+  download_url: ""
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Malassezia_restricta/latest_assembly_versions/GCF_003290485.1_ASM329048v1/"
+  regions_number: 3
+  window_length: 30000
+  sorted_files: false
+GCF_003290485.1: *m_restricta
+
 
 
 
