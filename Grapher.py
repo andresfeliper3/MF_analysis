@@ -625,7 +625,12 @@ class Grapher:
                     different_chromosomes_names = chromosome_names
                 else:
                     for index, chr_name in enumerate(different_chromosomes_names):
-                        different_chromosomes_names[index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+                        if index < len(chromosome_names) and chromosome_names[index]:
+                            different_chromosomes_names[
+                                index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+                        else:
+                            different_chromosomes_names[
+                                index] = f"{different_chromosomes_names[index]} - None"
             else:
                 raise Exception("Please provide a list of organisms names")
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=ddq_y_values,
@@ -647,7 +652,12 @@ class Grapher:
                     different_chromosomes_names = chromosome_names
                 else:
                     for index, chr_name in enumerate(different_chromosomes_names):
-                        different_chromosomes_names[index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+                        if index < len(chromosome_names) and chromosome_names[index]:
+                            different_chromosomes_names[
+                                index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+                        else:
+                            different_chromosomes_names[
+                                index] = f"{different_chromosomes_names[index]} - None"
             else:
                 raise Exception("Please provide a list of organisms names")
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=genes_count_y_values,
@@ -673,8 +683,12 @@ class Grapher:
                     different_chromosomes_names = chromosome_names
                 else:
                     for index, chr_name in enumerate(different_chromosomes_names):
-                        different_chromosomes_names[
-                            index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+                        if index < len(chromosome_names) and chromosome_names[index]:
+                            different_chromosomes_names[
+                                index] = f"{different_chromosomes_names[index]} - {chromosome_names[index]}"
+                        else:
+                            different_chromosomes_names[
+                                index] = f"{different_chromosomes_names[index]} - None"
             else:
                 raise Exception("Please provide a list of organisms names")
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=repeats_count_y_values,

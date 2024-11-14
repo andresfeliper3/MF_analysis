@@ -953,6 +953,12 @@ class Graphs:
         x = np.array(x)
         y = np.array(y)
 
+        # Ensure both x and y have the same length by finding the minimum length
+        min_length = min(len(x), len(y))
+        x = x[:min_length]
+        y = y[:min_length]
+
+        # Normalize the data
         scaler = StandardScaler()
         x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
         y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
@@ -999,6 +1005,10 @@ class Graphs:
         for idx, (kmer_name, (repeats_counts_list, DDq_list)) in enumerate(data.items()):
             x = np.array(repeats_counts_list)
             y = np.array(DDq_list)
+
+            min_length = min(len(x), len(y))
+            x = x[:min_length]
+            y = y[:min_length]
 
             scaler = StandardScaler()
             x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
@@ -1071,13 +1081,27 @@ class Graphs:
         colors = plt.cm.get_cmap('viridis', len(y_values_list))
 
         for index, y_values in enumerate(y_values_list):
-            # Plot original data points connected by a line
-            plt.plot(x_values, y_values, color=colors(index), label=organisms_names[index], marker='o')
+            # Convert y_values to a numpy array
+            y_values_np = np.array(y_values, dtype=float)
+
+            # Create a mask for valid Y-values (not NaN)
+            valid_mask = ~np.isnan(y_values_np)
+
+            # Only plot where both x and y values are valid
+            if len(x_values) == len(y_values_np):  # Ensure both have the same length
+                plt.plot(x_values[valid_mask], y_values_np[valid_mask], color=colors(index),
+                         label=organisms_names[index], marker='o')
+            else:
+                # If lengths differ, truncate x_values to match y_values
+                min_length = min(len(x_values), len(y_values_np))
+                plt.plot(x_values[:min_length][valid_mask[:min_length]],
+                         y_values_np[:min_length][valid_mask[:min_length]],
+                         color=colors(index), label=organisms_names[index], marker='o')
 
             if soften:
-                # Plot original data points connected by a line
-                plt.plot(x_values, y_values, color=colors(index), label=organisms_names[index], marker='o')
-
+                # You can add additional softening logic here if needed
+                plt.plot(x_values[valid_mask], y_values_np[valid_mask], color=colors(index),
+                         label=organisms_names[index], marker='o')
 
         plt.title(title)
         plt.xlabel("Chromosomes")
@@ -1086,6 +1110,8 @@ class Graphs:
         plt.legend()
         plt.grid(False)
         route = f"comparisons/{dir}"
+
         if save:
             Graphs._savefig(title, route)
+
         plt.show()
