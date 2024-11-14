@@ -130,7 +130,7 @@ class Grapher:
         region_results_service = RegionResultsService()
         df = region_results_service.extract_results(GCF=gcf)
         df['sequence_name_for_grouping'] = df['sequence_name'].str.split('_region').str[0]
-        dfs_per_sequence_list = [group for name, group in df.groupby('sequence_name_for_grouping')]
+        dfs_per_sequence_list = [group for name, group in df.groupby('sequence_name_for_grouping', sort=False)]
         return [split_df.to_dict(orient='records') for split_df in dfs_per_sequence_list]
 
     def _graph_all_sequences_regions(self, dic_list: list[list[dict]], organism_name, data, regions_number,

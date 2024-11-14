@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="caenorhabditis briggsae"
-set WINDOW_LENGTH=300000
-set DIR="caenorhabditis_briggsae"
-set GCF=GCF_000004555.2
-set GTF_PATH=resources/genes/caenorhabditis_briggsae/gtf/GCF_000004555.2_CB4_genomic.gtf
-set PARTITIONS=100
+set NAME="anopheles cruzii"
+set WINDOW_LENGTH=1000000
+set DIR="anopheles_cruzii"
+set GCF=GCF_943734635.1
+set GTF_PATH=resources/genes/anopheles_cruzii/gtf/GCF_943734635.1_idAnoCruzAS_RS32_06_genomic.gtf
+set PARTITIONS=300
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4
@@ -35,11 +35,11 @@ py .\command.py find_kmers_genome -method l -k_range %K_RANGE% -name %NAME% -win
 echo Running graph_linear_repeats_genome...
 py .\command.py graph_linear_repeats_genome --save true -name %NAME% -gcf %GCF% -dir %DIR% -k_range %K_RANGE%
 
-echo Running graph_gtf_file...
-py .\command.py graph_gtf_file -path %GTF_PATH% -partitions %PARTITIONS% -regions %REGIONS% -plot_type line -dir %DIR% --save true
+::echo Running graph_gtf_file...
+::py .\command.py graph_gtf_file -path %GTF_PATH% -partitions %PARTITIONS% -regions %REGIONS% -plot_type line -dir %DIR% --save true
 
-echo Running graph_linear_regression_genome...
-py .\command.py graph_linear_regression_genome -gcf %GCF% -k_range %K_RANGE% -dir %DIR% -name %NAME%
+::echo Running graph_linear_regression_genome...
+::py .\command.py graph_linear_regression_genome -gcf %GCF% -k_range %K_RANGE% -dir %DIR% -name %NAME%
 
 echo Running load_genes...
 py .\command.py load_genes -path %GTF_PATH%
@@ -48,11 +48,11 @@ py .\command.py load_genes -path %GTF_PATH%
 echo Running find_kmers_linearly_genes_genome...
 py .\command.py find_kmers_linearly_genes_genome -name %NAME% -window_length %WINDOW_LENGTH% -dir %DIR% -graph_from_file true -size %GENES_KMER_SIZE%
 
-::echo Running scraping functional categories and subcategories from KEGG..
-::py .\command.py load_categories_genome -name %NAME% -size %GENES_KMER_SIZE% -genes_amount %GENES_AMOUNT%
+echo Running scraping functional categories and subcategories from KEGG..
+py .\command.py load_categories_genome -name %NAME% -size %GENES_KMER_SIZE% -genes_amount %GENES_AMOUNT%
 
-::echo Running Graphing functional categories and subcategories heatmaps...
-::py .\command.py graph_categories_repeats_heatmap_genome -size %GENES_KMER_SIZE% --save true -dir %DIR% -name %NAME% --tags true
+echo Running Graphing functional categories and subcategories heatmaps...
+py .\command.py graph_categories_repeats_heatmap_genome -size %GENES_KMER_SIZE% --save true -dir %DIR% -name %NAME% --tags true
 
 
 endlocal

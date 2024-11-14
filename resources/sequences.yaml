@@ -141,6 +141,16 @@ saccharomyces mikatae: &s_mikatae
   sorted_files: false
 GCF_947241705.1: *s_mikatae
 
+saccharomyces kudriavzevii: &s_kudriavzevii
+  organism_name: "saccharomyces_kudriavzevii"
+  GCF: "GCF_947243775.1"
+  download_url: ""
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_kudriavzevii/latest_assembly_versions/GCF_947243775.1_Skud-IFO1802/"
+  regions_number: 3
+  window_length: 30000
+  sorted_files: true
+GCF_947243775.1: *s_kudriavzevii
+
 arabidopsis thaliana: &a_thaliana
   organism_name: "arabidopsis_thaliana"
   GCF: "GCF_000001735.4"
@@ -175,7 +185,7 @@ aspergillus luchuensis: &a_luchuensis
 GCF_016861625.1: *a_luchuensis
 
 aspergillus chevalieri: &a_chevalieri
-  organism_name: "aspergillus chevalieri"
+  organism_name: "aspergillus_chevalieri"
   GCF: "GCF_016861735.1"
   download_url: ""
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Aspergillus_chevalieri/latest_assembly_versions/GCF_016861735.1_AchevalieriM1_assembly01/"
@@ -183,6 +193,16 @@ aspergillus chevalieri: &a_chevalieri
   window_length: 150000
   sorted_files: false
 GCF_016861735.1: *a_chevalieri
+
+aspergillus puulaauensis: &a_puulaauensis
+  organism_name: "aspergillus_puulaauensis"
+  GCF: "GCF_016861865.1"
+  download_url: ""
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Aspergillus_puulaauensis/latest_assembly_versions/GCF_016861865.1_ApuulaauensisMK2_assembly01/"
+  regions_number: 3
+  window_length: 150000
+  sorted_files: false
+GCF_016861865.1: *a_puulaauensis
 
 brettanomyces nanus: &b_nanus
   organism_name: "brettanomyces_nanus"
@@ -216,6 +236,7 @@ anopheles gambiae: &a_gambiae
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_gambiae/latest_assembly_versions/GCF_943734735.2_idAnoGambNW_F1_1/"
   regions_number: 3
   sorted_files: true
+  window_length: 1000000
 GCF_943734735.2: *a_gambiae
 
 anopheles stephensi: &a_stephensi
@@ -225,7 +246,19 @@ anopheles stephensi: &a_stephensi
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_stephensi/latest_assembly_versions/GCF_013141755.1_UCI_ANSTEP_V1.0/"
   regions_number: 3
   sorted_files: true
+  window_length: 1000000
 GCF_013141755.1: *a_stephensi
+
+anopheles cruzii: &a_cruzii
+  organism_name: "anopheles_cruzii"
+  GCF: "GCF_943734635.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_cruzii/latest_assembly_versions/GCF_943734635.1_idAnoCruzAS_RS32_06/GCF_943734635.1_idAnoCruzAS_RS32_06_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_cruzii/latest_assembly_versions/GCF_943734635.1_idAnoCruzAS_RS32_06/"
+  regions_number: 3
+  sorted_files: true
+  window_length: 1000000
+GCF_943734635.1: *a_cruzii
+
 
 malassezia restricta: &m_restricta
   organism_name: "malassezia_restricta"
@@ -236,6 +269,18 @@ malassezia restricta: &m_restricta
   window_length: 30000
   sorted_files: false
 GCF_003290485.1: *m_restricta
+
+oryza brachyantha: &o_brachyantha
+  organism_name: "oryza_brachyantha"
+  GCF: "GCF_000231095.2"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Oryza_brachyantha/latest_assembly_versions/GCF_000231095.2_ObraRS2/GCF_000231095.2_ObraRS2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Oryza_brachyantha/latest_assembly_versions/GCF_000231095.2_ObraRS2/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: true
+GCF_000231095.2: *o_brachyantha
+
+
 
 
 
