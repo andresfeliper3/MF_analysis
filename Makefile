@@ -1,8 +1,8 @@
-NAME="malassezia restricta"
-WINDOW_LENGTH=30000
-DIR="malassezia_restricta"
-GCF=GCF_003290485.1
-GTF_PATH=resources/genes/malassezia_restricta/gtf/GCF_003290485.1_ASM329048v1_genomic.gtf
+NAME="oryza brachyantha"
+WINDOW_LENGTH=300000
+DIR="oryza_brachyantha"
+GCF=GCF_943734735.2
+GTF_PATH=resources/genes/oryza_brachyantha/gtf/GCF_000231095.2_ObraRS2_genomic.gtf
 PARTITIONS=300
 REGIONS=3
 K_RANGE="(4,12)"
@@ -17,7 +17,7 @@ GENES_AMOUNT=100
 all: analyze_genome_whole analyze_genome_regions graph_whole \
      graph_regions find_kmers_genome graph_linear_repeats \
      graph_gtf_file graph_linear_regression load_genes \
-     find_kmers_genes
+     find_kmers_genes load_categories graph_categories
 
 download:
 	@echo "Running download..."

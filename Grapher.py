@@ -118,8 +118,8 @@ class Grapher:
         cover, cover_percentage, degrees_of_multifractality = self._extract_cover_info(dataframe)
 
         genome_manager.set_mfa_results(mfa_results)
-        genome_manager.set_cover(cover)
-        genome_manager.set_cover_percentage(cover_percentage)
+        #genome_manager.set_cover(cover)
+        #genome_manager.set_cover_percentage(cover_percentage)
         genome_manager.set_degrees_of_multifractality(degrees_of_multifractality)
 
         genome_manager.generate_df_results()
@@ -154,8 +154,8 @@ class Grapher:
         cover, cover_percentage, degrees_of_multifractality = self._extract_cover_info(dic_list)
         region_sequence_manager.set_mfa_results(mfa_results)
         region_sequence_manager.set_flattened_mfa_results(mfa_results)
-        region_sequence_manager.set_cover(cover)
-        region_sequence_manager.set_cover_percentage(cover_percentage)
+        #region_sequence_manager.set_cover(cover)
+        #region_sequence_manager.set_cover_percentage(cover_percentage)
         region_sequence_manager.set_degrees_of_multifractality(degrees_of_multifractality)
 
         region_sequence_manager.generate_df_results()
