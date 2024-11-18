@@ -62,6 +62,8 @@ drosophila melanogaster: &d_melanogaster
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_melanogaster/latest_assembly_versions/GCF_000001215.4_Release_6_plus_ISO1_MT/GCF_000001215.4_Release_6_plus_ISO1_MT_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_melanogaster/latest_assembly_versions/GCF_000001215.4_Release_6_plus_ISO1_MT/"
   regions_number: 3
+  sorted_files: false
+  window_length: 300000
 GCF_000001215.4: *d_melanogaster
 
 drosophila pseudoobscura: &d_pseudoobscura
@@ -78,7 +80,20 @@ drosophila simulans: &d_simulans
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_simulans/latest_assembly_versions/GCF_016746395.2_Prin_Dsim_3.1/GCF_016746395.2_Prin_Dsim_3.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_simulans/latest_assembly_versions/GCF_016746395.2_Prin_Dsim_3.1/"
   regions_number: 3
+  window_length: 300000
+  sorted_files: false
 GCF_016746395.2: *d_simulans
+
+drosophila busckii: &d_busckii
+  organism_name: "drosophila_busckii"
+  GCF: "GCF_011750605.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_busckii/latest_assembly_versions/GCF_011750605.1_ASM1175060v1/GCF_011750605.1_ASM1175060v1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Drosophila_busckii/latest_assembly_versions/GCF_011750605.1_ASM1175060v1/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: false
+GCF_011750605.1: *d_busckii
+
 
 
 
@@ -280,9 +295,45 @@ oryza brachyantha: &o_brachyantha
   sorted_files: true
 GCF_000231095.2: *o_brachyantha
 
+daphnia pulicaria: &d_pulicaria
+  organism_name: "daphnia_pulicaria"
+  GCF: "GCF_021234035.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Daphnia_pulicaria/all_assembly_versions/GCF_021234035.1_SC_F0-13Bv2/GCF_021234035.1_SC_F0-13Bv2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Daphnia_pulicaria/all_assembly_versions/GCF_021234035.1_SC_F0-13Bv2/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: true
+GCF_021234035.1: *d_pulicaria
 
+daphnia pulex: &d_pulex
+  organism_name: "daphnia_pulex"
+  GCF: "GCF_021134715.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Daphnia_pulex/latest_assembly_versions/GCF_021134715.1_ASM2113471v1/GCF_021134715.1_ASM2113471v1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Daphnia_pulex/latest_assembly_versions/GCF_021134715.1_ASM2113471v1/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: true
+GCF_021134715.1: *d_pulex
 
+daphnia magna: &d_magna
+  organism_name: "daphnia_magna"
+  GCF: "GCF_020631705.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Daphnia_magna/latest_assembly_versions/GCF_020631705.1_ASM2063170v1.1/GCF_020631705.1_ASM2063170v1.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Daphnia_magna/latest_assembly_versions/GCF_020631705.1_ASM2063170v1.1/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: true
+GCF_020631705.1: *d_magna
 
+neodiprion lecontei: &n_lecontei
+  organism_name: "neodiprion_lecontei"
+  GCF: "GCF_021901455.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Neodiprion_lecontei/latest_assembly_versions/GCF_021901455.1_iyNeoLeco1.1/GCF_021901455.1_iyNeoLeco1.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Neodiprion_lecontei/latest_assembly_versions/GCF_021901455.1_iyNeoLeco1.1/"
+  regions_number: 3
+  window_length: 600000
+  sorted_files: true
+GCF_021901455.1: *n_lecontei
 
 
 

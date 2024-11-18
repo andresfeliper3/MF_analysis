@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="anopheles cruzii"
-set WINDOW_LENGTH=1000000
-set DIR="anopheles_cruzii"
-set GCF=GCF_943734635.1
-set GTF_PATH=resources/genes/anopheles_cruzii/gtf/GCF_943734635.1_idAnoCruzAS_RS32_06_genomic.gtf
-set PARTITIONS=300
+set NAME="neodiprion lecontei"
+set WINDOW_LENGTH=600000
+set DIR="neodiprion_lecontei"
+set GCF=GCF_021901455.1
+set GTF_PATH=resources/genes/neodiprion_lecontei/gtf/GCF_021901455.1_iyNeoLeco1.1_genomic.gtf
+set PARTITIONS=100
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4
