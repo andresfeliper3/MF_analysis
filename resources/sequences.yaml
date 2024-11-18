@@ -274,6 +274,16 @@ anopheles cruzii: &a_cruzii
   window_length: 1000000
 GCF_943734635.1: *a_cruzii
 
+anopheles darlingi: &a_darlingi
+  organism_name: "anopheles_darlingi"
+  GCF: "GCF_943734745.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_darlingi/latest_assembly_versions/GCF_943734745.1_idAnoDarlMG_H_01/GCF_943734745.1_idAnoDarlMG_H_01_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Anopheles_darlingi/latest_assembly_versions/GCF_943734745.1_idAnoDarlMG_H_01/"
+  regions_number: 3
+  sorted_files: true
+  window_length: 1000000
+GCF_943734745.1: *a_darlingi
+
 
 malassezia restricta: &m_restricta
   organism_name: "malassezia_restricta"
@@ -334,6 +344,57 @@ neodiprion lecontei: &n_lecontei
   window_length: 600000
   sorted_files: true
 GCF_021901455.1: *n_lecontei
+
+oryza glaberrima: &o_glaberrima
+  organism_name: "oryza_glaberrima"
+  GCF: "GCF_000147395.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Oryza_glaberrima/latest_assembly_versions/GCF_000147395.1_OglaRS2/GCF_000147395.1_OglaRS2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Oryza_glaberrima/latest_assembly_versions/GCF_000147395.1_OglaRS2/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: true
+GCF_000147395.1: *o_glaberrima
+
+cucumis melo: &c_melo
+  organism_name: "cucumis_melo"
+  GCF: "GCF_025177605.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Cucumis_melo/latest_assembly_versions/GCF_025177605.1_USDA_Cmelo_AY_1.0/GCF_025177605.1_USDA_Cmelo_AY_1.0_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Cucumis_melo/latest_assembly_versions/GCF_025177605.1_USDA_Cmelo_AY_1.0/"
+  regions_number: 3
+  window_length: 600000
+  sorted_files: true
+GCF_025177605.1: *c_melo
+
+cucumis sativus: &c_sativus
+  organism_name: "cucumis_sativus"
+  GCF: "GCF_000004075.3"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Cucumis_sativus/latest_assembly_versions/GCF_000004075.3_Cucumber_9930_V3/GCF_000004075.3_Cucumber_9930_V3_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Cucumis_sativus/latest_assembly_versions/GCF_000004075.3_Cucumber_9930_V3/"
+  regions_number: 3
+  window_length: 600000
+  sorted_files: true
+GCF_000004075.3: *c_sativus
+
+vitis riparia: &v_riparia
+  organism_name: "vitis_riparia"
+  GCF: "GCF_004353265.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Vitis_riparia/all_assembly_versions/GCF_004353265.1_EGFV_Vit.rip_1.0/GCF_004353265.1_EGFV_Vit.rip_1.0_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Vitis_riparia/all_assembly_versions/GCF_004353265.1_EGFV_Vit.rip_1.0/"
+  regions_number: 3
+  window_length: 600000
+  sorted_files: true
+GCF_004353265.1: *v_riparia
+
+fusarium falciforme: &f_falciforme
+  organism_name: "fusarium_falciforme"
+  GCF: "GCF_026873545.1"
+  download_url: ""
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Fusarium_falciforme/latest_assembly_versions/GCF_026873545.1_ASM2687354v1/"
+  regions_number: 3
+  window_length: 100000
+  sorted_files: true
+GCF_026873545.1: *f_falciforme
+
 
 
 
