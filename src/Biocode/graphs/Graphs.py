@@ -1078,7 +1078,7 @@ class Graphs:
     def graph_comparison_lines(x_values: list, y_values_list: list, title: str, ylabel: str,
                                organisms_names: list[str], save: bool, dir: str, soften: bool, window_size: int = 4):
         plt.figure(figsize=(10, 6))
-        colors = plt.cm.get_cmap('viridis', len(y_values_list))
+        colors = plt.cm.get_cmap('Accent', len(y_values_list))
 
         for index, y_values in enumerate(y_values_list):
             # Convert y_values to a numpy array
