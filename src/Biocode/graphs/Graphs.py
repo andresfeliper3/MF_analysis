@@ -1076,9 +1076,11 @@ class Graphs:
 
     @staticmethod
     def graph_comparison_lines(x_values: list, y_values_list: list, title: str, ylabel: str,
-                               organisms_names: list[str], save: bool, dir: str, soften: bool, window_size: int = 4):
+                               comparison_names: list[str], save: bool, dir: str, soften: bool, window_size: int = 4):
         plt.figure(figsize=(10, 6))
         colors = plt.cm.get_cmap('Accent', len(y_values_list))
+
+        x_values_np = np.array(x_values)
 
         for index, y_values in enumerate(y_values_list):
             # Convert y_values to a numpy array
@@ -1088,20 +1090,20 @@ class Graphs:
             valid_mask = ~np.isnan(y_values_np)
 
             # Only plot where both x and y values are valid
-            if len(x_values) == len(y_values_np):  # Ensure both have the same length
-                plt.plot(x_values[valid_mask], y_values_np[valid_mask], color=colors(index),
-                         label=organisms_names[index], marker='o')
+            if len(x_values_np) == len(y_values_np):  # Ensure both have the same length
+                plt.plot(x_values_np[valid_mask], y_values_np[valid_mask], color=colors(index),
+                         label=comparison_names[index], marker='o')
             else:
-                # If lengths differ, truncate x_values to match y_values
-                min_length = min(len(x_values), len(y_values_np))
-                plt.plot(x_values[:min_length][valid_mask[:min_length]],
+                # If lengths differ, truncate to match the shorter length
+                min_length = min(len(x_values_np), len(y_values_np))
+                plt.plot(x_values_np[:min_length][valid_mask[:min_length]],
                          y_values_np[:min_length][valid_mask[:min_length]],
-                         color=colors(index), label=organisms_names[index], marker='o')
+                         color=colors(index), label=comparison_names[index], marker='o')
 
             if soften:
                 # You can add additional softening logic here if needed
                 plt.plot(x_values[valid_mask], y_values_np[valid_mask], color=colors(index),
-                         label=organisms_names[index], marker='o')
+                         label=comparison_names[index], marker='o')
 
         plt.title(title)
         plt.xlabel("Chromosomes")

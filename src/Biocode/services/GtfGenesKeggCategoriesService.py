@@ -21,3 +21,18 @@ class GtfGenesKeggCategoriesService(AbstractService):
                 f"AND wc.refseq_accession_number = '{refseq_accession_number}' " \
                 f"AND LENGTH(r.name) = {size} GROUP BY r.name, kc.category;"
         return self.extract_with_custom_query(query)
+
+    def extract_count_of_repeats_per_category_by_size_and_organism(self, GCF: str, size: int):
+        query = f"SELECT r.id, r.name, kc.category, SUM(gcr.count) count FROM repeats r " \
+                f"JOIN genes_containing_repeats gcr ON r.id = gcr.repeats_id " \
+                f"JOIN gtf_genes gg ON gcr.gtf_genes_id=gg.id " \
+                f"JOIN gtf_genes_kegg_categories ggkc ON gg.id=ggkc.gtf_genes_id " \
+                f"JOIN kegg_categories kc ON kc.id = ggkc.kegg_categories_id " \
+                f"JOIN whole_chromosomes wc ON wc.id = gg.whole_chromosomes_id " \
+                f"JOIN organisms o ON o.id = wc.organism_id " \
+                f"WHERE r.method_to_find_it = 'Linear in genes' " \
+                f"AND o.GCF = '{GCF}' " \
+                f"AND LENGTH(r.name) = {size} " \
+                f"GROUP BY r.name, kc.category;"
+        return self.extract_with_custom_query(query)
+

@@ -587,6 +587,7 @@ class Grapher:
     @TryExcept
     @Timer
     def graph_compare_command(self, organisms, save, dir):
+        self.graph_compare_single_organism_data(organisms, save, dir, soften=False)
         different_chromosomes_names, ddq_y_values = self.graph_compare_ddq_command(organisms, save, dir, soften=False)
         different_chromosomes_names, genes_count_y_values = self.graph_compare_genes_command(organisms, save, dir, soften=False)
         for i in range(4, 12+1):
@@ -635,7 +636,7 @@ class Grapher:
                 raise Exception("Please provide a list of organisms names")
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=ddq_y_values,
                                       title="Degree of multifractality", ylabel="Degrees of multifractality",
-                                      organisms_names=organisms, save=bool(save), dir=dir, soften=soften)
+                                      comparison_names=organisms, save=bool(save), dir=dir, soften=soften)
         return different_chromosomes_names, ddq_y_values
 
     def graph_compare_genes_command(self, organisms, save, dir, soften):
@@ -661,7 +662,7 @@ class Grapher:
             else:
                 raise Exception("Please provide a list of organisms names")
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=genes_count_y_values,
-                                      title="Count of genes", ylabel="Count of genes", organisms_names=organisms,
+                                      title="Count of genes", ylabel="Count of genes", comparison_names=organisms,
                                       save=bool(save), dir=dir, soften=soften)
         return different_chromosomes_names, genes_count_y_values
 
@@ -692,6 +693,81 @@ class Grapher:
             else:
                 raise Exception("Please provide a list of organisms names")
         Graphs.graph_comparison_lines(x_values=different_chromosomes_names, y_values_list=repeats_count_y_values,
-                                      title=f"Count of kmers of size {size_list}", ylabel="Count of kmers", organisms_names=organisms,
+                                      title=f"Count of kmers of size {size_list}", ylabel="Count of kmers", comparison_names=organisms,
                                       save=bool(save), dir=dir, soften=soften)
         return different_chromosomes_names, repeats_count_y_values
+
+    def graph_compare_single_organism_data(self, organisms, save, dir, soften):
+        for name in organisms:
+            if name:
+                self.organism = name
+                self.loader.set_organism(self.organism)
+                self.graph_compare_organism_regions_ddq(save, dir, soften)
+                self.graph_compare_organism_repeats(save, dir, soften)
+                self.graph_compare_organism_heatmaps(name, save, dir)
+            else:
+                raise Exception("Please provide a list of organisms names")
+
+    def graph_compare_organism_regions_ddq(self, save, dir, soften):
+        chromosomes_names = self.organisms_service.extract_chromosomes_names_by_GCF(self.loader.get_gcf())
+        refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(self.loader.get_gcf())
+        ddq_list = []
+        for refseq_accession_number in refseq_accession_numbers:
+            df = self.region_results_service.extract_ddq_by_refseq_accession_number(refseq_accession_number)
+            ddq_list.append(df['DDq'].to_list())
+        ddq_list = self._delete_last_row_element(ddq_list)
+        regions_names = self._get_regions_names(region_chromosomes_values=ddq_list)
+        Graphs.graph_comparison_lines(x_values=regions_names, y_values_list=ddq_list, ylabel='Degree of multifractality',
+                                      comparison_names=chromosomes_names, save=save, dir=f"{dir}/inside_organism", soften=soften,
+                                      title=f"Degrees of multifractality of {self.loader.get_organism_name()} by regions")
+
+    def _get_regions_names(self, region_chromosomes_values):
+        max_regions_amount = self._max_regions_amount(region_chromosomes_values)
+        region_names = [f"region_{x}" for x in range(1, max_regions_amount + 1)]
+        return region_names
+
+    def _max_regions_amount(self, region_chromosomes_values):
+        max_regions = 0
+        for regions in region_chromosomes_values:
+            regions_length = len(regions)
+            if regions_length > max_regions:
+                max_regions = regions_length
+        return max_regions
+
+    def _delete_last_row_element(self, matrix):
+        return [row[:-1] for row in matrix]
+
+    def graph_compare_organism_repeats(self, save, dir, soften):
+        chromosomes_names = self.organisms_service.extract_chromosomes_names_by_GCF(self.loader.get_gcf())
+        refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(
+            self.loader.get_gcf())
+        repeats_count_sum_list = []
+        for refseq_accession_number in refseq_accession_numbers:
+            df = self.linear_repeats_region_chromosomes_service.extract_count_of_repeats_by_region(refseq_accession_number)
+            repeats_count_sum_list.append(df['count_sum'].to_list())
+        repeats_count_sum_list = self._delete_last_row_element(repeats_count_sum_list)
+        regions_names = self._get_regions_names(region_chromosomes_values=repeats_count_sum_list)
+        Graphs.graph_comparison_lines(x_values=regions_names, y_values_list=repeats_count_sum_list,
+                                      ylabel='Kmers count',
+                                      comparison_names=chromosomes_names, save=save, dir=f"{dir}/inside_organism",
+                                      soften=soften,
+                                      title=f"Kmers count (4-12) of {self.loader.get_organism_name()} by regions")
+    def graph_compare_organism_heatmaps(self, name, save, dir, size=4, tags=True):
+        categories_df = self.gtf_genes_kegg_categories_service.extract_count_of_repeats_per_category_by_size_and_organism(
+            self.loader.get_gcf(), size)
+        subcategories_df = self.gtf_genes_kegg_subcategories_service.extract_count_of_repeats_per_subcategory_by_size_and_genome(
+            self.loader.get_gcf(), size)
+        subcategories_df['category_subcategory'] = subcategories_df['category'] + ': ' + subcategories_df[
+            'subcategory']
+        heatmap_categories_data = categories_df.pivot(index="category", columns="name", values="count")
+        heatmap_subcategories_data = subcategories_df.pivot(index="category_subcategory", columns="name",
+                                                            values="count")
+        Graphs.plot_heatmap(heatmap_categories_data,
+                            title=f"Functional categories for {size}-mers - {self.loader.get_organism_name()}"
+                                  f" - {name}", xlabel='Kmers', ylabel='Functional category',
+                            dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/categories")
+        Graphs.plot_heatmap(heatmap_subcategories_data,
+                            title=f"Functional subcategories for {size}-mers - {self.loader.get_organism_name()}"
+                                  f" - {name}", xlabel='Kmers', ylabel='Functional category: subcategory',
+                            dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/subcategories")
+
