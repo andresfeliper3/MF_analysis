@@ -385,6 +385,16 @@ vitis riparia: &v_riparia
   sorted_files: true
 GCF_004353265.1: *v_riparia
 
+vitis vinifera: &v_vinifera
+  organism_name: "vitis_vinifera"
+  GCF: "GCF_000003745.3"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Vitis_vinifera/latest_assembly_versions/GCF_030704535.1_ASM3070453v1/GCF_030704535.1_ASM3070453v1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Vitis_vinifera/latest_assembly_versions/GCF_030704535.1_ASM3070453v1/"
+  regions_number: 3
+  window_length: 600000
+  sorted_files: true
+GCF_000003745.3: *v_vinifera
+
 fusarium falciforme: &f_falciforme
   organism_name: "fusarium_falciforme"
   GCF: "GCF_026873545.1"
@@ -394,6 +404,47 @@ fusarium falciforme: &f_falciforme
   window_length: 100000
   sorted_files: true
 GCF_026873545.1: *f_falciforme
+
+fusarium oxysporum: &f_oxysporum
+  organism_name: "fusarium_oxysporum"
+  GCF: "GCF_000149955.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Fusarium_oxysporum/latest_assembly_versions/GCF_000149955.1_ASM14995v2/GCF_000149955.1_ASM14995v2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Fusarium_oxysporum/latest_assembly_versions/GCF_000149955.1_ASM14995v2/"
+  regions_number: 3
+  window_length: 100000
+  sorted_files: true
+GCF_013085055.1: *f_oxysporum
+
+prunus dulcis: &p_dulcis
+  organism_name: "prunus_dulcis"
+  GCF: "GCF_902201215.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Prunus_dulcis/latest_assembly_versions/GCF_902201215.1_ALMONDv2/GCF_902201215.1_ALMONDv2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Prunus_dulcis/latest_assembly_versions/GCF_902201215.1_ALMONDv2/"
+  regions_number: 3
+  window_length: 400000
+  sorted_files: true
+GCF_902201215.1: *p_dulcis
+
+prunus mume: &p_mume
+  organism_name: "prunus_mume"
+  GCF: "GCF_000346735.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Prunus_mume/latest_assembly_versions/GCF_000346735.1_P.mume_V1.0/GCF_000346735.1_P.mume_V1.0_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Prunus_mume/latest_assembly_versions/GCF_000346735.1_P.mume_V1.0/"
+  regions_number: 3
+  window_length: 400000
+  sorted_files: true
+GCF_000346735.1: *p_mume
+
+prunus persica: &p_persica
+  organism_name: "prunus_persica"
+  GCF: "GCF_000346465.2"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Prunus_persica/latest_assembly_versions/GCF_000346465.2_Prunus_persica_NCBIv2/GCF_000346465.2_Prunus_persica_NCBIv2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Prunus_persica/latest_assembly_versions/GCF_000346465.2_Prunus_persica_NCBIv2/"
+  regions_number: 3
+  window_length: 400000
+  sorted_files: true
+GCF_000346465.2: *p_persica
+
 
 
 

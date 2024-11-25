@@ -1079,9 +1079,7 @@ class Graphs:
                                comparison_names: list[str], save: bool, dir: str, soften: bool, window_size: int = 4):
         plt.figure(figsize=(10, 6))
         colors = plt.cm.get_cmap('Accent', len(y_values_list))
-
         x_values_np = np.array(x_values)
-
         for index, y_values in enumerate(y_values_list):
             # Convert y_values to a numpy array
             y_values_np = np.array(y_values, dtype=float)

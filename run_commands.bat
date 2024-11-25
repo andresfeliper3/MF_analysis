@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="neodiprion lecontei"
-set WINDOW_LENGTH=600000
-set DIR="neodiprion_lecontei"
-set GCF=GCF_021901455.1
-set GTF_PATH=resources/genes/neodiprion_lecontei/gtf/GCF_021901455.1_iyNeoLeco1.1_genomic.gtf
-set PARTITIONS=100
+set NAME="fusarium oxysporum"
+set WINDOW_LENGTH=100000
+set DIR="fusarium_oxysporum"
+set GCF=GCF_000149955.1
+set GTF_PATH=resources/genes/fusarium_oxysporum/gtf/GCF_000149955.1_ASM14995v2_genomic.gtf
+set PARTITIONS=300
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4
