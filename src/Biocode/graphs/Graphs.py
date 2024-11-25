@@ -959,19 +959,12 @@ class Graphs:
         y = y[:min_length]
 
         # Normalize the data
-        scaler = StandardScaler()
-        x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
-        y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
+        x_normalized, y_normalized = Graphs.normalized_x_y_data(x, y)
 
-        # Calculate Pearson correlation coefficient
-        correlation_matrix = np.corrcoef(x_normalized, y_normalized)
-        pearson_correlation = correlation_matrix[0, 1]
+        pearson_correlation = Graphs._calculate_pearson_coefficient(x_normalized, y_normalized)
 
         # Fit linear regression model and calculate R^2
-        model = LinearRegression()
-        model.fit(x_normalized.reshape(-1, 1), y_normalized)
-        y_pred = model.predict(x_normalized.reshape(-1, 1))
-        r_squared = model.score(x_normalized.reshape(-1, 1), y_normalized)
+        y_pred, r_squared = Graphs._calculate_y_pred_and_r_squared(x_normalized, y_normalized)
 
         # Plot the data and the regression line
         plt.figure(figsize=(10, 6))
@@ -994,6 +987,29 @@ class Graphs:
         if save:
             Graphs._savefig(title, route)
         plt.show()
+
+    @staticmethod
+    def normalized_x_y_data(x, y):
+        scaler = StandardScaler()
+        x_normalized = scaler.fit_transform(x.reshape(-1, 1)).flatten()
+        y_normalized = scaler.fit_transform(y.reshape(-1, 1)).flatten()
+        return x_normalized, y_normalized
+
+    @staticmethod
+    def _calculate_pearson_coefficient(x_normalized: list, y_normalized: list):
+        correlation_matrix = np.corrcoef(x_normalized, y_normalized)
+        pearson_coefficient = correlation_matrix[0, 1]
+        return pearson_coefficient
+
+    @staticmethod
+    def _calculate_y_pred_and_r_squared(x_normalized, y_normalized):
+        model = LinearRegression()
+        model.fit(x_normalized.reshape(-1, 1), y_normalized)
+        y_pred = model.predict(x_normalized.reshape(-1, 1))
+        r_squared = model.score(x_normalized.reshape(-1, 1), y_normalized)
+        return y_pred, r_squared
+
+
 
     @staticmethod
     def plot_multiple_linear_regression(data, dir: str, subfolder: str, save: bool, title: str):
@@ -1054,9 +1070,14 @@ class Graphs:
 
     @staticmethod
     def plot_heatmap(heatmap_data, title: str, xlabel: str, ylabel: str, dir: str, save: bool, subfolder: str,
-                     tags: bool):
+                     tags: bool, xticklabels=None, yticklabels=None):
         plt.figure(figsize=(12, 8))
-        ax = sns.heatmap(heatmap_data, annot=tags, fmt='.2f', cmap='viridis', cbar_kws={'label': 'Count'})
+        if xticklabels and yticklabels:
+            ax = sns.heatmap(heatmap_data, annot=tags, fmt='.2f', cmap='viridis', cbar_kws={'label': 'Count'},
+                         xticklabels=xticklabels, yticklabels=yticklabels)
+        else:
+            ax = sns.heatmap(heatmap_data, annot=tags, fmt='.2f', cmap='viridis', cbar_kws={'label': 'Count'})
+
         cbar = ax.collections[0].colorbar
         cbar.ax.set_position([0.1, 0.2, 0.03, 0.6])
 
