@@ -26,6 +26,12 @@ from utils.logger import logger
 
 from src.Biocode.utils.utils import adapt_dataframe_to_window_profiles, adapt_dataframe_to_most_frequent_nplets
 
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
 
 @Inject(whole_results_service=WholeResultsService,
         region_results_service=RegionResultsService,
@@ -587,7 +593,6 @@ class Grapher:
     @TryExcept
     @Timer
     def graph_compare_command(self, organisms, save, dir):
-        self.graph_compare_single_organism_data(organisms, save, dir, soften=False)
         different_chromosomes_names, ddq_y_values = self.graph_compare_ddq_command(organisms, save, dir, soften=False)
         different_chromosomes_names, genes_count_y_values = self.graph_compare_genes_command(organisms, save, dir, soften=False)
         for i in range(4, 12+1):
@@ -610,6 +615,8 @@ class Grapher:
                                                                   dir=dir, save=bool(save),
                                                                   subfolder="comparisons/linear_regressions",
                                                                   title=f"Kmers count - Linear Regression for {organisms[y_organism_index]} vs {organisms[x_organism_index]}")
+        self.graph_correlation_matrix(organisms, save, dir, ddq_y_values, genes_count_y_values, repeats_count_y_values)
+        self.graph_compare_single_organism_data(organisms, save, dir, soften=False)
 
 
     def graph_compare_ddq_command(self, organisms, save, dir, soften):
@@ -771,3 +778,53 @@ class Grapher:
                                   f" - {name}", xlabel='Kmers', ylabel='Functional category: subcategory',
                             dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/subcategories")
 
+    def graph_correlation_matrix(self, organisms, save, dir, ddq_y_values, genes_count_y_values, repeats_count_y_values):
+        # Define a helper function to compute R² values
+        def compute_r_squared(y_values):
+            r_squared_matrix = np.zeros((len(y_values), len(y_values)))
+            for i in range(len(y_values)):
+                for j in range(len(y_values)):
+                    if i != j:
+                        model = LinearRegression()
+                        model.fit(np.array(y_values[i]).reshape(-1, 1), y_values[j])
+                        r_squared_matrix[i, j] = model.score(np.array(y_values[i]).reshape(-1, 1), y_values[j])
+                    else:
+                        r_squared_matrix[i, j] = 1.0  # R² for the same variable
+            return r_squared_matrix
+
+        # Compute Pearson correlation coefficients
+        def compute_pearson_correlation(y_values):
+            return np.corrcoef(y_values)
+
+        min_length = min(
+            min(len(row) for row in ddq_y_values),
+            min(len(row) for row in genes_count_y_values),
+            min(len(row) for row in repeats_count_y_values)
+        )
+
+        # Truncate each row in the matrices to the minimum length
+        def truncate_to_min_length(y_values, min_length):
+            return [row[:min_length] for row in y_values]
+
+        ddq_y_values_truncated = truncate_to_min_length(ddq_y_values, min_length)
+        genes_count_y_values_truncated = truncate_to_min_length(genes_count_y_values, min_length)
+        repeats_count_y_values_truncated = truncate_to_min_length(repeats_count_y_values, min_length)
+
+        # Prepare the datasets for correlation calculations
+        datasets = {
+            "Degrees of multifractality (DDq)": ddq_y_values_truncated,
+            "Gene Counts": genes_count_y_values_truncated,
+            "Kmers Counts": repeats_count_y_values_truncated
+        }
+
+        for title, data in datasets.items():
+            # Calculate Pearson correlation coefficients
+            pearson_corr = compute_pearson_correlation(data)
+            # Calculate R² values
+            r_squared = compute_r_squared(data)
+            Graphs.plot_heatmap(pearson_corr, title=f"Pearson coefficient - {title}", xticklabels=organisms,
+                                yticklabels=organisms, xlabel="X", ylabel="Y", save=save, dir=f"{dir}/corr",
+                                subfolder="comparisons", tags=True)
+            Graphs.plot_heatmap(r_squared, title=f"R2 - {title}", xticklabels=organisms,
+                                yticklabels=organisms, xlabel="X", ylabel="Y", save=save, dir=f"{dir}/corr",
+                                subfolder="comparisons", tags=True)
