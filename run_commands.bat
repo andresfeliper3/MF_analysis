@@ -2,11 +2,11 @@
 setlocal
 
 rem Editable parameters
-set NAME="neodiprion lecontei"
-set WINDOW_LENGTH=600000
-set DIR="neodiprion_lecontei"
-set GCF=GCF_021901455.1
-set GTF_PATH=resources/genes/neodiprion_lecontei/gtf/GCF_021901455.1_iyNeoLeco1.1_genomic.gtf
+set NAME="musa acuminata"
+set WINDOW_LENGTH=1000000
+set DIR="musa_acuminata"
+set GCF=GCF_000313855.2
+set GTF_PATH=resources/genes/musa_acuminata/gtf/GCF_000313855.2_ASM31385v2_genomic.gtf
 set PARTITIONS=100
 set REGIONS=3
 set K_RANGE="(4,12)"
