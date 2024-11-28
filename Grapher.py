@@ -824,7 +824,7 @@ class Grapher:
             r_squared = compute_r_squared(data)
             Graphs.plot_heatmap(pearson_corr, title=f"Pearson coefficient - {title}", xticklabels=organisms,
                                 yticklabels=organisms, xlabel="X", ylabel="Y", save=save, dir=f"{dir}/corr",
-                                subfolder="comparisons", tags=True)
+                                subfolder="comparisons", tags=True, large_text=True)
             Graphs.plot_heatmap(r_squared, title=f"R2 - {title}", xticklabels=organisms,
                                 yticklabels=organisms, xlabel="X", ylabel="Y", save=save, dir=f"{dir}/corr",
-                                subfolder="comparisons", tags=True)
+                                subfolder="comparisons", tags=True, large_text=True)

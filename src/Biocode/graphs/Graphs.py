@@ -1070,13 +1070,23 @@ class Graphs:
 
     @staticmethod
     def plot_heatmap(heatmap_data, title: str, xlabel: str, ylabel: str, dir: str, save: bool, subfolder: str,
-                     tags: bool, xticklabels=None, yticklabels=None):
+                     tags: bool, xticklabels=None, yticklabels=None, large_text: bool = False):
         plt.figure(figsize=(12, 8))
+
+        # Adjust font size for annotations based on the parameter
+        annot_kws = {'size': 20 if large_text else 10}
+
         if xticklabels and yticklabels:
-            ax = sns.heatmap(heatmap_data, annot=tags, fmt='.2f', cmap='viridis', cbar_kws={'label': 'Count'},
-                         xticklabels=xticklabels, yticklabels=yticklabels)
+            ax = sns.heatmap(
+                heatmap_data, annot=tags, fmt='.2f', cmap='viridis',
+                cbar_kws={'label': 'Count'}, xticklabels=xticklabels,
+                yticklabels=yticklabels, annot_kws=annot_kws
+            )
         else:
-            ax = sns.heatmap(heatmap_data, annot=tags, fmt='.2f', cmap='viridis', cbar_kws={'label': 'Count'})
+            ax = sns.heatmap(
+                heatmap_data, annot=tags, fmt='.2f', cmap='viridis',
+                cbar_kws={'label': 'Count'}, annot_kws=annot_kws
+            )
 
         cbar = ax.collections[0].colorbar
         cbar.ax.set_position([0.1, 0.2, 0.03, 0.6])
@@ -1085,6 +1095,8 @@ class Graphs:
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.yticks(rotation=0, ha='right')
+
+        # Save the plot if required
         route = f"{subfolder}/{dir}"
         if save:
             Graphs._savefig(title, route)
@@ -1100,9 +1112,7 @@ class Graphs:
                                comparison_names: list[str], save: bool, dir: str, soften: bool, window_size: int = 4):
         plt.figure(figsize=(10, 6))
         colors = plt.cm.get_cmap('Accent', len(y_values_list))
-
         x_values_np = np.array(x_values)
-
         for index, y_values in enumerate(y_values_list):
             # Convert y_values to a numpy array
             y_values_np = np.array(y_values, dtype=float)
