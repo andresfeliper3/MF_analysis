@@ -485,7 +485,7 @@ class Grapher:
         repeats_count_sum_list = repeats_df['count_sum'].to_list()
         region_name_list = repeats_df['name'].to_list()
 
-        Graphs.graph_line(region_name_list, repeats_count_sum_list, title=f"Count of kmers [4-12] for {sequence_name}", ylabel="Count of kmers", xlabel="Regions",
+        Graphs.graph_line(region_name_list[:-1], repeats_count_sum_list[:-1], title=f"Count of kmers [4-12] for {sequence_name}", ylabel="Count of kmers", xlabel="Regions",
                           save=bool(save), dir=dir, subfolder=f"linear_repeats_all_database_summed")
 
 
