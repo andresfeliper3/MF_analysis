@@ -18,7 +18,7 @@ rem Execute commands
 ::py .\command.py download -name %NAME%
 
 echo Running analyze_genome -mode whole...
-py .\command.py analyze_genome -name %NAME% -mode whole
+::py .\command.py analyze_genome -name %NAME% -mode whole
 
 echo Running analyze_genome -mode regions...
 py .\command.py analyze_genome -name %NAME% -mode regions -window_length %WINDOW_LENGTH%

@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="caenorhabditis remanei"
-set WINDOW_LENGTH=300000
-set DIR="caenorhabditis_remanei"
-set GCF=GCF_010183535.1
-set GTF_PATH=resources/genes/caenorhabditis_remanei/gtf/GCF_010183535.1_CRPX506_genomic.gtf
-set SEQUENCE_PATH=resources/dna_sequences/caenorhabditis_remanei/chrX.fna
+set NAME="neodiprion lecontei"
+set WINDOW_LENGTH=3000000
+set DIR="neodiprion_lecontei"
+set GCF=GCF_021901455.1
+set GTF_PATH=resources/genes/neodiprion_lecontei/gtf/GCF_021901455.1_iyNeoLeco1.1_genomic.gtf
+set SEQUENCE_PATH=resources/dna_sequences/neodiprion_lecontei/chr1.fna
 set PARTITIONS=300
 set REGIONS=3
 set K_RANGE="(4,12)"
