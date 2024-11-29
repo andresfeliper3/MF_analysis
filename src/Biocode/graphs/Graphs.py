@@ -1148,3 +1148,20 @@ class Graphs:
             Graphs._savefig(title, route)
 
         plt.show()
+
+    @staticmethod
+    def graph_line(x_values: list, y_values: list, title: str, ylabel: str, xlabel: str, save: bool, dir: str,
+                   subfolder: str):
+        plt.figure(figsize=(10, 6))
+        plt.plot(x_values, y_values, marker='o', linestyle='-', color='b')
+        plt.title(title)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.grid(False)
+        plt.xticks(rotation=90)
+        route = f"{subfolder}/{dir}"
+        if save:
+            Graphs._savefig(title, route)
+        else:
+            plt.show()
+
