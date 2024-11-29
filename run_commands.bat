@@ -2,12 +2,12 @@
 setlocal
 
 rem Editable parameters
-set NAME="fusarium oxysporum"
-set WINDOW_LENGTH=100000
-set DIR="fusarium_oxysporum"
-set GCF=GCF_000149955.1
-set GTF_PATH=resources/genes/fusarium_oxysporum/gtf/GCF_000149955.1_ASM14995v2_genomic.gtf
-set PARTITIONS=300
+set NAME="musa acuminata"
+set WINDOW_LENGTH=1000000
+set DIR="musa_acuminata"
+set GCF=GCF_000313855.2
+set GTF_PATH=resources/genes/musa_acuminata/gtf/GCF_000313855.2_ASM31385v2_genomic.gtf
+set PARTITIONS=100
 set REGIONS=3
 set K_RANGE="(4,12)"
 set GENES_KMER_SIZE=4

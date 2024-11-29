@@ -470,6 +470,24 @@ class Grapher:
         for refseq_accession_number in refseq_accession_numbers:
             self.graph_linear_repeats_sequence_command(refseq_accession_number=refseq_accession_number, save=save,
                                                        dir=dir, name=name, k_range=k_range)
+            self.graph_linear_repeats_summed_sequence_command(refseq_accession_number=refseq_accession_number, save=save,
+                                                              dir=dir, k_range=k_range)
+    @TryExcept
+    @Timer
+    def graph_linear_repeats_summed_sequence_command(self, save: bool, dir: str, k_range: str, path: str = None,
+                                                     refseq_accession_number: str = None):
+        if refseq_accession_number is None:
+            refseq_accession_number = self.loader.extract_refseq_accession_number(path)
+        sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(
+            refseq_accession_number)
+        repeats_df = self.linear_repeats_region_chromosomes_service.extract_count_of_repeats_by_region(
+            refseq_accession_number=refseq_accession_number)
+        repeats_count_sum_list = repeats_df['count_sum'].to_list()
+        region_name_list = repeats_df['name'].to_list()
+
+        Graphs.graph_line(region_name_list, repeats_count_sum_list, title=f"Count of kmers [4-12] for {sequence_name}", ylabel="Count of kmers", xlabel="Regions",
+                          save=bool(save), dir=dir, subfolder=f"linear_repeats_all_database_summed")
+
 
     @DBConnection
     @TryExcept

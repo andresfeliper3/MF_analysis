@@ -1,9 +1,5 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
-resources/sequences.yaml
-run_commands.bat
-run_graph_commands.bat
-run_commands_sequence.bat
 
 *.fasta
 *.fna

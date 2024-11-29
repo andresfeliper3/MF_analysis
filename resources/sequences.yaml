@@ -50,10 +50,12 @@ GCF_000090985.2: *m_commoda
 
 musa acuminata: &musa_acuminata
   organism_name: "musa_acuminata"
-  GCF: "GCF_036884655.1"
-  download_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/latest_assembly_versions/GCF_036884655.1_Cavendish_Baxijiao_AAA/'
-  download_files_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/latest_assembly_versions/GCF_036884655.1_Cavendish_Baxijiao_AAA/'
+  GCF: "GCF_000313855.2"
+  download_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/all_assembly_versions/suppressed/GCF_000313855.2_ASM31385v2/GCF_000313855.2_ASM31385v2_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA'
+  download_files_url: 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Musa_acuminata/all_assembly_versions/suppressed/GCF_000313855.2_ASM31385v2/'
   regions_number: 3
+  window_length: 1000000
+  sorted_files: true
 GCF_000313855.2: *musa_acuminata
 
 drosophila melanogaster: &d_melanogaster
@@ -135,7 +137,18 @@ eremothecium gossypii: &e_gossypii
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Eremothecium_gossypii/latest_assembly_versions/GCF_000091025.4_ASM9102v4/GCF_000091025.4_ASM9102v4_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Eremothecium_gossypii/latest_assembly_versions/GCF_000091025.4_ASM9102v4/"
   regions_number: 3
+  sorted_files: true
 GCF_000091025.4: *e_gossypii
+
+eremothecium sinecaudum: &e_sinecaudum
+  organism_name: "eremothecium_sinecaudum"
+  GCF: "GCF_001548555.1"
+  download_url: ""
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Eremothecium_sinecaudum/latest_assembly_versions/GCF_001548555.1_ASM154855v1/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: true
+GCF_001548555.1: *e_sinecaudum
 
 saccharomyces cerevisiae: &s_cerevisiae
   organism_name: "saccharomyces_cerevisiae"
@@ -345,6 +358,17 @@ neodiprion lecontei: &n_lecontei
   sorted_files: true
 GCF_021901455.1: *n_lecontei
 
+neodiprion fabricii: &n_fabricii
+  organism_name: "neodiprion_fabricii"
+  GCF: "GCF_021155785.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Neodiprion_fabricii/latest_assembly_versions/GCF_021155785.1_iyNeoFabr1.1/GCF_021155785.1_iyNeoFabr1.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Neodiprion_fabricii/latest_assembly_versions/GCF_021155785.1_iyNeoFabr1.1/"
+  regions_number: 3
+  window_length: 600000
+  sorted_files: true
+GCF_021155785.1: *n_fabricii
+
+
 oryza glaberrima: &o_glaberrima
   organism_name: "oryza_glaberrima"
   GCF: "GCF_000147395.1"
@@ -404,6 +428,28 @@ fusarium falciforme: &f_falciforme
   window_length: 100000
   sorted_files: true
 GCF_026873545.1: *f_falciforme
+
+<<<<<<< HEAD
+vespula pensylvanica: &v_pensylvanica
+  organism_name: "vespula_pensylvanica"
+  GCF: "GCF_014466175.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Vespula_pensylvanica/latest_assembly_versions/GCF_014466175.1_ASM1446617v1/GCF_014466175.1_ASM1446617v1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Vespula_pensylvanica/latest_assembly_versions/GCF_014466175.1_ASM1446617v1/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: true
+GCF_014466175.1: *v_pensylvanica
+
+vespula vulgaris: &v_vulgaris
+  organism_name: "vespula_vulgaris"
+  GCF: "GCF_905475345.1"
+  download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Vespula_vulgaris/latest_assembly_versions/GCF_905475345.1_iyVesVulg1.1/GCF_905475345.1_iyVesVulg1.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
+  download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Vespula_vulgaris/latest_assembly_versions/GCF_905475345.1_iyVesVulg1.1/"
+  regions_number: 3
+  window_length: 300000
+  sorted_files: true
+GCF_905475345.1: *v_vulgaris
+
 
 fusarium oxysporum: &f_oxysporum
   organism_name: "fusarium_oxysporum"
