@@ -1071,7 +1071,7 @@ class Graphs:
     @staticmethod
     def plot_heatmap(heatmap_data, title: str, xlabel: str, ylabel: str, dir: str, save: bool, subfolder: str,
                      tags: bool, xticklabels=None, yticklabels=None, large_text: bool = False):
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(16, 8))
 
         # Adjust font size for annotations based on the parameter
         annot_kws = {'size': 20 if large_text else 10}
