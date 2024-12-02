@@ -1151,11 +1151,11 @@ class Graphs:
 
     @staticmethod
     def graph_line(x_values: list, y_values: list, title: str, ylabel: str, xlabel: str, save: bool, dir: str,
-                   subfolder: str):
+                   window_length: int, subfolder: str):
         plt.figure(figsize=(10, 6))
         plt.plot(x_values, y_values, marker='o', linestyle='-', color='b')
         plt.title(title)
-        plt.xlabel(xlabel)
+        plt.xlabel(f"{xlabel} ({window_length} bp)")
         plt.ylabel(ylabel)
         plt.grid(False)
         plt.xticks(rotation=90)

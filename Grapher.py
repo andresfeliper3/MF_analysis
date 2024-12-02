@@ -482,11 +482,15 @@ class Grapher:
             refseq_accession_number)
         repeats_df = self.linear_repeats_region_chromosomes_service.extract_count_of_repeats_by_region(
             refseq_accession_number=refseq_accession_number)
+        region_repeats_df = self.linear_repeats_region_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(
+            refseq_accession_number,
+            k_range=ast.literal_eval(k_range))
+        window_length = region_repeats_df.iloc[0]['window_length']
         repeats_count_sum_list = repeats_df['count_sum'].to_list()
         region_name_list = repeats_df['name'].to_list()
 
         Graphs.graph_line(region_name_list[:-1], repeats_count_sum_list[:-1], title=f"Count of kmers [4-12] for {sequence_name}", ylabel="Count of kmers", xlabel="Regions",
-                          save=bool(save), dir=dir, subfolder=f"linear_repeats_all_database_summed")
+                          save=bool(save), dir=dir, window_length=window_length, subfolder=f"linear_repeats_all_database_summed")
 
 
     @DBConnection

@@ -354,7 +354,7 @@ neodiprion lecontei: &n_lecontei
   download_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Neodiprion_lecontei/latest_assembly_versions/GCF_021901455.1_iyNeoLeco1.1/GCF_021901455.1_iyNeoLeco1.1_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/"
   download_files_url: "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Neodiprion_lecontei/latest_assembly_versions/GCF_021901455.1_iyNeoLeco1.1/"
   regions_number: 3
-  window_length: 600000
+  window_length: 3000000
   sorted_files: true
 GCF_021901455.1: *n_lecontei
 
