@@ -294,6 +294,15 @@ def main():
     graph_compare_parser.add_argument('-dir',
                                                                 help="Enter the name of the genre or family")
 
+    graph_compare_genes_mfa_kmers_parser = subparsers.add_parser('graph_compare_genes_mfa_kmers',
+                                                 help='Graph comparing degrees of multifractality of different organisms')
+    graph_compare_genes_mfa_kmers_parser.add_argument('-gcf', help='GCF of the organism')
+    graph_compare_genes_mfa_kmers_parser.add_argument('-k_range', help='Range of k values for kmers')
+    graph_compare_genes_mfa_kmers_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                      help='Save graphs locally in /out directory')
+    graph_compare_genes_mfa_kmers_parser.add_argument('-dir',
+                                      help="Enter the name of the genre or family")
+
     download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
                                                              'specified in the sequences.yaml file.')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
@@ -408,6 +417,8 @@ def main():
                                                                   name=args.name, tags=args.tags)
     elif args.command == 'graph_compare':
         grapher.graph_compare_command(organisms=args.organisms, save=args.save, dir=args.dir)
+    elif args.command == "graph_compare_genes_mfa_kmers":
+        grapher.compare_genes_mfa_kmers_command(GCF=args.gcf, k_range=args.k_range, dir=args.dir, save=args.save)
     elif args.command == 'download':
         downloader.download_command(args)
     elif args.command == 'load_RM_repeats':

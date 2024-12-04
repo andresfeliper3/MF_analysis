@@ -454,7 +454,7 @@ class Graphs:
     ## Repeats graphs
     # merged with partitions
     @staticmethod
-    def _create_partitions(df, size: int, amount_partitions: int, start_col_name: str, length_col_name: str):
+    def create_partitions(df, size: int, amount_partitions: int, start_col_name: str, length_col_name: str):
         partition_size = size // amount_partitions
         repeat_lengths = np.zeros(amount_partitions)
 
@@ -476,7 +476,7 @@ class Graphs:
 
         plt.figure(figsize=(40, 6))
 
-        repeat_lengths = Graphs._create_partitions(df, size, partitions, "query_begin", "repeat_length")
+        repeat_lengths = Graphs.create_partitions(df, size, partitions, "query_begin", "repeat_length")
 
         # Convert repeat_lengths to a numpy array for plotting
         repeat_lengths = np.array(repeat_lengths)
@@ -731,9 +731,8 @@ class Graphs:
         df = df[df['feature'] == 'gene']
         df = df.reset_index(drop=True)
         plt.figure(figsize=(40, 6))
-        lengths = Graphs._create_partitions(df, size, partitions, start_col_name="start_position",
-                                            length_col_name="length")
-
+        lengths = Graphs.create_partitions(df, size, partitions, start_col_name="start_position",
+                                           length_col_name="length")
         # Convert lengths to a numpy array for plotting
         lengths = np.array(lengths)
 
@@ -1165,3 +1164,37 @@ class Graphs:
         else:
             plt.show()
 
+    @staticmethod
+    def plot_normalized_magnitudes(normalized_data, labels, sequence_name, save, dir, subfolder):
+        """
+        Plots the normalized magnitudes as line plots.
+
+        Parameters:
+        - normalized_data: numpy array, the normalized data (rows: observations, columns: magnitudes)
+        - labels: list of str, the labels for each magnitude (e.g., ["DDq", "Gene Counts", "Kmers Counts"])
+        - sequence_name: str, the name of the sequence being analyzed
+        - save: bool, whether to save the plot
+        - dir: str, the directory where the plot should be saved
+        """
+        plt.figure(figsize=(12, 6))
+
+        # Plot each magnitude as a line
+        for i, label in enumerate(labels):
+            plt.plot(normalized_data[:, i], label=label)
+
+        # Add title, labels, and legend
+        title = f"Normalized Magnitudes - {sequence_name}"
+        plt.title(title, fontsize=16)
+        plt.xlabel("Regions", fontsize=14)
+        plt.ylabel("Normalized Value", fontsize=14)
+        plt.legend(title="Magnitudes", fontsize=12)
+
+        # Customize grid and layout
+        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.tight_layout()
+
+        # Save the plot if required
+        route = f"{subfolder}/{dir}"
+        if save:
+            Graphs._savefig(title, route)
+        plt.show()

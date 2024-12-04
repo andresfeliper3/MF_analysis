@@ -398,6 +398,10 @@ For the genome:
 
     py .\command.py graph_compare -organisms "caenorhabditis elegans" "caenorhabditis remanei" "caenorhabditis briggsae" --save true -dir caenorhabditis
 
+## Graph comparisons between the degree of multifractality, count of genes and count of kmers in the chromosomes of a genomoe
+
+    py .\command.py graph_compare_genes_mfa_kmers  -gcf GCF_943734745.1 -k_range "(4,12)" -dir anopheles_darlingi
+
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
 These files can be saved in the following directory resources/RM_resources/<organism_name>_
