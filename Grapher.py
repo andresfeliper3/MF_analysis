@@ -30,6 +30,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
 
@@ -489,6 +490,7 @@ class Grapher:
         repeats_count_sum_list = repeats_df['count_sum'].to_list()
         region_name_list = repeats_df['name'].to_list()
 
+
         Graphs.graph_line(region_name_list[:-1], repeats_count_sum_list[:-1], title=f"Count of kmers [4-12] for {sequence_name}", ylabel="Count of kmers", xlabel="Regions",
                           save=bool(save), dir=dir, window_length=window_length, subfolder=f"linear_repeats_all_database_summed")
 
@@ -800,23 +802,25 @@ class Grapher:
                                   f" - {name}", xlabel='Kmers', ylabel='Functional category: subcategory',
                             dir=dir, tags=bool(tags), save=bool(save), subfolder=f"heatmaps/subcategories")
 
-    def graph_correlation_matrix(self, organisms, save, dir, ddq_y_values, genes_count_y_values, repeats_count_y_values):
-        # Define a helper function to compute R² values
-        def compute_r_squared(y_values):
-            r_squared_matrix = np.zeros((len(y_values), len(y_values)))
-            for i in range(len(y_values)):
-                for j in range(len(y_values)):
-                    if i != j:
-                        model = LinearRegression()
-                        model.fit(np.array(y_values[i]).reshape(-1, 1), y_values[j])
-                        r_squared_matrix[i, j] = model.score(np.array(y_values[i]).reshape(-1, 1), y_values[j])
-                    else:
-                        r_squared_matrix[i, j] = 1.0  # R² for the same variable
-            return r_squared_matrix
+    def compute_r_squared(self, y_values):
+        r_squared_matrix = np.zeros((len(y_values), len(y_values)))
+        for i in range(len(y_values)):
+            for j in range(len(y_values)):
+                if i != j:
+                    model = LinearRegression()
+                    model.fit(np.array(y_values[i]).reshape(-1, 1), y_values[j])
+                    r_squared_matrix[i, j] = model.score(np.array(y_values[i]).reshape(-1, 1), y_values[j])
+                else:
+                    r_squared_matrix[i, j] = 1.0  # R² for the same variable
+        return r_squared_matrix
 
         # Compute Pearson correlation coefficients
-        def compute_pearson_correlation(y_values):
-            return np.corrcoef(y_values)
+
+    def compute_pearson_correlation(self, y_values):
+        return np.corrcoef(y_values)
+
+    def graph_correlation_matrix(self, organisms, save, dir, ddq_y_values, genes_count_y_values, repeats_count_y_values):
+        # Define a helper function to compute R² values
 
         min_length = min(
             min(len(row) for row in ddq_y_values),
@@ -841,12 +845,80 @@ class Grapher:
 
         for title, data in datasets.items():
             # Calculate Pearson correlation coefficients
-            pearson_corr = compute_pearson_correlation(data)
+            pearson_corr = self.compute_pearson_correlation(data)
             # Calculate R² values
-            r_squared = compute_r_squared(data)
+            r_squared = self.compute_r_squared(data)
             Graphs.plot_heatmap(pearson_corr, title=f"Pearson coefficient - {title}", xticklabels=organisms,
                                 yticklabels=organisms, xlabel="X", ylabel="Y", save=save, dir=f"{dir}/corr",
                                 subfolder="comparisons", tags=True, large_text=True)
             Graphs.plot_heatmap(r_squared, title=f"R2 - {title}", xticklabels=organisms,
                                 yticklabels=organisms, xlabel="X", ylabel="Y", save=save, dir=f"{dir}/corr",
                                 subfolder="comparisons", tags=True, large_text=True)
+
+    @DBConnection
+    @TryExcept
+    @Timer
+    def compare_genes_mfa_kmers_command(self, GCF: str, k_range: str, dir: str, save: str):
+        refseq_accession_numbers = self.organisms_service.extract_chromosomes_refseq_accession_numbers_by_GCF(GCF)
+        dic_list = self._extract_regions_data_df(gcf=GCF)  # len(dic_list[0])
+
+        for index, refseq_accession_number in enumerate(refseq_accession_numbers):
+            sequence_name = self.whole_chromosomes_service.extract_sequence_name_by_refseq_accession_number(
+                refseq_accession_number)
+            repeats_df = self.linear_repeats_region_chromosomes_service.extract_count_of_repeats_by_region(
+                refseq_accession_number=refseq_accession_number)
+            region_repeats_df = self.linear_repeats_region_chromosomes_service.extract_linear_repeats_by_refseq_accession_number(
+                refseq_accession_number,
+                k_range=ast.literal_eval(k_range))
+            window_length = region_repeats_df.iloc[0]['window_length']
+            repeats_count_sum_list = repeats_df['count_sum'].to_list()
+            region_name_list = repeats_df['name'].to_list()
+            amount_regions = len(region_name_list)
+
+            chromosome_name, chr_size = self.whole_chromosomes_service.extract_filename_and_size_by_refseq_accession_number(
+                refseq_accession_number)
+            genes_df = self.gtf_genes_service.extract_genes_by_chromosome(refseq_accession_number)
+            genes_df = genes_df[genes_df['feature'] == 'gene']
+            genes_df = genes_df.reset_index(drop=True)
+            plt.figure(figsize=(40, 6))
+            genes_amount_list = Graphs.create_partitions(
+                genes_df, chr_size, amount_regions, start_col_name="start_position", length_col_name="length"
+            )
+            ddq_list = dic_list[index]['DDq'].to_list()
+
+            # Prepare datasets for correlation calculations
+            datasets = {
+                "Degrees of multifractality (DDq)": ddq_list[:-1],
+                "Gene Counts": genes_amount_list[:-1],
+                "Kmers Counts": repeats_count_sum_list[:-1]
+            }
+            data_frame = pd.DataFrame(datasets)
+            scaler = StandardScaler()
+            normalized_data = scaler.fit_transform(data_frame)
+
+            # Recalculate the Pearson correlation on normalized data
+            pearson_corr = pd.DataFrame(normalized_data, columns=datasets.keys()).corr(method='pearson').values
+
+            # Plot the heatmap
+            labels = list(datasets.keys())
+            Graphs.plot_heatmap(
+                pearson_corr, title=f"Pearson coefficient - {sequence_name}", xticklabels=labels,
+                yticklabels=labels, xlabel=f"Window length {window_length}", ylabel=f"Window length {window_length}",
+                save=bool(save), dir=f"{dir}/corr",
+                subfolder="comparisons_magnitudes", tags=True, large_text=True
+            )
+            Graphs.plot_normalized_magnitudes(
+                normalized_data=normalized_data,
+                labels=list(datasets.keys()),
+                sequence_name=sequence_name,
+                save=bool(save),
+                dir=f"{dir}/lines",
+                subfolder="comparisons_magnitudes"
+            )
+
+
+    def _extract_regions_data_df(self, gcf) -> list[pd.DataFrame]:
+        df = self.region_results_service.extract_results(GCF=gcf)
+        df['sequence_name_for_grouping'] = df['sequence_name'].str.split('_region').str[0]
+        dfs_per_sequence_list = [group for name, group in df.groupby('sequence_name_for_grouping', sort=False)]
+        return dfs_per_sequence_list
