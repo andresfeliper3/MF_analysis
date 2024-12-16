@@ -642,6 +642,27 @@ class Grapher:
         self.graph_correlation_matrix(organisms, save, dir, ddq_y_values, genes_count_y_values, repeats_count_y_values)
         self.graph_compare_single_organism_data(organisms, save, dir, soften=False)
 
+    @DBConnection
+    @TryExcept
+    @Timer
+    def graph_most_frequent_kmer_command(self, refseq_accession_numbers, organisms, kmer_size, save, dir):
+        most_common_kmer = self.linear_repeats_region_chromosomes_service.extract_most_common_kmer(
+            refseq_accession_numbers, kmer_size)
+        most_common_kmer_in_chromosomes_list = []
+        for refseq_accession_number in refseq_accession_numbers:
+            print(refseq_accession_number)
+            kmer_in_regions_df = self.linear_repeats_region_chromosomes_service.extract_count_of_single_repeat_by_region(
+                refseq_accession_number, most_common_kmer)
+            most_common_kmer_in_chromosomes_list.append(kmer_in_regions_df['count_sum'].to_list())
+        regions_names = self._get_regions_names(region_chromosomes_values=most_common_kmer_in_chromosomes_list)
+
+        Graphs.graph_comparison_lines(x_values=regions_names, y_values_list=most_common_kmer_in_chromosomes_list,
+                                      ylabel=f"{most_common_kmer} count",
+                                      comparison_names=organisms, save=save, dir=f"{dir}/chromosome",
+                                      soften=False,
+                                      title=f"{most_common_kmer} count of {self.loader.get_organism_name()} by regions")
+
+
 
     def graph_compare_ddq_command(self, organisms, save, dir, soften):
         ddq_y_values = []

@@ -402,6 +402,10 @@ For the genome:
 
     py .\command.py graph_compare_genes_mfa_kmers  -gcf GCF_943734745.1 -k_range "(4,12)" -dir anopheles_darlingi
 
+## Graph comparisons between degree of multifractality, count of genes and count of kmers for one single chromosome 
+
+    py .\command.py graph_most_frequent_kmer -refs "NC_057366.1" "NC_054853.1" "NC_054861.1" -organisms "aspergillus chevalieri" "aspergillus luchuensis" "aspergillus puulaauensis" -dir aspergillus -kmer_size 6
+
 ## Repeats using RepeatMasker
 After executing the RepeatMasker program, the results are saved in a .out file.
 These files can be saved in the following directory resources/RM_resources/<organism_name>_

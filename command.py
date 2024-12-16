@@ -303,6 +303,17 @@ def main():
     graph_compare_genes_mfa_kmers_parser.add_argument('-dir',
                                       help="Enter the name of the genre or family")
 
+    graph_most_frequent_kmer_parser = subparsers.add_parser('graph_most_frequent_kmer',
+                                                             help='Graph most common k-mer per organisms')
+    graph_most_frequent_kmer_parser.add_argument('-refs', nargs='+', help='List of chromosomes to compare')
+    graph_most_frequent_kmer_parser.add_argument('-organisms', nargs='+', help='List of organisms to compare')
+    graph_most_frequent_kmer_parser.add_argument('-kmer_size', help='Size of most frequent kmer')
+
+    graph_most_frequent_kmer_parser.add_argument('--save', choices=['true', 'false'], default='true',
+                                                      help='Save graphs locally in /out directory')
+    graph_most_frequent_kmer_parser.add_argument('-dir',
+                                                      help="Enter the name of the genre or family")
+
     download_parser = subparsers.add_parser('download', help='Download command: it downloads the chromosomes files form the link'
                                                              'specified in the sequences.yaml file.')
     download_parser.add_argument('-name', help='Name or GCF for downloading')
@@ -397,6 +408,8 @@ def main():
     elif args.command == 'graph_linear_in_genes_repeats_genome':
         grapher.graph_linear_in_genes_repeats_genome_command(GCF=args.gcf, save=args.save, dir=args.dir, name=args.name,
                                                              k_range=args.k_range)
+    elif args.command == 'graph_most_frequent_kmer':
+        grapher.graph_most_frequent_kmer_command(refseq_accession_numbers=args.refs, organisms=args.organisms, save=args.save, dir=args.dir, kmer_size=args.kmer_size)
     elif args.command == 'graph_gtf_file':
         grapher.graph_gtf_from_file(path=args.path, partitions=args.partitions, regions=args.regions, plot_type=args.plot_type,
                             save=args.save, dir=args.dir)

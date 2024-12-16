@@ -6,6 +6,9 @@ class AbstractService:
     def _list_to_sql_list(self, lst: list) -> str:
         return ', '.join(map(str, lst))
 
+    def _list_to_sql_list_with_quotes(self, lst: list) -> str:
+        return ', '.join(f"'{item}'" for item in lst)
+
     def insert(self, record: tuple) -> int :
         return DBConnectionManager.insert(table_name=self.table_name, columns=self.columns, pk=self.pk_column,
                                           record=record)

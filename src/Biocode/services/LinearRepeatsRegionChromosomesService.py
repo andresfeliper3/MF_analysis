@@ -70,3 +70,26 @@ class LinearRepeatsRegionChromosomesService(AbstractService):
                 f"WHERE r.method_to_find_it = 'Linear' AND wc.refseq_accession_number = '{refseq_accession_number}' " \
                 f"GROUP BY rc.name ORDER BY rc.id;"
         return self.extract_with_custom_query(query)
+
+    def extract_count_of_single_repeat_by_region(self, refseq_accession_number: str, repeat: str):
+        query = f"SELECT rc.id AS region_id , rc.name , SUM(lrrc.count) AS count_sum " \
+                f"FROM repeats r JOIN linear_repeats_region_chromosomes lrrc ON r.id = lrrc.repeats_id " \
+                f"JOIN region_chromosomes rc ON lrrc.region_chromosomes_id = rc.id JOIN whole_chromosomes wc ON rc.whole_chromosome_id = wc.id " \
+                f"WHERE r.method_to_find_it = 'Linear' AND r.name = '{repeat}' AND wc.refseq_accession_number = '{refseq_accession_number}' " \
+                f"GROUP BY rc.name ORDER BY rc.id;"
+        return self.extract_with_custom_query(query)
+
+    def extract_most_common_kmer(self, refseq_accession_number_list: list, kmer_size: int) -> str:
+        query = (
+            f"SELECT r.name, SUM(lrrc.count) AS count "
+            f"FROM repeats r "
+            f"JOIN linear_repeats_region_chromosomes lrrc ON r.id = lrrc.repeats_id "
+            f"JOIN region_chromosomes rc ON lrrc.region_chromosomes_id = rc.id "
+            f"JOIN whole_chromosomes wc ON rc.whole_chromosome_id = wc.id "
+            f"WHERE wc.refseq_accession_number IN ({self._list_to_sql_list_with_quotes(refseq_accession_number_list)}) "
+            f"AND lrrc.size = {kmer_size} "
+            f"GROUP BY r.name "
+            f"ORDER BY count DESC "
+            f"LIMIT 1;"
+        )
+        return self.extract_with_custom_query(query).iloc[0]['name']
