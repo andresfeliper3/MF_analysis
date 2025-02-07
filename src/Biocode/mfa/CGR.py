@@ -61,7 +61,7 @@ class CGR:
         self.sequence.set_cover(self.cover)
         return [self.x_coords, self.y_coords]
 
-    def generate_cgr_counting_grid_cells(self, graph=True, epsilon=0.01, title="Chaos Game Representation") -> list[
+    def generate_cgr_counting_grid_cells(self, graph=True, epsilon=0.01, title="Chaos Game Representation", name=None) -> list[
         list[float]]:
 
         # Initialize the current position
@@ -120,7 +120,8 @@ class CGR:
         self.sequence.set_cover_percentage(self.cover_percentage)
 
         if graph:
-            Graphs.graph_cgr(self.x_coords, self.y_coords, self.grid_size, title=title, epsilon=epsilon)
+            Graphs.graph_cgr(self.x_coords, self.y_coords, name, self.grid_size, title=title, epsilon=epsilon,
+                             with_grid=False)
 
         self.sequence.set_cover(self.cover)
         return self.mi_grid

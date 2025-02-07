@@ -81,6 +81,15 @@ def main():
     graph_parser.add_argument('-regions_number', help='Amount of regions in which the sequence will be divided.')
     graph_parser.add_argument('-window_length', help='Size (amount of bps) in which the windows/regions will be divided.')
 
+    cgr_graph_parser = subparsers.add_parser('graph_cgr', help='Graph CGR after executing CGR algorithm')
+    cgr_graph_parser.add_argument('-name', help='Name or GCF for analysis')
+    cgr_graph_parser.add_argument('--only_cgr', help='True if graphing only cgr', choices=['true', 'false'], default='true')
+    cgr_graph_parser.add_argument('-mode', help='Analysis mode: whole / regions')
+    cgr_graph_parser.add_argument('-regions_number', help='Enter the amount of regions')
+    cgr_graph_parser.add_argument('-window_length', help='Enter the length of the windows')
+    cgr_graph_parser.add_argument('--save-to-db', choices=['true', 'false'], default='true',
+                                       help='Save results to the database')
+
     graph_rm_file_parser = subparsers.add_parser('graph_rm_file_sequence', help='Graph RepeatMasker results')
     graph_rm_file_parser.add_argument('-path', help="Enter the path of a RepeatMasker results file")
     graph_rm_file_parser.add_argument('-partitions', help="Enter the number of partitions to use to divide the sequence and "
@@ -377,6 +386,8 @@ def main():
         repeats_loader.find_kmers_linearly_genes_genome_command(args)
     elif args.command == 'graph':
         grapher.graph_command(args)
+    elif args.command == 'graph_cgr':
+        analyzer.analyze_genome_command(args)
     elif args.command == 'graph_rm_file_sequence':
         grapher.graph_rm_results_from_file(path=args.path, partitions=args.partitions, regions=args.regions,
                                    plot_type=args.plot_type, save=args.save, dir=args.dir)

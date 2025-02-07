@@ -78,9 +78,10 @@ class MFA:
         cgr_largest_mi_grid = cgr_largest_mi_grid.reshape((self.grid_sizes[0], self.grid_sizes[0]))
         return self.generate_cgr_mi_grids_from_initial_grid(cgr_largest_mi_grid)
 
-    def generate_initial_grid(self):
+    def generate_initial_grid(self, name, title):
         self.cgr_gen = CGR(self.sequence)
-        self.cgr_initial_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=False, epsilon=self.epsilons[0])
+        self.cgr_initial_grid = self.cgr_gen.generate_cgr_counting_grid_cells(graph=True, epsilon=self.epsilons[0],
+                                                                              name=name, title=title)
         return self.cgr_initial_grid
 
     def _generate_cgr_mi_grids_quickly(self) -> list:

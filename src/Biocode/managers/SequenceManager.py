@@ -20,12 +20,13 @@ from typing import List
 import gc
 import numpy as np
 
+
 @Inject(whole_results_service=WholeResultsService,
-        organisms_service = OrganismsService,
-        whole_chromosomes_service = WholeChromosomesService,
-        repeats_service = RepeatsService,
-        recursive_repeats_whole_chromosomes_service = RecursiveRepeatsWholeChromosomesService,
-        whole_mi_grids_service = WholeMiGridsService
+        organisms_service=OrganismsService,
+        whole_chromosomes_service=WholeChromosomesService,
+        repeats_service=RepeatsService,
+        recursive_repeats_whole_chromosomes_service=RecursiveRepeatsWholeChromosomesService,
+        whole_mi_grids_service=WholeMiGridsService
         )
 class SequenceManager(SequenceManagerInterface):
     def __init__(self, sequence: Sequence = None, sequence_data: dict = None, sequence_name: str = None,
@@ -45,7 +46,6 @@ class SequenceManager(SequenceManagerInterface):
         self.repeats_service = repeats_service
         self.recursive_repeats_whole_chromosomes_service = recursive_repeats_whole_chromosomes_service
         self.whole_mi_grids_service = whole_mi_grids_service
-
 
         self.n_largest_mi_grid_values_strings_for_k = None
         if sequence:
@@ -72,36 +72,42 @@ class SequenceManager(SequenceManagerInterface):
         self.cover_percentage = None
         self._10_largest_values_from_k_10_to_4 = None
         self.region_number = None
+        self.CGR_PLOT_TITLE = f"CGR - {self.sequence_name}"
 
-
-    def calculate_multifractal_analysis_values(self, GCF):
-        self.generate_mfa(GCF, self.whole_mi_grids_service, self.whole_chromosomes_service)
+    def calculate_multifractal_analysis_values(self, GCF, name, only_cgr):
+        self.generate_mfa(GCF, self.whole_mi_grids_service, self.whole_chromosomes_service, name=name,
+                          only_cgr=only_cgr)
         self.generate_degrees_of_multifractality()
         self._attach_cover_data()
 
-    def generate_mfa(self, GCF, mi_grids_service, chromosomes_service):
-        mi_grid_chromosome_id = mi_grids_service\
+    def generate_mfa(self, GCF, mi_grids_service, chromosomes_service, name, only_cgr=False):
+        mi_grid_chromosome_id = mi_grids_service \
             .get_chromosome_id_if_mi_grid_exists_by_refseq_accession_number(self.refseq_accession_number)
-        if mi_grid_chromosome_id is None:
+        if only_cgr:
+            self.mfa_generator.generate_initial_grid(name=name, title=self.CGR_PLOT_TITLE)
+            return
+        elif mi_grid_chromosome_id is None:
             self.chromosome_id = self._insert_chromosome(GCF, chromosomes_service)
-            logger.debug(f"generate_mfa: {self.chromosome_id}")
-            logger.info(f"No previous results found in mi_grids table {mi_grids_service.get_table_name()} for {self.refseq_accession_number} - executing CGR algorithm")
-            initial_cgr = self.mfa_generator.generate_initial_grid()
+            logger.info(
+                f"No previous results found in mi_grids table {mi_grids_service.get_table_name()} for {self.refseq_accession_number} - executing CGR algorithm")
+
+            initial_cgr = self.mfa_generator.generate_initial_grid(name=name, title=self.CGR_PLOT_TITLE)
             self._save_initial_grid_to_database(initial_cgr, self.chromosome_id, mi_grids_service)
             cgr_results = self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(initial_cgr)
         else:
             self.chromosome_id = mi_grid_chromosome_id
-            logger.info(f"Extracting {self.refseq_accession_number} mi_grid from table {mi_grids_service.get_table_name()}")
+            logger.info(
+                f"Extracting {self.refseq_accession_number} mi_grid from table {mi_grids_service.get_table_name()}")
             retrieved_data = mi_grids_service.extract_mi_grid_by_chromosome_id(mi_grid_chromosome_id)
-            initial_cgr = np.frombuffer(retrieved_data, dtype=np.float64).reshape((self.mfa_generator.get_grid_sizes()[0],
-                                               self.mfa_generator.get_grid_sizes()[0]))
+            initial_cgr = np.frombuffer(retrieved_data, dtype=np.float64).reshape(
+                (self.mfa_generator.get_grid_sizes()[0],
+                 self.mfa_generator.get_grid_sizes()[0]))
             self.mfa_generator.set_cgr_initial_grid(initial_cgr)
             cgr_results = self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(initial_cgr)
 
         self.mfa_results = self.mfa_generator.multifractal_discrimination_analysis(cgrs_mi_grids=cgr_results)
         logger.info(f"MFA results were generated for chromosome: {self.refseq_accession_number}")
         self.fq = self.mfa_generator.get_fq()
-
 
     def _save_initial_grid_to_database(self, cgr_largest_mi_grid, chromosome_id, mi_grids_service):
         cgr_largest_mi_grid_np = np.array(cgr_largest_mi_grid, dtype=np.float64)
@@ -115,12 +121,12 @@ class SequenceManager(SequenceManagerInterface):
         del binary_data_numpy
         gc.collect()
 
-
     def generate_degrees_of_multifractality(self):
         self.degrees_of_multifractality = self.mfa_generator.get_DDq()
 
     def graph_cgr(self):
-        self.mfa_generator.get_cgr_gen().graph_cgr(title=f"CGR of {self.sequence_name}", name=f"whole/{self.organism_name}")
+        self.mfa_generator.get_cgr_gen().graph_cgr(title=f"CGR of {self.sequence_name}",
+                                                   name=f"whole/{self.organism_name}")
 
     def graph_3d_cgr(self, grid_size=512):
         epsilons = self.mfa_generator.get_epsilons()
@@ -158,14 +164,14 @@ class SequenceManager(SequenceManagerInterface):
             logger.info(f"The degree of multifractality of {self.sequence_name} is {self.degrees_of_multifractality}")
 
     def graph_coverage(self, subfolder="whole"):
-        Graphs.graph_coverage(values=self.cover, sequence_name=self.sequence_name, name=f"{subfolder}/{self.organism_name}")
+        Graphs.graph_coverage(values=self.cover, sequence_name=self.sequence_name,
+                              name=f"{subfolder}/{self.organism_name}")
 
-
-    def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step:int, amount_sequences: int) -> \
+    def find_nucleotides_strings_recursively(self, k1: int, k2: int, k_step: int, amount_sequences: int) -> \
             List[MiGridCoordinatesValuesAndNucleotides]:
         recursive_sequences_finder = RecursiveSequencesFinder(grid_exponents=self.mfa_generator.GRID_EXPONENTS,
-                        cgrs_mi_grids=self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(
-                            self.mfa_generator.get_cgr_initial_grid()))
+                                                              cgrs_mi_grids=self.mfa_generator.generate_cgr_mi_grids_from_initial_grid(
+                                                                  self.mfa_generator.get_cgr_initial_grid()))
         self.n_largest_mi_grid_values_strings_for_k = recursive_sequences_finder.get_largest_mi_grid_values_strings_for_different_k(
             k1=k1, k2=k2, k_step=k_step, amount_sequences=amount_sequences
         )
@@ -216,21 +222,20 @@ class SequenceManager(SequenceManagerInterface):
     def get_size(self) -> int:
         return self.sequence.get_size()
 
-
     def save_results_to_db_during_execution(self, GCF):
-        self._insert_chromosome(GCF, self.whole_chromosomes_service)
-        self.whole_results_service.insert(record=(self.chromosome_id, self.mfa_results['Dq_values'].tolist(),
-                                             self.mfa_results['tau_q_values'].tolist(),
-                                             self.mfa_results['DDq']))
-        del self.mfa_results
-        logger.info(f"************* Saved to DB {self.sequence_name} *************")
-
+        if self.mfa_results:
+            self._insert_chromosome(GCF, self.whole_chromosomes_service)
+            self.whole_results_service.insert(record=(self.chromosome_id, self.mfa_results['Dq_values'].tolist(),
+                                                      self.mfa_results['tau_q_values'].tolist(),
+                                                      self.mfa_results['DDq']))
+            del self.mfa_results
+            logger.info(f"************* Saved to DB {self.sequence_name} *************")
 
     def find_only_kmers_recursively(self, k_range: tuple) -> List[MiGridCoordinatesValuesAndNucleotides]:
-        kmers_list = self.find_nucleotides_strings_recursively(k1=k_range[1], k2=k_range[0], k_step=-1, amount_sequences=10)
+        kmers_list = self.find_nucleotides_strings_recursively(k1=k_range[1], k2=k_range[0], k_step=-1,
+                                                               amount_sequences=10)
         logger.info("kmers - " + str(kmers_list))
         return kmers_list
-
 
     def save_repeats_found_recursively_to_db(self, kmers_list: List[MiGridCoordinatesValuesAndNucleotides], GCF: str,
                                              method_to_find_it: str = "Recursively"):
@@ -244,10 +249,5 @@ class SequenceManager(SequenceManagerInterface):
             for index, string in enumerate(nucleotides_strings):
                 repeats_service_id = self.repeats_service.insert(record=(string, "", method_to_find_it))
                 self.recursive_repeats_whole_chromosomes_service.insert(
-                    record=(repeats_service_id, self.chromosome_id , len(string), int(largest_values[index]),
+                    record=(repeats_service_id, self.chromosome_id, len(string), int(largest_values[index]),
                             str(coordinates[index])))
-
-
-
-
-

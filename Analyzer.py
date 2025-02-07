@@ -33,41 +33,44 @@ class Analyzer:
         if args.name:
             self.organism = args.name
             self.loader.set_organism(self.organism)
-            self._validate_mode_analyzing_genome(args, save_to_db=save_to_db)
-
+            dir_name = args.name.replace(" ", "_")
+            self._validate_mode_analyzing_genome(args, save_to_db=save_to_db, name=dir_name,
+                                                 only_cgr=bool(args.only_cgr))
         else:
             raise Exception("Please provide either a -name (lowercase name or GCF).")
 
-    def _validate_mode_analyzing_genome(self, args, save_to_db: bool):
+    def _validate_mode_analyzing_genome(self, args, save_to_db: bool, name: str, only_cgr: bool):
         if args.mode:
             if args.mode == 'whole':
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__whole_MFA_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(), data=self.loader.get_data(),
-                                        save_to_db=save_to_db)
+                                        save_to_db=save_to_db, name=name, only_cgr=only_cgr)
             elif args.mode == 'regions':
                 self._load_organism(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(),
                               amount_chromosomes=self.loader.get_amount_chromosomes())
                 self.__regions_MFA_genome(organism_name=self.loader.get_organism_name(), gcf=self.loader.get_gcf(), data=self.loader.get_data(),
                                           regions_number=args.regions_number, window_length=args.window_length,
-                                          save_to_db=save_to_db)
+                                          save_to_db=save_to_db, name=name, only_cgr=only_cgr)
             else:
                 raise Exception("Enter a valid mode (whole or regions)")
         else:
             raise Exception("Enter a valid mode (whole or regions)")
 
-    def __whole_MFA_genome(self, organism_name, gcf, data, save_to_db):
+    def __whole_MFA_genome(self, organism_name, gcf, data, save_to_db, name, only_cgr):
         genome_manager = GenomeManager(genome_data=data, organism_name=organism_name)
-        genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
+        genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db, name=name,
+                                                              only_cgr=only_cgr)
         #genome_manager.graph_linear_fit()
         #genome_manager.generate_df_results()
 
-    def __regions_MFA_genome(self, organism_name, gcf, data, regions_number, window_length, save_to_db):
+    def __regions_MFA_genome(self, organism_name, gcf, data, regions_number, window_length, save_to_db, name, only_cgr):
         window_length = int(window_length) if window_length else None
         regions_number = int(regions_number) if regions_number else None
         region_genome_manager = RegionGenomeManager(genome_data=data, regions_number=regions_number,
                                                     window_length=window_length, organism_name=organism_name)
-        region_genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db)
+        region_genome_manager.calculate_multifractal_analysis_values(GCF=gcf, save_to_db=save_to_db, name=name,
+                                                                     only_cgr=only_cgr)
 
     @DBConnection
     @TryExcept

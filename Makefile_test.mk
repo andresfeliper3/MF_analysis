@@ -1,4 +1,4 @@
-NAME="vitis vinifera"
+AME="vitis vinifera"
 WINDOW_LENGTH=600000
 DIR="vitis_vinifera"
 GCF=GCF_000003745.3

@@ -16,6 +16,7 @@ MFA:
   degrees_of_multifractality: true
   multifractal_analysis_merged: true
   coverage: false
+  CGR: true
 
 genes:
   distribution_of_genes_merged: true

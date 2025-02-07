@@ -89,14 +89,14 @@ class RegionSequenceManager(SequenceManagerInterface):
         for region in self.regions:
             self.managers.append(SequenceManager(sequence=region, sequence_name=region.get_name()))
 
-    def calculate_multifractal_analysis_values(self, GCF):
-        self.generate_mfa(GCF, self.region_mi_grids_service, self.region_chromosomes_service)
+    def calculate_multifractal_analysis_values(self, GCF, name):
+        self.generate_mfa(GCF, self.region_mi_grids_service, self.region_chromosomes_service, name)
         self.generate_degrees_of_multifractality()
         self._attach_cover_data()
 
-    def generate_mfa(self, GCF, mi_grids_service, chromosomes_service):
+    def generate_mfa(self, GCF, mi_grids_service, chromosomes_service, name):
         for manager in self.managers:
-            manager.generate_mfa(GCF, mi_grids_service, chromosomes_service)
+            manager.generate_mfa(GCF, mi_grids_service, chromosomes_service, name)
             self.mfa_results.append(manager.get_mfa_results())
             self.fq.append(manager.get_fq())
 

@@ -281,7 +281,7 @@ class Graphs:
                 plt.axhline(i * square_width, color=linecolor, linewidth=linewidth)
 
         if save:
-            Graphs._savefig(title, name)
+            Graphs._savefig(title, f"CGR/{name}")
 
         plt.show()
 

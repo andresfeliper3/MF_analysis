@@ -12,7 +12,7 @@ class SequenceManagerInterface:
         """Generate the MFA class"""
         pass
 
-    def generate_mfa(self, GCF, mi_grids_service, chromosomes_service):
+    def generate_mfa(self, GCF, mi_grids_service, chromosomes_service, name, only_cgr):
         """Generate mfa_results with the MFA values"""
         pass
 
@@ -44,7 +44,7 @@ class SequenceManagerInterface:
         """Attach to the fields of the class the cover and cover_percentage of the sequence"""
         pass
 
-    def calculate_multifractal_analysis_values(self, GCF):
+    def calculate_multifractal_analysis_values(self, GCF, name, only_cgr):
         """Generate mfa generators, generate mfa values, attach the degrees of multifractality, the cover and cover
         percentage"""
         pass
